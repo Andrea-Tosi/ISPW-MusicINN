@@ -53,3 +53,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           # Token per l'analisi delle Pull Request
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          #
