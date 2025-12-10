@@ -27,7 +27,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '23'
           distribution: 'temurin'
 
       # 2. Configurazione e Caching delle Dipendenze Maven
@@ -53,4 +53,3 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           # Token per l'analisi delle Pull Request
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          #
