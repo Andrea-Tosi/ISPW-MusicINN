@@ -1,0 +1,55 @@
+name: SonarCloud Analysis (Java Maven)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - master
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Essenziale per il confronto del codice vecchio/nuovo nelle PR
+          fetch-depth: 0
+
+      # 1. Configurazione dell'ambiente Java
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # 2. Configurazione e Caching delle Dipendenze Maven
+      # Ottimizzazione per velocizzare le build successive
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      # 3. Fase di Build e Analisi (usando il plugin Sonar di Maven)
+      # Qui, il plugin Sonar per Maven esegue l'analisi durante la fase 'install'
+      - name: Build and Sonar Analysis with Maven
+        run: |
+          mvn clean install \
+            -DskipTests=true \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3060:sonar \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+        env:
+          # Il Token per l'autenticazione su SonarCloud
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          # Token per l'analisi delle Pull Request
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
