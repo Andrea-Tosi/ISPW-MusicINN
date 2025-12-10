@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.LoginBean;
+package org.musicinn.musicinn.util.login_bean;
 
 public class UserLoginBean {
     protected String identifier;

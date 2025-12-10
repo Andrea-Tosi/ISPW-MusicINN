@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.LoginBean;
+package org.musicinn.musicinn.util.login_bean;
 
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 

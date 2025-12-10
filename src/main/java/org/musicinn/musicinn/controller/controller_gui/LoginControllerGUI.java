@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.controller.controllerGUI;
+package org.musicinn.musicinn.controller.controller_gui;
 
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
@@ -8,11 +8,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.musicinn.musicinn.controller.controllerApplication.LoginController;
+import org.musicinn.musicinn.controller.controller_application.LoginController;
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
-import org.musicinn.musicinn.util.LoginBean.UserLoginBean;
+import org.musicinn.musicinn.util.FxmlPathLoader;
+import org.musicinn.musicinn.util.login_bean.UserLoginBean;
 
 import java.io.IOException;
 import java.net.URL;
@@ -110,17 +111,15 @@ public class LoginControllerGUI implements Initializable {
     }
 
     private void handleSuccessfulLogin(User user){
-        String nextFxmlPath = new String();
+        String nextFxmlPath = "";
 
         Scene currentScene = statusLabel.getScene();
         Stage stage = (Stage) currentScene.getWindow();
 
         if (user instanceof Manager) {
-            //Manager manager = (Manager) user;
-            nextFxmlPath = "/org/musicinn/musicinn/2.0.2_HomePage_Manager.fxml";
+            nextFxmlPath = FxmlPathLoader.getPath("fxml.manager.home");
         } else if (user instanceof Artist) {
-            //Artist artist = (Artist) user;
-            nextFxmlPath = "/org/musicinn/musicinn/2.0.1_HomePage_Artist.fxml";
+            nextFxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
         }
         navigateToHomepage(stage, nextFxmlPath);
     }

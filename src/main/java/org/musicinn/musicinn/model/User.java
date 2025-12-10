@@ -5,7 +5,7 @@ public abstract class User {
     protected String email;
     protected String hashedPassword;
 
-    public User(String username, String email, String hashedPassword){
+    protected User(String username, String email, String hashedPassword){
         this.username = username;
         this.email = email;
         this.hashedPassword = hashedPassword;

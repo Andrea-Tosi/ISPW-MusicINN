@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.DAO;
+package org.musicinn.musicinn.util.dao;
 
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
@@ -7,7 +7,6 @@ import org.musicinn.musicinn.model.Venue;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import static org.musicinn.musicinn.util.enumerations.TypeArtist.SINGER;
 

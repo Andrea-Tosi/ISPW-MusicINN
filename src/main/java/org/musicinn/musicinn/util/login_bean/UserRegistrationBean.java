@@ -1,9 +1,9 @@
-package org.musicinn.musicinn.util.LoginBean;
+package org.musicinn.musicinn.util.login_bean;
 
 public abstract class UserRegistrationBean extends UserLoginBean{
     protected String email;
 
-    public UserRegistrationBean(String identifier, String password) {
+    protected UserRegistrationBean(String identifier, String password) {
         super(identifier, password);
     }
 

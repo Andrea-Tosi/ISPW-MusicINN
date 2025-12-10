@@ -1,8 +1,8 @@
-package org.musicinn.musicinn.controller.controllerApplication;
+package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.User;
-import org.musicinn.musicinn.util.DAO.UserDAO;
-import org.musicinn.musicinn.util.LoginBean.UserLoginBean;
+import org.musicinn.musicinn.util.dao.UserDAO;
+import org.musicinn.musicinn.util.login_bean.UserLoginBean;
 
 import java.util.Objects;
 

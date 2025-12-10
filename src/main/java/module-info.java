@@ -4,6 +4,6 @@ module org.musicinn.musicinn {
 
 
     opens org.musicinn.musicinn to javafx.fxml;
-    opens org.musicinn.musicinn.controller.controllerGUI to javafx.fxml;
+    opens org.musicinn.musicinn.controller.controller_gui to javafx.fxml;
     exports org.musicinn.musicinn;
 }
