@@ -46,6 +46,7 @@ jobs:
           mvn clean install \
             -DskipTests=true \
             org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
+            -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
         env:
