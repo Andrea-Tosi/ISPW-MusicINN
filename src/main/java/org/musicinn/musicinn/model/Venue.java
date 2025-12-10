@@ -47,7 +47,7 @@ public class Venue {
         this.type = type;
     }
 
-    public Boolean IsActive() {
+    public Boolean isActive() {
         return isActive;
     }
 

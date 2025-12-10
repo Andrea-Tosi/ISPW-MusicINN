@@ -12,7 +12,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         String loginFxmlPath = FxmlPathLoader.getPath("fxml.login.view");
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("1.0.0_LoginView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(loginFxmlPath));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("MusicINN");
         stage.setScene(scene);

@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class FxmlPathLoader {
+    private FxmlPathLoader() {}
+
     private static final Properties props = new Properties();
 
     static {

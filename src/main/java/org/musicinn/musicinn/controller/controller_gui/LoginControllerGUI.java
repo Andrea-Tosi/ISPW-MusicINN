@@ -51,14 +51,10 @@ public class LoginControllerGUI implements Initializable {
 
         // Assicura che i campi siano sempre sincronizzati
         // Quando si scrive in passwordField, copiamo il testo in clearPasswordField
-        passwordField.textProperty().addListener((obs, oldText, newText) -> {
-            clearPasswordField.setText(newText);
-        });
+        passwordField.textProperty().addListener((obs, oldText, newText) -> clearPasswordField.setText(newText));
 
         // Quando si scrive in passwordTextField, copiamo il testo in passwordField
-        clearPasswordField.textProperty().addListener((obs, oldText, newText) -> {
-            passwordField.setText(newText);
-        });
+        clearPasswordField.textProperty().addListener((obs, oldText, newText) -> passwordField.setText(newText));
     }
 
     @FXML
