@@ -45,7 +45,7 @@ jobs:
         run: |
           mvn clean install \
             -DskipTests=true \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3060:sonar \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
         env:
