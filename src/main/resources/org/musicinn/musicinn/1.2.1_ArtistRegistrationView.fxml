@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="840.0" style="-fx-background-color: #00CCFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.ArtistRegistrationControllerGUI">
+   <top>
+      <AnchorPane prefHeight="106.0" prefWidth="580.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="123.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <image>
+                  <Image url="@Music - Soulful.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="123.0" fitWidth="125.0" layoutX="710.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <image>
+                  <Image url="@Music - Celebrate.png" />
+               </image>
+            </ImageView>
+            <StackPane layoutX="125.0" layoutY="40.0" prefHeight="30.0" prefWidth="306.0" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="124.59999999999991">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to MusicINN" textAlignment="CENTER">
+                     <font>
+                        <Font name="Berlin Sans FB" size="36.0" />
+                     </font>
+                  </Text>
+               </children>
+            </StackPane>
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
+      <VBox prefHeight="423.0" prefWidth="500.0" spacing="10.0" style="-fx-background-color: dddddd;" BorderPane.alignment="CENTER">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Completa la registrazione del tuo account artista" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="4.0" right="4.0" top="4.0" />
+               </VBox.margin>
+            </Text>
+            <HBox alignment="CENTER" prefHeight="26.0" prefWidth="589.0" spacing="30.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <TextField fx:id="stageNameField" promptText="Nome d'arte" HBox.hgrow="ALWAYS" />
+                  <ComboBox fx:id="typeArtistBox" prefWidth="150.0" promptText="Tipo di artista" HBox.hgrow="ALWAYS" />
+                  <CheckBox fx:id="doesUnreleasedCheck" mnemonicParsing="false" text="Eseguo brani inediti" HBox.hgrow="ALWAYS" />
+               </children>
+               <VBox.margin>
+                  <Insets left="4.0" right="4.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="26.0" prefWidth="589.0" spacing="20.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <TextField fx:id="cityField" promptText="Città" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+                  <TextField fx:id="addressField" promptText="Indirizzo" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <VBox.margin>
+                  <Insets left="4.0" right="4.0" />
+               </VBox.margin>
+            </HBox>
+            <VBox alignment="CENTER_LEFT" prefHeight="88.0" prefWidth="589.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Label text="Generi Musicali">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="4.0" right="4.0" />
+                     </VBox.margin>
+                  </Label>
+                  <FlowPane hgap="10.0" prefHeight="68.0" prefWidth="589.0" vgap="10.0">
+                     <children>
+                        <ToggleButton fx:id="rockToggle" mnemonicParsing="false" text="Rock" />
+                        <ToggleButton fx:id="popToggle" mnemonicParsing="false" text="Pop" />
+                        <ToggleButton fx:id="jazzToggle" mnemonicParsing="false" text="Jazz" />
+                        <ToggleButton fx:id="rapToggle" mnemonicParsing="false" text="Rap" />
+                        <ToggleButton fx:id="trapToggle" mnemonicParsing="false" text="Trap" />
+                        <ToggleButton fx:id="reggaeToggle" mnemonicParsing="false" text="Reggae" />
+                        <ToggleButton fx:id="classicalToggle" mnemonicParsing="false" text="Classica" />
+                        <ToggleButton fx:id="metalToggle" mnemonicParsing="false" text="Metal" />
+                        <ToggleButton fx:id="indieToggle" mnemonicParsing="false" text="Indie" />
+                        <ToggleButton fx:id="soulToggle" mnemonicParsing="false" text="Soul" />
+                        <ToggleButton fx:id="r_bToggle" mnemonicParsing="false" text="R&amp;B" />
+                        <ToggleButton fx:id="funkToggle" mnemonicParsing="false" text="Funk" />
+                        <ToggleButton fx:id="discoToggle" mnemonicParsing="false" text="Disco" />
+                        <ToggleButton fx:id="technoToggle" mnemonicParsing="false" text="Techno" />
+                        <ToggleButton fx:id="electronicToggle" mnemonicParsing="false" text="Elettronica" />
+                        <ToggleButton fx:id="ambientToggle" mnemonicParsing="false" text="Ambiente" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                     </padding>
+                  </FlowPane>
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+               <children>
+                  <Label fx:id="statusLabel" textFill="RED" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" VBox.vgrow="NEVER">
+               <children>
+                  <Button fx:id="backButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleBackButton" prefWidth="0.0" text="Indietro" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="completeRegistrationButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConfirmButton" prefWidth="0.0" text="Completa Registrazione" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="4.0" left="4.0" right="4.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="50.0" left="125.0" right="125.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+</BorderPane>

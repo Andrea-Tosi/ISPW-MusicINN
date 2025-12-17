@@ -9,11 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.musicinn.musicinn.controller.controller_application.LoginController;
+import org.musicinn.musicinn.controller.controller_gui.Navigation;
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.util.FxmlPathLoader;
-import org.musicinn.musicinn.util.login_bean.UserLoginBean;
+import org.musicinn.musicinn.util.login_bean.CredentialsBean;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,13 +34,13 @@ public class LoginControllerGUI implements Initializable {
     ToggleButton visibilityToggleButton;
 
     @FXML
-    Button confermaButton;
+    Button confirmButton;
 
     @FXML
-    Hyperlink passwordDimenticataLink;
+    Hyperlink forgottenPasswordLink;
 
     @FXML
-    Hyperlink registratiLink;
+    Hyperlink signupLink;
 
     @FXML
     Label statusLabel;
@@ -59,17 +60,31 @@ public class LoginControllerGUI implements Initializable {
 
     @FXML
     protected void changePasswordVisibility(ActionEvent event) {
-        // Controlla quale campo è attualmente visibile
-        if (passwordField.isVisible()) {
-            // Se il PasswordField è visibile:
-            passwordField.setVisible(false);
-            clearPasswordField.setVisible(true);
-            visibilityToggleButton.setText("Nascondi");
-        } else {
-            // Se il TextField è visibile (cioè la password è mostrata)
-            passwordField.setVisible(true);
-            clearPasswordField.setVisible(false);
-            visibilityToggleButton.setText("Mostra");
+        boolean nextStateIsHidden = !passwordField.isVisible();
+        passwordField.setVisible(nextStateIsHidden);
+        clearPasswordField.setVisible(!nextStateIsHidden);
+        String buttonText = nextStateIsHidden ? "Mostra" : "Nascondi";
+        visibilityToggleButton.setText(buttonText);
+    }
+
+    @FXML
+    protected void onActionSignupLink(ActionEvent event){
+        String fxmlPath = "";
+
+        Scene currentScene = statusLabel.getScene();
+        Stage stage = (Stage) currentScene.getWindow();
+
+        fxmlPath = FxmlPathLoader.getPath("fxml.registration_user.view");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            Scene newScene = new Scene(root);
+            stage.setScene(newScene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Errore nel caricamento del file FXML: " + fxmlPath);
         }
     }
 
@@ -80,7 +95,7 @@ public class LoginControllerGUI implements Initializable {
 
     @FXML
     protected void onActionPassword(ActionEvent event) {
-        confermaButton.fire();
+        confirmButton.fire();
     }
 
     @FXML
@@ -95,9 +110,8 @@ public class LoginControllerGUI implements Initializable {
             return;
         }
 
-        UserLoginBean userBean = new UserLoginBean(username, password);
-        LoginController loginController = new LoginController();
-        User loggedUser = loginController.login(userBean);
+        CredentialsBean userBean = new CredentialsBean(username, password);
+        User loggedUser = LoginController.getSingletonInstance().login(userBean);
         if (loggedUser != null) {
             //controlla il tipo di utente e mostra la schermata adeguata
             handleSuccessfulLogin(loggedUser);
@@ -117,19 +131,6 @@ public class LoginControllerGUI implements Initializable {
         } else if (user instanceof Artist) {
             nextFxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
         }
-        navigateToHomepage(stage, nextFxmlPath);
-    }
-
-    private void navigateToHomepage(Stage currentStage, String fxmlPath){
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Scene newScene = new Scene(root);
-            currentStage.setScene(newScene);
-            currentStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Errore nel caricamento del file FXML: " + fxmlPath);
-        }
+        Navigation.navigateToPath(stage, nextFxmlPath);
     }
 }

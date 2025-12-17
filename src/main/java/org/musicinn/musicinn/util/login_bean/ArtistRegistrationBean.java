@@ -5,7 +5,7 @@ import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
 import java.util.List;
 
-public class ArtistRegistrationBean extends UserRegistrationBean{
+public class ArtistRegistrationBean {
     private String stageName;
     private TypeArtist typeArtist;
     private Boolean doesUnreleased;
@@ -15,8 +15,12 @@ public class ArtistRegistrationBean extends UserRegistrationBean{
     private String urlInstagram;
     private String urlSpotify;
 
-    public ArtistRegistrationBean(String identifier, String password) {
-        super(identifier, password);
+    public ArtistRegistrationBean(String stageName, TypeArtist typeArtist, Boolean doesUnreleased, String city, String address) {
+        this.stageName = stageName;
+        this.typeArtist = typeArtist;
+        this.doesUnreleased = doesUnreleased;
+        this.city = city;
+        this.address = address;
     }
 
     public String getStageName() {

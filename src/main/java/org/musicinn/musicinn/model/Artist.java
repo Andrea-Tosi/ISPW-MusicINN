@@ -3,6 +3,7 @@ package org.musicinn.musicinn.model;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Artist extends User{
@@ -12,12 +13,13 @@ public class Artist extends User{
     private String city;
     private String address;
     private List<MusicalGenre> genresList;
+    private List<SocialAccount> socialAccounts;
 
-    public Artist(String username, String email, String password, String stageName, TypeArtist typeArtist, boolean b, String city, String address) {
+    public Artist(String username, String email, String password, String stageName, TypeArtist typeArtist, boolean doesUnreleased, String city, String address) {
         super(username, email, password);
         this.stageName = stageName;
         this.typeArtist = typeArtist;
-        this.doesUnreleased = b;
+        this.doesUnreleased = doesUnreleased;
         this.city = city;
         this.address = address;
     }
@@ -68,5 +70,20 @@ public class Artist extends User{
 
     public void setGenresList(List<MusicalGenre> genresList) {
         this.genresList = genresList;
+    }
+
+    public List<SocialAccount> getSocialAccounts() {
+        return socialAccounts;
+    }
+
+    public void setSocialAccounts(List<SocialAccount> socialAccounts) {
+        this.socialAccounts = socialAccounts;
+    }
+
+    public void addSocialAccount(SocialAccount socialAccount) {
+        if (this.socialAccounts == null) {
+            this.socialAccounts = new ArrayList<>();
+        }
+        this.socialAccounts.add(socialAccount);
     }
 }

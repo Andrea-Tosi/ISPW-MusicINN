@@ -36,7 +36,7 @@
                   <Label text="Username" />
                   <ImageView fx:id="iconaUtente" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@Icona%20Utente.png" />
+                        <Image url="@Icona Utente.png" />
                      </image>
                   </ImageView>
                </children>

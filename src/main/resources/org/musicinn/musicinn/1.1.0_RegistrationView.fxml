@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="840.0" style="-fx-background-color: #00CCFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.LoginControllerGUI">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="840.0" style="-fx-background-color: #00CCFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.UserRegistrationControllerGUI">
    <top>
       <AnchorPane prefHeight="106.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
@@ -49,11 +49,11 @@
             <Insets bottom="80.0" left="125.0" right="125.0" />
          </BorderPane.margin>
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0" spacing="40.0" StackPane.alignment="CENTER">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="30.0" StackPane.alignment="CENTER">
                <children>
                   <HBox alignment="CENTER" prefHeight="30.0" prefWidth="590.0">
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Log In" HBox.hgrow="ALWAYS">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Registrati" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="24.0" />
                            </font>
@@ -64,49 +64,47 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="0.0" prefWidth="590.0">
                            <children>
-                              <TextField fx:id="identityTextField" onAction="#onActionUsername" prefHeight="26.0" prefWidth="300.0" promptText="Username o email" />
+                              <TextField fx:id="usernameTextField" onAction="#onActionUsername" prefHeight="26.0" prefWidth="300.0" promptText="Username" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <TextField fx:id="emailTextField" onAction="#onActionEmail" prefHeight="26.0" prefWidth="300.0" promptText="Email" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="0.0" prefWidth="590.0">
                            <children>
-                              <StackPane prefHeight="150.0" prefWidth="220.0">
+                              <StackPane prefHeight="26.0" prefWidth="220.0">
                                  <children>
-                                    <TextField fx:id="clearPasswordField" onAction="#onActionPassword" promptText="Password" />
                                     <PasswordField fx:id="passwordField" onAction="#onActionPassword" promptText="Password" />
+                                    <TextField fx:id="clearPasswordField" onAction="#onActionPassword" promptText="Password" />
                                  </children>
                               </StackPane>
-                              <ToggleButton fx:id="visibilityToggleButton" mnemonicParsing="false" onAction="#changePasswordVisibility" prefHeight="26.0" prefWidth="80.0" text="Mostra" />
+                              <ToggleButton fx:id="visibilityToggleButton1" onAction="#changePasswordVisibility" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" text="Mostra" />
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER">
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="101.0" prefHeight="0.0" prefWidth="590.0">
                            <children>
-                              <Label fx:id="statusLabel" />
+                              <StackPane prefHeight="150.0" prefWidth="220.0">
+                                 <children>
+                                    <PasswordField fx:id="repeatPasswordField" onAction="#onActionClearPassword" promptText="Conferma Password" />
+                                    <TextField fx:id="clearRepeatPasswordField" onAction="#onActionClearPassword" promptText="Conferma Password" />
+                                 </children>
+                              </StackPane>
+                              <ToggleButton fx:id="visibilityToggleButton2" onAction="#changePasswordVisibility" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" text="Mostra" />
                            </children>
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                  <HBox alignment="CENTER">
                      <children>
-                        <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#handleLogin" prefHeight="32.0" prefWidth="100.0" text="Conferma" />
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-                           <children>
-                              <VBox alignment="CENTER" prefHeight="60.0" prefWidth="198.0" spacing="5.0">
-                                 <children>
-                                    <HBox alignment="CENTER" prefHeight="0.0" prefWidth="198.0">
-                                       <children>
-                                          <Hyperlink fx:id="forgottenPasswordLink" prefHeight="0.0" prefWidth="184.0" text="Hai dimenticato la tua password?" />
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER" prefHeight="0.0" prefWidth="198.0">
-                                       <children>
-                                          <Label text="Non hai un account?" />
-                                          <Hyperlink fx:id="signupLink" onAction="#onActionSignupLink" text="Registrati" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </HBox>
+                        <Label fx:id="statusLabel" />
+                     </children>
+                  </HBox>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                     <children>
+                        <Button fx:id="confirmButton" onAction="#handleRegistration" mnemonicParsing="false" prefHeight="32.0" prefWidth="100.0" text="Conferma" />
+                        <Hyperlink fx:id="loginLink" onAction="#onActionLoginLink" text="Effettua il login" />
                      </children>
                   </VBox>
                </children>

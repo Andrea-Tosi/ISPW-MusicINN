@@ -15,6 +15,6 @@ public enum MusicalGenre {
     R_B,
     DISCO,
     TECHNO,
-    ELETTRONIC,
+    ELECTRONIC,
     AMBIENT
 }

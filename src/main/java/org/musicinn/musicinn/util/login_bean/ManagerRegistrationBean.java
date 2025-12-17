@@ -2,15 +2,15 @@ package org.musicinn.musicinn.util.login_bean;
 
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 
-public class ManagerRegistrationBean extends UserRegistrationBean{
+public class ManagerRegistrationBean {
     private String nameVenue;
     private String city;
     private String addressVenue;
     private TypeVenue typeVenue;
 
-    public ManagerRegistrationBean(String identifier, String password) {
-        super(identifier, password);
-    }
+//    public ManagerRegistrationBean(String identifier, String password) {
+//        super(identifier, password);
+//    }
 
     public String getNameVenue() {
         return nameVenue;
