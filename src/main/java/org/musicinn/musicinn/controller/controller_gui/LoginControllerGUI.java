@@ -9,11 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.musicinn.musicinn.controller.controller_application.LoginController;
-import org.musicinn.musicinn.controller.controller_gui.Navigation;
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.util.FxmlPathLoader;
+import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.login_bean.CredentialsBean;
 
 import java.io.IOException;
@@ -22,28 +22,28 @@ import java.util.ResourceBundle;
 
 public class LoginControllerGUI implements Initializable {
     @FXML
-    TextField identityTextField;
+    private TextField identityTextField;
 
     @FXML
-    PasswordField passwordField;
+    private PasswordField passwordField;
 
     @FXML
-    TextField clearPasswordField;
+    private TextField clearPasswordField;
 
     @FXML
-    ToggleButton visibilityToggleButton;
+    private ToggleButton visibilityToggleButton;
 
     @FXML
-    Button confirmButton;
+    private Button confirmButton;
 
     @FXML
-    Hyperlink forgottenPasswordLink;
+    private Hyperlink forgottenPasswordLink;
 
     @FXML
-    Hyperlink signupLink;
+    private Hyperlink signupLink;
 
     @FXML
-    Label statusLabel;
+    private Label statusLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -131,6 +131,6 @@ public class LoginControllerGUI implements Initializable {
         } else if (user instanceof Artist) {
             nextFxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
         }
-        Navigation.navigateToPath(stage, nextFxmlPath);
+        NavigationGUI.navigateToPath(stage, nextFxmlPath);
     }
 }

@@ -8,10 +8,6 @@ public class ManagerRegistrationBean {
     private String addressVenue;
     private TypeVenue typeVenue;
 
-//    public ManagerRegistrationBean(String identifier, String password) {
-//        super(identifier, password);
-//    }
-
     public String getNameVenue() {
         return nameVenue;
     }

@@ -1,20 +1,19 @@
 package org.musicinn.musicinn.util;
 
-import org.musicinn.musicinn.controller.controller_application.LoginController;
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmailVerifier {
-    private EmailVerifier() {};
+    private Random random = new Random();
+
+    private EmailVerifier() {}
 
     private static class SingletonContainer{
-        public final static EmailVerifier singletonInstance = new EmailVerifier();
+        public static final EmailVerifier singletonInstance = new EmailVerifier();
     }
 
-    public static final EmailVerifier getSingletonInstance() {
+    public static EmailVerifier getSingletonInstance() {
         return SingletonContainer.singletonInstance;
     }
 
@@ -22,7 +21,7 @@ public class EmailVerifier {
 
     private record VerificationEntry(String code, long expiresAt) {}
 
-    private static final long EXPIRATION_TIME_MS = 10 * 60 * 1000; //minuti in millisecondi
+    private static final long EXPIRATION_TIME_MS = 10 * 60 * 1000L; //minuti in millisecondi
 
     public void sendCode(String email) {
         String code = generateSixDigitCode();
@@ -38,8 +37,27 @@ public class EmailVerifier {
         }
     }
 
-    public Boolean checkEnteredCode(String email, String code) {
-        return code.equals(verificationCodesCache.get(email).code);
+    public Boolean checkEnteredCode(String email, String enteredCode) {
+        VerificationEntry entry = verificationCodesCache.get(email);
+        // CASO A: Il codice non esiste (mai inviato o già rimosso)
+        if (entry == null) {
+            return false;
+        }
+        // Controllo della scadenza
+        long currentTime = System.currentTimeMillis();
+        if (currentTime > entry.expiresAt()) {
+            // CASO B: Codice scaduto
+            verificationCodesCache.remove(email);
+            return false;
+        }
+        // Confronto dei codici
+        if (entry.code().equals(enteredCode)) {
+            // CASO C: Successo
+            // Rimuove il codice perché evitare attacchi replay
+            verificationCodesCache.remove(email);
+            return true;
+        }
+        return false;
     }
 
     public void invalidateVerificationCode(String email) {
@@ -47,7 +65,6 @@ public class EmailVerifier {
     }
 
     private String generateSixDigitCode() {
-        Random random = new Random();
         int number = random.nextInt(999999);
         return String.format("%06d", number);
     }

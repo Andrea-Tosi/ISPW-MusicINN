@@ -73,7 +73,7 @@
                                           </ImageView>
                                        </graphic>
                                        <toggleGroup>
-                                          <ToggleGroup fx:id="IconChoice" />
+                                          <ToggleGroup fx:id="iconChoice" />
                                        </toggleGroup>
                                     </ToggleButton>
                                     <Label text="Artista">
@@ -85,7 +85,7 @@
                               </VBox>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <ToggleButton fx:id="managerToggleButton" onAction="#handleChoiceButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="ToggleButton" toggleGroup="$IconChoice">
+                                    <ToggleButton fx:id="managerToggleButton" onAction="#handleChoiceButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="ToggleButton" toggleGroup="$iconChoice">
                                        <graphic>
                                           <ImageView fitHeight="100.0" fitWidth="314.0" pickOnBounds="true" preserveRatio="true">
                                              <image>

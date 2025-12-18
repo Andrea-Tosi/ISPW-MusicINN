@@ -6,25 +6,26 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.musicinn.musicinn.util.FxmlPathLoader;
+import org.musicinn.musicinn.util.NavigationGUI;
 
 public class ChooseAccountTypeControllerGUI {
     @FXML
-    public ToggleButton artistToggleButton;
+    private ToggleButton artistToggleButton;
 
     @FXML
-    public ToggleButton managerToggleButton;
+    private ToggleButton managerToggleButton;
 
     @FXML
-    public ToggleGroup IconChoice;
+    private ToggleGroup iconChoice;
 
     @FXML
-    public Label statusLabel;
+    private Label statusLabel;
 
     @FXML
-    public Button backButton;
+    private Button backButton;
 
     @FXML
-    public Button confirmButton;
+    private Button confirmButton;
 
     @FXML
     private void handleChoiceButton(ActionEvent event) {
@@ -39,13 +40,13 @@ public class ChooseAccountTypeControllerGUI {
         Stage stage = (Stage) currentScene.getWindow();
         String fxmlPath = FxmlPathLoader.getPath("fxml.registration_user.view");
 
-        Navigation.navigateToPath(stage, fxmlPath);
+        NavigationGUI.navigateToPath(stage, fxmlPath);
     }
 
     @FXML
     private void handleConfirmButton(ActionEvent event) {
         statusLabel.setText("");
-        Toggle currentSelection = IconChoice.getSelectedToggle();
+        Toggle currentSelection = iconChoice.getSelectedToggle();
         if (currentSelection == null) {
             statusLabel.setText("Seleziona un tipo di account.");
         } else {
@@ -58,7 +59,7 @@ public class ChooseAccountTypeControllerGUI {
             } else if (currentSelection == managerToggleButton) {
                 fxmlPath = FxmlPathLoader.getPath("fxml.registration_manager.view");
             }
-            Navigation.navigateToPath(stage, fxmlPath);
+            NavigationGUI.navigateToPath(stage, fxmlPath);
         }
     }
 }

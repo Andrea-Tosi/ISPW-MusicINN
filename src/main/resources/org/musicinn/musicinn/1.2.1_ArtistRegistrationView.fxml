@@ -104,7 +104,7 @@
                         <ToggleButton fx:id="metalToggle" mnemonicParsing="false" text="Metal" />
                         <ToggleButton fx:id="indieToggle" mnemonicParsing="false" text="Indie" />
                         <ToggleButton fx:id="soulToggle" mnemonicParsing="false" text="Soul" />
-                        <ToggleButton fx:id="r_bToggle" mnemonicParsing="false" text="R&amp;B" />
+                        <ToggleButton fx:id="rbToggle" mnemonicParsing="false" text="R&amp;B" />
                         <ToggleButton fx:id="funkToggle" mnemonicParsing="false" text="Funk" />
                         <ToggleButton fx:id="discoToggle" mnemonicParsing="false" text="Disco" />
                         <ToggleButton fx:id="technoToggle" mnemonicParsing="false" text="Techno" />
@@ -127,8 +127,8 @@
             </HBox>
             <HBox alignment="CENTER" VBox.vgrow="NEVER">
                <children>
-                  <Button fx:id="backButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleBackButton" prefWidth="0.0" text="Indietro" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="completeRegistrationButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConfirmButton" prefWidth="0.0" text="Completa Registrazione" HBox.hgrow="ALWAYS">
+                  <Button fx:id="backButton" onAction="#handleBackButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Indietro" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="completeRegistrationButton" onAction="#handleConfirmButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Completa Registrazione" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

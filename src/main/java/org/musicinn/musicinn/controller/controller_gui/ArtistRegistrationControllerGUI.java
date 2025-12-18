@@ -9,10 +9,10 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.musicinn.musicinn.controller.controller_application.LoginController;
 import org.musicinn.musicinn.util.FxmlPathLoader;
+import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.login_bean.ArtistRegistrationBean;
-import org.musicinn.musicinn.util.login_bean.CredentialsBean;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -21,78 +21,80 @@ import java.util.ResourceBundle;
 
 public class ArtistRegistrationControllerGUI implements Initializable {
     @FXML
-    public TextField stageNameField;
+    private TextField stageNameField;
 
     @FXML
-    public ComboBox<TypeArtist> typeArtistBox;
+    private ComboBox<TypeArtist> typeArtistBox;
 
     @FXML
-    public CheckBox doesUnreleasedCheck;
+    private CheckBox doesUnreleasedCheck;
 
     @FXML
-    public TextField cityField;
+    private TextField cityField;
 
     @FXML
-    public TextField addressField;
+    private TextField addressField;
 
     @FXML
-    public ToggleButton rockToggle;
+    private ToggleButton rockToggle;
 
     @FXML
-    public ToggleButton popToggle;
+    private ToggleButton popToggle;
 
     @FXML
-    public ToggleButton jazzToggle;
+    private ToggleButton jazzToggle;
 
     @FXML
-    public ToggleButton rapToggle;
+    private ToggleButton rapToggle;
 
     @FXML
-    public ToggleButton trapToggle;
+    private ToggleButton trapToggle;
 
     @FXML
-    public ToggleButton reggaeToggle;
+    private ToggleButton reggaeToggle;
 
     @FXML
-    public ToggleButton classicalToggle;
+    private ToggleButton classicalToggle;
 
     @FXML
-    public ToggleButton metalToggle;
+    private ToggleButton metalToggle;
 
     @FXML
-    public ToggleButton indieToggle;
+    private ToggleButton indieToggle;
 
     @FXML
-    public ToggleButton soulToggle;
+    private ToggleButton soulToggle;
 
     @FXML
-    public ToggleButton r_bToggle;
+    private ToggleButton rbToggle;
 
     @FXML
-    public ToggleButton funkToggle;
+    private ToggleButton funkToggle;
 
     @FXML
-    public ToggleButton discoToggle;
+    private ToggleButton discoToggle;
 
     @FXML
-    public ToggleButton technoToggle;
+    private ToggleButton technoToggle;
 
     @FXML
-    public ToggleButton electronicToggle;
+    private ToggleButton electronicToggle;
 
     @FXML
-    public ToggleButton ambientToggle;
+    private ToggleButton ambientToggle;
 
     @FXML
-    public Label statusLabel;
+    private Label statusLabel;
 
     @FXML
-    public Button backButton;
+    private Button backButton;
 
     @FXML
-    public Button completeRegistrationButton;
+    private Button completeRegistrationButton;
 
     private List<ToggleButton> buttons;
+    private static final int MIN_SELECTIONS = 1;
+    private static final int MAX_SELECTIONS = 4;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -117,7 +119,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
                 metalToggle,
                 indieToggle,
                 soulToggle,
-                r_bToggle,
+                 rbToggle,
                 funkToggle,
                 discoToggle,
                 technoToggle,
@@ -135,7 +137,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         metalToggle.setUserData(MusicalGenre.METAL);
         indieToggle.setUserData(MusicalGenre.INDIE);
         soulToggle.setUserData(MusicalGenre.SOUL);
-        r_bToggle.setUserData(MusicalGenre.R_B);
+        rbToggle.setUserData(MusicalGenre.R_B);
         funkToggle.setUserData(MusicalGenre.FUNK);
         discoToggle.setUserData(MusicalGenre.DISCO);
         technoToggle.setUserData(MusicalGenre.TECHNO);
@@ -143,14 +145,13 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         ambientToggle.setUserData(MusicalGenre.AMBIENT);
 
         for (ToggleButton button : buttons) {
-            button.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                updateButtonsState();
-            });
+            button.selectedProperty().addListener((obs, oldVal, newVal) ->
+                updateButtonsState()
+            );
         }
     }
 
     private void updateButtonsState() {
-        int MAX_SELECTIONS = 4;
         long count = buttons.stream().filter(ToggleButton::isSelected).count();
 
         for (ToggleButton button : buttons) {
@@ -172,7 +173,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         Stage stage = (Stage) currentScene.getWindow();
         String fxmlPath = FxmlPathLoader.getPath("fxml.registration_user.view");
 
-        Navigation.navigateToPath(stage, fxmlPath);
+        NavigationGUI.navigateToPath(stage, fxmlPath);
     }
 
     private List<MusicalGenre> getSelectedGenres() {
@@ -181,8 +182,6 @@ public class ArtistRegistrationControllerGUI implements Initializable {
 
     @FXML
     public void handleConfirmButton() {
-        int MIN_SELECTIONS = 1;
-
         statusLabel.setText("");
 
         String stageName = stageNameField.getText();
@@ -212,7 +211,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         Stage stage = (Stage) currentScene.getWindow();
         String fxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
 
-        Navigation.navigateToPath(stage, fxmlPath);
+        NavigationGUI.navigateToPath(stage, fxmlPath);
     }
 }
 //TODO: correttezza formato https

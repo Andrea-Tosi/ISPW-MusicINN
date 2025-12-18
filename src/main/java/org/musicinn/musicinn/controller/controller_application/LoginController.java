@@ -16,7 +16,7 @@ public class LoginController {
     private LoginController() {}
 
     private static class SingletonContainer{
-        public final static LoginController singletonInstance = new LoginController();
+        public static final LoginController singletonInstance = new LoginController();
     }
 
     public static LoginController getSingletonInstance() {
@@ -59,12 +59,10 @@ public class LoginController {
         if (userEmail != null) {
             //TODO: lancia l'eccezione (ancora da modellare) emailAlreadyUsed
         }
-//TODO: verifica email
+
         EmailVerifier.getSingletonInstance().sendCode(credentialsBean.getEmail());
 
-
-
-//TODO: hashing password
+        //TODO: hashing password
         cb = credentialsBean;
     }
 
@@ -77,7 +75,7 @@ public class LoginController {
     }
 
     public void completeSignup(ArtistRegistrationBean arb) {
-        Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getEmail(), arb.getStageName(), arb.getTypeArtist(), arb.getDoesUnreleased(), arb.getCity(), arb.getAddress());
+        Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword(), arb.getStageName(), arb.getTypeArtist(), arb.getDoesUnreleased(), arb.getCity(), arb.getAddress());
         artist.setGenresList(arb.getGenresList());
 
         ArtistDAO artistDAO = new ArtistDAO();

@@ -4,54 +4,53 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.musicinn.musicinn.controller.controller_application.LoginController;
+import org.musicinn.musicinn.util.EmailValidator;
 import org.musicinn.musicinn.util.FxmlPathLoader;
+import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.login_bean.CredentialsBean;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class UserRegistrationControllerGUI implements Initializable {
     @FXML
-    public TextField usernameTextField;
+    private TextField usernameTextField;
 
     @FXML
-    public TextField emailTextField;
+    private TextField emailTextField;
 
     @FXML
-    public PasswordField passwordField;
+    private PasswordField passwordField;
 
     @FXML
-    public TextField clearPasswordField;
+    private TextField clearPasswordField;
 
     @FXML
-    public ToggleButton visibilityToggleButton1;
+    private ToggleButton visibilityToggleButton1;
 
     @FXML
-    public PasswordField repeatPasswordField;
+    private PasswordField repeatPasswordField;
 
     @FXML
-    public TextField clearRepeatPasswordField;
+    private TextField clearRepeatPasswordField;
 
     @FXML
-    public ToggleButton visibilityToggleButton2;
+    private ToggleButton visibilityToggleButton2;
 
     @FXML
-    public Button confirmButton;
+    private Button confirmButton;
 
     @FXML
-    public Hyperlink loginLink;
+    private Hyperlink loginLink;
 
     @FXML
-    public Label statusLabel;
+    private Label statusLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -87,7 +86,7 @@ public class UserRegistrationControllerGUI implements Initializable {
         Stage stage = (Stage) currentScene.getWindow();
         String fxmlPath = FxmlPathLoader.getPath("fxml.login.view");
 
-        Navigation.navigateToPath(stage, fxmlPath);
+        NavigationGUI.navigateToPath(stage, fxmlPath);
     }
 
     @FXML
@@ -113,9 +112,6 @@ public class UserRegistrationControllerGUI implements Initializable {
     //TODO: gestire l'errore per cui un username o un indirizzo email è stato preso (magari con la gestione di un eccezione che arriva dal controller applicativo)
     @FXML
     protected void handleRegistration() {
-        String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-
         statusLabel.setText("");
 
         String username = usernameTextField.getText();
@@ -133,8 +129,8 @@ public class UserRegistrationControllerGUI implements Initializable {
             return;
         }
 
-        Matcher matcher = pattern.matcher(email);
-        if (!matcher.matches()) {
+        EmailValidator emailValidator = new EmailValidator();
+        if (!emailValidator.isEmailFormatValid(email)) {
             statusLabel.setText("L'email immessa non segue il formato standard");
             return;
         }
@@ -157,7 +153,6 @@ public class UserRegistrationControllerGUI implements Initializable {
             //passaggio parametro a nuovo controller GUI
             VerificationModalStageGUI controllerSecondario = loader.getController();
             controllerSecondario.setEmail(email);
-//            controllerSecondario.setParentController(this);
 
             Scene currentScene = statusLabel.getScene();
             Stage primaryStage = (Stage) currentScene.getWindow();
@@ -167,16 +162,16 @@ public class UserRegistrationControllerGUI implements Initializable {
             // Collega la modale allo Stage principale ( primaryStage )
             verificationStage.initOwner(primaryStage);
 
-            verificationStage.setOnHidden(event -> {
+            verificationStage.setOnHidden(event ->
                 // Se l'utente chiude la finestra, dovrà richiedere il rinvio della mail di verifica
-                LoginController.getSingletonInstance().invalidateVerificationCode(email);
-            });
+                LoginController.getSingletonInstance().invalidateVerificationCode(email)
+            );
 
             verificationStage.showAndWait();
 
             if (controllerSecondario.getCheck()) {
                 nextFxmlPath = FxmlPathLoader.getPath("fxml.choose_account_type.view");
-                Navigation.navigateToPath(primaryStage, nextFxmlPath);
+                NavigationGUI.navigateToPath(primaryStage, nextFxmlPath);
             } else {
                 statusLabel.setText("Il codice fornito è errato. Email non verificata. Clicca su 'Conferma' per riprovare la verifica.");
             }

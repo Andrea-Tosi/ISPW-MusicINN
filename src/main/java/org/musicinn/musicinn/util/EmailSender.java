@@ -8,20 +8,13 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import io.github.cdimascio.dotenv.Dotenv;
-import jakarta.mail.*;
-import jakarta.mail.internet.*;
 
 import java.io.IOException;
-import java.util.Properties;
 
 public class EmailSender {
-    Dotenv dotenv = Dotenv.load();
-
-    private static final String SMTP_HOST = "smtp.sendgrid.net";
-    private static final String SMTP_PORT = "587"; // Porta standard TLS
-    private static final String USERNAME = "apikey";
-    private final String SENDER_EMAIL = dotenv.get("EMAIL_APP");
-    private final String API_KEY = dotenv.get("SENDGRIP_API_KEY");
+    private static final Dotenv DOTENV = Dotenv.load();
+    private static final String SENDER_EMAIL = DOTENV.get("EMAIL_APP");
+    private static final String API_KEY = DOTENV.get("SENDGRIP_API_KEY");
 
     public void sendEmail(String to, String subject, String body) {
         Email sender = new Email(SENDER_EMAIL);
