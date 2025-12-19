@@ -1,12 +1,17 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.Artist;
+import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
+import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.EmailVerifier;
 import org.musicinn.musicinn.util.dao.ArtistDAO;
+import org.musicinn.musicinn.util.dao.ManagerDAO;
 import org.musicinn.musicinn.util.dao.UserDAO;
+import org.musicinn.musicinn.util.dao.VenueDAO;
 import org.musicinn.musicinn.util.login_bean.ArtistRegistrationBean;
 import org.musicinn.musicinn.util.login_bean.CredentialsBean;
+import org.musicinn.musicinn.util.login_bean.ManagerRegistrationBean;
 
 import java.util.Objects;
 
@@ -81,5 +86,16 @@ public class LoginController {
         ArtistDAO artistDAO = new ArtistDAO();
         artistDAO.create(artist);
     }
-    //crea un entity Artist o Manager
+
+    public void completeSignup(ManagerRegistrationBean mrb) {
+        Manager manager = new Manager(cb.getUsername(), cb.getEmail(), cb.getPassword());
+        Venue venue = new Venue(mrb.getNameVenue(), mrb.getCityVenue(), mrb.getAddressVenue(), mrb.getTypeVenue());
+        manager.getVenueList().add(venue);
+        manager.setActiveVenue(venue);
+
+        ManagerDAO managerDAO = new ManagerDAO();
+        managerDAO.create(manager);
+        VenueDAO venueDAO = new VenueDAO();
+        venueDAO.create(venue);
+    }
 }

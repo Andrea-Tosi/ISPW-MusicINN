@@ -98,6 +98,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Popola la ComboBox
         ObservableList<TypeArtist> items = FXCollections.observableArrayList(
                 TypeArtist.SINGER,
                 TypeArtist.BAND,
@@ -105,9 +106,9 @@ public class ArtistRegistrationControllerGUI implements Initializable {
                 TypeArtist.DJ,
                 TypeArtist.MUSICIAN
         );
-
         typeArtistBox.setItems(items);
 
+        // Collega ogni pulsante alla sua costante Enum
          buttons = Arrays.asList(
                 rockToggle,
                 popToggle,
@@ -126,7 +127,6 @@ public class ArtistRegistrationControllerGUI implements Initializable {
                 electronicToggle,
                 ambientToggle
         );
-        // Collega ogni pulsante alla sua costante Enum
         rockToggle.setUserData(MusicalGenre.ROCK);
         popToggle.setUserData(MusicalGenre.POP);
         jazzToggle.setUserData(MusicalGenre.JAZZ);
@@ -171,7 +171,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
     public void handleBackButton() {
         Scene currentScene = backButton.getScene();
         Stage stage = (Stage) currentScene.getWindow();
-        String fxmlPath = FxmlPathLoader.getPath("fxml.registration_user.view");
+        String fxmlPath = FxmlPathLoader.getPath("fxml.choose_account_type.view");
 
         NavigationGUI.navigateToPath(stage, fxmlPath);
     }
@@ -214,4 +214,3 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         NavigationGUI.navigateToPath(stage, fxmlPath);
     }
 }
-//TODO: correttezza formato https

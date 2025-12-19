@@ -7,7 +7,7 @@ public class EmailValidator {
     String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     Pattern pattern = Pattern.compile(emailRegex);
 
-    public Boolean isEmailFormatValid(String email) {
+    public boolean isEmailFormatValid(String email) {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }

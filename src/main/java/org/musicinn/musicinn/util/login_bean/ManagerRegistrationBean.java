@@ -4,9 +4,16 @@ import org.musicinn.musicinn.util.enumerations.TypeVenue;
 
 public class ManagerRegistrationBean {
     private String nameVenue;
-    private String city;
+    private String cityVenue;
     private String addressVenue;
     private TypeVenue typeVenue;
+
+    public ManagerRegistrationBean(String nameVenue, String cityVenue, String addressVenue, TypeVenue typeVenue) {
+        this.nameVenue = nameVenue;
+        this.cityVenue = cityVenue;
+        this.addressVenue = addressVenue;
+        this.typeVenue = typeVenue;
+    }
 
     public String getNameVenue() {
         return nameVenue;
@@ -16,12 +23,12 @@ public class ManagerRegistrationBean {
         this.nameVenue = nameVenue;
     }
 
-    public String getCity() {
-        return city;
+    public String getCityVenue() {
+        return cityVenue;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCityVenue(String cityVenue) {
+        this.cityVenue = cityVenue;
     }
 
     public String getAddressVenue() {

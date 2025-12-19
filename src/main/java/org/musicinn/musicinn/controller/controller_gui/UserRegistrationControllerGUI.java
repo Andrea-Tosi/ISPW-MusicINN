@@ -135,6 +135,8 @@ public class UserRegistrationControllerGUI implements Initializable {
             return;
         }
 
+        statusLabel.setText("Attendere l'arrivo della mail per la verifica dell'indirizzo email fornito (potrebbe volerci un po')");
+
         CredentialsBean credentialsBean = new CredentialsBean(username, email, password);
         LoginController loginController = LoginController.getSingletonInstance();
         loginController.startSignup(credentialsBean);

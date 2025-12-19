@@ -7,12 +7,14 @@ public class Venue {
     private String city;
     private String address;
     private TypeVenue type;
-    private Boolean isActive;
+    private boolean isActive;
 
-    public Venue(String name, String city, String address) {
+    public Venue(String name, String city, String address, TypeVenue typeVenue) {
         this.name = name;
         this.city = city;
         this.address = address;
+        this.type = typeVenue;
+        this.isActive = true;
     }
 
     public String getName() {
@@ -47,11 +49,11 @@ public class Venue {
         this.type = type;
     }
 
-    public Boolean isActive() {
+    public boolean isActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         isActive = active;
     }
 }

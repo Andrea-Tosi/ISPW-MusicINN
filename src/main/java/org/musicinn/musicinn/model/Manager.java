@@ -1,14 +1,15 @@
 package org.musicinn.musicinn.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Manager extends User{
     private Venue activeVenue;
     private List<Venue> venueList;
 
-    public Manager(String username, String email,String password, Venue activeVenue) {
+    public Manager(String username, String email,String password) {
         super(username, email, password);
-        this.activeVenue = activeVenue;
+        venueList = new ArrayList<>();
     }
 
     public Venue getActiveVenue() {
