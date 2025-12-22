@@ -150,19 +150,7 @@ public class CalendarGUI implements Initializable {
 
         int currentDay = 1;
 
-        // Somma l'offset del primo giorno ai giorni totali e dividiamo per 7 (colonne)
-        int totalSlotsOccupied = dayOfWeekOffset + daysInMonth;
-        int rowsNeeded = (int) Math.ceil(totalSlotsOccupied / 7.0);
-
-        for (int i = 0; i <= 5; i++) {
-            if (i <= rowsNeeded - 1) {
-                // Imposta la percentuale equa per le righe attive
-                calendarGrid.getRowConstraints().get(i).setPercentHeight(100.0 / rowsNeeded);
-            } else {
-                // Azzera la percentuale per le righe extra, facendole sparire
-                calendarGrid.getRowConstraints().get(i).setPercentHeight(0);
-            }
-        }
+        setupRows(dayOfWeekOffset, daysInMonth);
 
         // Popolamento delle celle
         // Partiamo dalla riga 1 e proseguiamo finché ci sono giorni
@@ -184,17 +172,38 @@ public class CalendarGUI implements Initializable {
                     node.setVisible(true);
                     node.setManaged(true);
 
-                    Label dayLabel = (Label) cellContainer.lookup("#dayLabel");
-                    if (dayLabel != null) {
-                        dayLabel.setText(String.valueOf(currentDay));
-                    }
-                    //TODO popolamento eventVBox
+                    fillCell(cellContainer, currentDay);
+
                     currentDay++;
                 }
             }
         }
         updateButtonsState();
     }
+
+    public void setupRows(int dayOfWeekOffset, int daysInMonth) {
+        // Somma l'offset del primo giorno ai giorni totali e dividiamo per 7 (colonne)
+        int totalSlotsOccupied = dayOfWeekOffset + daysInMonth;
+        int rowsNeeded = (int) Math.ceil(totalSlotsOccupied / 7.0);
+
+        for (int i = 0; i <= 5; i++) {
+            if (i <= rowsNeeded - 1) {
+                // Imposta la percentuale equa per le righe attive
+                calendarGrid.getRowConstraints().get(i).setPercentHeight(100.0 / rowsNeeded);
+            } else {
+                // Azzera la percentuale per le righe extra, facendole sparire
+                calendarGrid.getRowConstraints().get(i).setPercentHeight(0);
+            }
+        }
+    }
+
+    private void fillCell(VBox cellContainer, int currentDay) {
+        Label dayLabel = (Label) cellContainer.lookup("#dayLabel");
+        if (dayLabel != null) {
+            dayLabel.setText(String.valueOf(currentDay));
+        }
+        //TODO popolamento eventVBox
+    }
 }
-//TODO stile CSS per dayLabel che inica giorno corrente
+//TODO stile CSS per dayLabel che indica giorno corrente
 //TODO passaggio da mese n a mese n+1 quando si supera la mezzanotte con l'applicazione in esecuzione: in realtà la vista continua ad essere la stessa, cambia lo stile CSS sulla dayLabel che indica il giorno corrente
