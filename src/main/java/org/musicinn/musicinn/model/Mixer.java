@@ -11,8 +11,8 @@ public class Mixer implements Equipment {
         return isFOH;
     }
 
-    public void setFOH(boolean FOH) {
-        isFOH = FOH;
+    public void setFOH(boolean foh) {
+        isFOH = foh;
     }
 
     public int getInputChannels() {
@@ -65,7 +65,7 @@ public class Mixer implements Equipment {
 
     private boolean isDigitalOk (Mixer requested) {
         if (requested.getDigital() != null) {
-            return getDigital() == requested.getDigital();
+            return getDigital().equals(requested.getDigital());
         } else {
             return true;
         }

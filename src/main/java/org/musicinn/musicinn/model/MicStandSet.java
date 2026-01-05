@@ -1,10 +1,14 @@
 package org.musicinn.musicinn.model;
 
-import jdk.jfr.Frequency;
-
 public class MicStandSet extends OtherEquipment {
     private Boolean isTall; // true = Alta (per voce) false = Bassa (per strumenti)
     private int quantity;
+
+    public MicStandSet(int quantity, Boolean tall) {
+        super();
+        this.quantity = quantity;
+        this.isTall = tall;
+    }
 
     public Boolean isTall() {
         return isTall;
@@ -31,13 +35,9 @@ public class MicStandSet extends OtherEquipment {
 
     private boolean isHeightOk(MicStandSet requested) {
         if (requested.isTall() != null) {
-            return isTall() == requested.isTall();
+            return isTall().equals(requested.isTall());
         } else {
             return true;
         }
-    }
-
-    private boolean isQuantityOk(MicStandSet requested) {
-        return getQuantity() >= requested.getQuantity();
     }
 }

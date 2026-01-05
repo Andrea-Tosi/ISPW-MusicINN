@@ -4,6 +4,12 @@ public class MonitorSet extends OutputEquipment {
     private Boolean isPowered; // true = Attiva, false = Passiva (richiede amplificatore esterno), null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
     private int quantity;
 
+    public MonitorSet(int quantity, Boolean powered) {
+        super();
+        this.quantity = quantity;
+        this.isPowered = powered;
+    }
+
     public Boolean isPowered() {
         return isPowered;
     }
@@ -29,14 +35,10 @@ public class MonitorSet extends OutputEquipment {
 
     private boolean isPoweredOk (MonitorSet requested) {
         if (requested.isPowered() != null) {
-            return isPowered() == requested.isPowered();
+            return isPowered().equals(requested.isPowered());
         } else {
             return true;
         }
-    }
-
-    private boolean isQuantityOk(MonitorSet requested) {
-        return getQuantity() >= requested.getQuantity();
     }
 }
 //TODO eccezioni in caso di cross-checks non andati a buon fine da notificare all'utente

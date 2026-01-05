@@ -4,6 +4,12 @@ public class MicrophoneSet extends InputEquipment {
     private int quantity;
     private Boolean needsPhantomPower; // true = richiede Phantom, false = non richiede Phantom Power, null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
 
+    public MicrophoneSet(int quantity, Boolean needsPhantomPower) {
+        super();
+        this.quantity = quantity;
+        this.needsPhantomPower = needsPhantomPower;
+    }
+
     @Override
     public int getQuantity() {
         return quantity;
@@ -36,7 +42,7 @@ public class MicrophoneSet extends InputEquipment {
 
     private boolean isTypeOk (MicrophoneSet requested) {
         if (requested.isPhantomPowerNeeded() != null) {
-            return isPhantomPowerNeeded() == requested.isPhantomPowerNeeded();
+            return isPhantomPowerNeeded().equals(requested.isPhantomPowerNeeded());
         } else {
             return true;
         }

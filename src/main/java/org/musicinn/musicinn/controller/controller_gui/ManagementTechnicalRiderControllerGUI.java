@@ -22,6 +22,7 @@ import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.technical_rider_bean.*;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,21 +171,36 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     }
 
     private void setAttr(Object obj, String methodName, Object value) {
-        if (obj == null) return;
-        try {
-            // Determina se il valore è un intero per gestire il tipo primitivo 'int'
-            Class<?> paramType = (value instanceof Integer) ? int.class : value.getClass();
+        if (obj == null || value == null) return;
 
-            try {
-                obj.getClass().getMethod(methodName, paramType).invoke(obj, value);
-            } catch (NoSuchMethodException e) {
-                // Fallback per tipi wrapper (es. Integer invece di int)
-                obj.getClass().getMethod(methodName, value.getClass()).invoke(obj, value);
+        try {
+            Method method = findMethod(obj.getClass(), methodName, value);
+            if (method != null) {
+                method.invoke(obj, value);
             }
         } catch (Exception e) {
+            // Logga l'eccezione in modo appropriato
             e.printStackTrace();
         }
     }
+
+    private Method findMethod(Class<?> clazz, String methodName, Object value) {
+        // Determina il tipo primitivo se il valore è un Integer
+        Class<?> primitiveType = (value instanceof Integer) ? int.class : value.getClass();
+
+        try {
+            // Tentativo 1: Tipo primitivo (es. setQuantity(int))
+            return clazz.getMethod(methodName, primitiveType);
+        } catch (NoSuchMethodException e) {
+            try {
+                // Tentativo 2: Tipo Wrapper (es. setQuantity(Integer))
+                return clazz.getMethod(methodName, value.getClass());
+            } catch (NoSuchMethodException ex) {
+                return null; // Metodo non trovato in nessuna forma
+            }
+        }
+    }
+    //TODO in realtà non penso serva un controllo sul tipo Integer dato che i setAttr sono tutti int
 
     private void updateQuantity(Object obj, int extraQty) {
         int currentQty = getAttr(obj, "getQuantity", 0);
@@ -290,8 +306,8 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddMicrophone(ActionEvent event) {
         handleEquipmentLogic("fxml.microphone_features.modal", "Microfoni", inputEquipmentsVBox,
                 c -> ((MicrophoneSetPopupControllerGUI) c).getCreatedMicrophoneSet(),
-                (o, n) -> getAttr(o, "getNeedsPhantomPower", false) == getAttr(n, "getNeedsPhantomPower", false),
-                obj -> String.format("%s phantom, (qt: %d)", getAttr(obj, "getNeedsPhantomPower", false) ? "Con" : "Senza", getAttr(obj, "getQuantity", 0))
+                (o, n) -> getAttr(o, "getNeedsPhantomPower", false).equals(getAttr(n, "getNeedsPhantomPower", false)),
+                obj -> String.format("%s phantom, (qt: %d)", (boolean) getAttr(obj, "getNeedsPhantomPower", false) ? "Con" : "Senza", getAttr(obj, "getQuantity", 0))
         );
     }
 
@@ -299,8 +315,8 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddDIBox(ActionEvent event) {
         handleEquipmentLogic("fxml.di_box_features.modal", "DI Box", inputEquipmentsVBox,
                 c -> ((DIBoxSetPopupControllerGUI) c).getCreatedDIBoxSet(),
-                (o, n) -> getAttr(o, "getActive", false) == getAttr(n, "getActive", false),
-                obj -> String.format("DI Box %s, (qt: %d)", getAttr(obj, "getActive", false) ? "Attiva" : "Passiva", getAttr(obj, "getQuantity", 0))
+                (o, n) -> getAttr(o, "getActive", false).equals(getAttr(n, "getActive", false)),
+                obj -> String.format("DI Box %s, (qt: %d)", (boolean) getAttr(obj, "getActive", false) ? "Attiva" : "Passiva", getAttr(obj, "getQuantity", 0))
         );
     }
 
@@ -308,8 +324,8 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddMonitor(ActionEvent event) {
         handleEquipmentLogic("fxml.monitor_features.modal", "Monitor", outputEquipmentsVBox,
                 c -> ((MonitorSetPopupControllerGUI) c).getCreatedMonitorSet(),
-                (o, n) -> getAttr(o, "getPowered", false) == getAttr(n, "getPowered", false),
-                obj -> String.format("Monitor %s, (qt: %d)", getAttr(obj, "getPowered", false) ? "Attivo" : "Passivo", getAttr(obj, "getQuantity", 0))
+                (o, n) -> getAttr(o, "getPowered", false).equals(getAttr(n, "getPowered", false)),
+                obj -> String.format("Monitor %s, (qt: %d)", (boolean) getAttr(obj, "getPowered", false) ? "Attivo" : "Passivo", getAttr(obj, "getQuantity", 0))
         );
     }
 
@@ -317,8 +333,8 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddMicStand(ActionEvent event) {
         handleEquipmentLogic("fxml.mic_stand_features.modal", "Aste", otherEquipmentsVBox,
                 c -> ((MicStandSetPopupControllerGUI) c).getCreatedMicStandSet(),
-                (o, n) -> getAttr(o, "getTall", false) == getAttr(n, "getTall", false),
-                obj -> String.format("Asta %s, (qt: %d)", getAttr(obj, "getTall", false) ? "Alta" : "Bassa", getAttr(obj, "getQuantity", 0))
+                (o, n) -> getAttr(o, "getTall", false).equals(getAttr(n, "getTall", false)),
+                obj -> String.format("Asta %s, (qt: %d)", (boolean) getAttr(obj, "getTall", false) ? "Alta" : "Bassa", getAttr(obj, "getQuantity", 0))
         );
     }
 
@@ -338,7 +354,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         if (role.equals(Session.UserRole.MANAGER)) {
             nextFxmlPath = FxmlPathLoader.getPath("fxml.manager.home");
         } else if (role.equals(Session.UserRole.ARTIST)) {
-            nextFxmlPath = FxmlPathLoader.getPath("fxml.manager.home");
+            nextFxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
         }
 
         Scene currentScene = backButton.getScene();
@@ -387,6 +403,6 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 .map(Node::getUserData)
                 .filter(type::isInstance) // Prende solo se è del tipo giusto (es. MixerBean)
                 .map(type::cast)          // Converte in modo sicuro
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -33,7 +33,7 @@ public class StageBox implements Equipment {
 
     private boolean isDigitalOk (StageBox requested) {
         if (requested.isDigital() != null) {
-            return isDigital() == requested.isDigital();
+            return isDigital().equals(requested.isDigital());
         } else {
             return true;
         }

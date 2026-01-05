@@ -115,32 +115,4 @@ public class ManagerRider extends TechnicalRider {
         }
         return false;
     }
-
-//    private boolean checkInputsInventory(List<InputEquipment> requiredInputs) {
-//        for (InputEquipment req : requiredInputs) {
-//            // Esempio: conta quanti microfoni totali ha il locale
-//            // (Sia MicrophoneSet che DIBoxSet ereditano da InputEquipment)
-//            int available = this.inputs.stream()
-//                    .filter(vIn -> vIn.getClass().equals(req.getClass()))
-//                    // Qui andrebbero aggiunti filtri per modello o Phantom se specificati
-//                    .mapToInt(InputEquipment::getQuantity)
-//                    .sum();
-//
-//            if (available < req.getQuantity()) return false;
-//        }
-//        return true;
-//    }
-//
-//    private boolean checkOutputsInventory(List<OutputEquipment> requiredOutputs) {
-//        for (OutputEquipment req : requiredOutputs) {
-//            // Conta i monitor fisici disponibili nel locale
-//            int available = this.outputs.stream()
-//                    .filter(vOut -> vOut instanceof MonitorSet)
-//                    .mapToInt(OutputEquipment::getPhysicalQuantity)
-//                    .sum();
-//
-//            if (available < req.getPhysicalQuantity()) return false;
-//        }
-//        return true;
-//    }
 }

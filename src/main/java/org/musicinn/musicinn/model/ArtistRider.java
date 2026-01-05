@@ -42,63 +42,71 @@ public class ArtistRider extends TechnicalRider {
     public ValidationResult validate() {
         ValidationResult report = new ValidationResult();
 
-        Mixer fohMixer = getFohMixer();
-        Mixer stageMixer = getStageMixer();
-        StageBox stageBox = getStageBox();
+        Mixer foh = getFohMixer();
+        Mixer stage = getStageMixer();
+        StageBox sb = getStageBox();
 
-        // Se l'artista non chiede mixer, è "autonomo": il rider è valido.
-        if (fohMixer == null && stageMixer == null) {
+        // 1. Caso base: artista autonomo
+        if (foh == null && stage == null) {
             report.setValid(true);
             return report;
         }
 
-        int inputsNeeded = getTotalInputsNeeded();
-        int outputsNeeded = getTotalOutputsNeeded();
-        boolean phantomNeeded = requiresPhantom();
+        // 2. Calcolo requisiti minimi (Metodi helper già esistenti)
+        int inputs = getTotalInputsNeeded();
+        int outputs = getTotalOutputsNeeded();
+        boolean phantom = requiresPhantom();
 
-        // Check sul Mixer FOH
-        if (fohMixer != null) {
-            if (fohMixer.getInputChannels() < inputsNeeded) {
-                report.addError("Il mixer FOH richiesto ha solo " + fohMixer.getInputChannels() +
-                        " canali, ma ne servono " + inputsNeeded);
-            }
-            if (phantomNeeded && !fohMixer.getHasPhantomPower()) {
-                report.addError("Il mixer FOH richiesto non supporta la Phantom Power necessaria.");
-            }
-            if (stageMixer == null) {
-                if (fohMixer.getAuxSends() < outputsNeeded) {
-                    report.addError("Il mixer FOH (unico mixer) ha solo " + fohMixer.getAuxSends() + " mandate aux, ma ne servono " + outputsNeeded + " per le spie.");
-                }
-            }
-        }
-
-        // Check sul Mixer di Stage
-        if (stageMixer != null) {
-            if (stageMixer.getInputChannels() < inputsNeeded) {
-                report.addError("Il mixer FOH richiesto ha solo " + stageMixer.getInputChannels() +
-                        " canali, ma ne servono " + inputsNeeded);
-            }
-            if (stageMixer.getAuxSends() < outputsNeeded) {
-                report.addError("Il mixer di Stage richiesto ha solo " + stageMixer.getAuxSends() +
-                        " mandate per " + outputsNeeded + " configurazioni di mix ausiliarie.");
-            }
-        }
-
-        // Check sullo Stage Box
-        if (stageBox != null) {
-            if (stageBox.getInputChannels() < inputsNeeded) {
-                report.addError("La Stage Box selezionata ha solo " + stageBox.getInputChannels() +
-                        " canali, ma ne servono " + inputsNeeded);
-            }
-        }
-
-        // Se ci sono due mixer, la Stage Box è caldamente raccomandata/obbligatoria
-        if (fohMixer != null && stageMixer != null && stageBox == null) {
-            report.addError("Attenzione: hai selezionato due mixer ma nessuna Stage Box/Splitter.");
-        }
+        // 3. Esecuzione dei controlli granulari
+        validateFohMixer(report, foh, stage, inputs, outputs, phantom);
+        validateStageMixer(report, stage, inputs, outputs);
+        validateStageBox(report, sb, inputs);
+        validateSystemCoherence(report, foh, stage, sb);
 
         report.setValid(report.isEmpty());
         return report;
+    }
+
+    private void validateFohMixer(ValidationResult report, Mixer foh, Mixer stage, int inputs, int outputs, boolean phantom) {
+        if (foh == null) return;
+
+        if (foh.getInputChannels() < inputs) {
+            report.addError(String.format("Il mixer FOH ha solo %d canali, ne servono %d", foh.getInputChannels(), inputs));
+        }
+
+        if (phantom && !Boolean.TRUE.equals(foh.getHasPhantomPower())) {
+            report.addError("Il mixer FOH non supporta la Phantom Power necessaria.");
+        }
+
+        // Se il mixer FOH è l'unico, deve gestire anche le uscite (spie)
+        if (stage == null && foh.getAuxSends() < outputs) {
+            report.addError(String.format("Il mixer FOH (unico) ha solo %d mandate aux, ne servono %d per le spie.", foh.getAuxSends(), outputs));
+        }
+    }
+
+    private void validateStageMixer(ValidationResult report, Mixer stage, int inputs, int outputs) {
+        if (stage == null) return;
+
+        if (stage.getInputChannels() < inputs) {
+            report.addError(String.format("Il mixer di Stage ha solo %d canali, ne servono %d", stage.getInputChannels(), inputs));
+        }
+
+        if (stage.getAuxSends() < outputs) {
+            report.addError(String.format("Il mixer di Stage ha solo %d mandate per %d mix ausiliari.", stage.getAuxSends(), outputs));
+        }
+    }
+
+    private void validateStageBox(ValidationResult report, StageBox sb, int inputs) {
+        if (sb != null && sb.getInputChannels() < inputs) {
+            report.addError(String.format("La Stage Box ha solo %d canali, ne servono %d", sb.getInputChannels(), inputs));
+        }
+    }
+
+    private void validateSystemCoherence(ValidationResult report, Mixer foh, Mixer stage, StageBox sb) {
+        // Caso specifico: doppio mixer senza splitter fisico
+        if (foh != null && stage != null && sb == null) {
+            report.addError("Attenzione: configurazione a due mixer senza Stage Box/Splitter rilevata.");
+        }
     }
 }
 //TODO modellare eccezioni da lanciare in caso di mancata validazione del rider

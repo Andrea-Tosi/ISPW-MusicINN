@@ -18,8 +18,8 @@ public class MixerBean {
         return isFOH;
     }
 
-    public void setFOH(Boolean FOH) {
-        isFOH = FOH;
+    public void setFOH(Boolean foh) {
+        isFOH = foh;
     }
 
     public int getInputChannels() {

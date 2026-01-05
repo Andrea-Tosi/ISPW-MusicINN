@@ -13,134 +13,99 @@ public class ManagementTechnicalRiderController {
                               List<MicrophoneSetBean> mics, List<DIBoxSetBean> diBoxes,
                               List<MonitorSetBean> monitors, List<MicStandSetBean> stands,
                               List<CableSetBean> cables) {
-        // Liste di Entity specifiche
-        List<Mixer> mixerEntities = new ArrayList<>();
-        List<StageBox> stageBoxEntities = new ArrayList<>();
-        List<InputEquipment> inputEntities = new ArrayList<>(); // Classe base per Mics e DI
-        List<OutputEquipment> outputEntities = new ArrayList<>();
-        List<OtherEquipment> otherEntities = new ArrayList<>();
-
         try {
-            // 1. MAPPING: Da Bean a Entity
+            // 1. Mapping dell'equipaggiamento comune
+            List<InputEquipment> inputs = mapInputs(mics, diBoxes);
+            List<OutputEquipment> outputs = mapOutputs(monitors);
+            List<OtherEquipment> others = mapOthers(stands, cables);
 
-            // Mixer
-//            for (MixerBean b : mixers) {
-//                Mixer m = new Mixer();
-//                m.setInputChannels(b.getInputChannels());
-//                m.setAuxSends(b.getAuxSends());
-//                m.setDigital(b.getDigital());
-//                m.setFOH(b.isFOH());
-//                m.setHasPhantomPower(b.getHasPhantomPower());
-//                mixerEntities.add(m);
-//            }
-
-            // Stage Box
-//            for (StageBoxBean b : stageBoxes) {
-//                StageBox sb = new StageBox();
-//                sb.setInputChannels(b.getInputChannels());
-//                sb.setDigital(b.getDigital());
-//                stageBoxEntities.add(sb);
-//            }
-
-            // Input Equipment (Uso delle classi Entity separate MicrophoneSet e DIBoxSet)
-            for (MicrophoneSetBean b : mics) {
-                MicrophoneSet mic = new MicrophoneSet();
-                mic.setQuantity(b.getQuantity());
-                mic.setNeedsPhantomPower(b.getNeedsPhantomPower());
-                inputEntities.add(mic); // Aggiunto alla lista polimorfica
-            }
-
-            for (DIBoxSetBean b : diBoxes) {
-                DIBoxSet di = new DIBoxSet();
-                di.setQuantity(b.getQuantity());
-                di.setActive(b.getActive());
-                inputEntities.add(di); // Aggiunto alla lista polimorfica
-            }
-
-            // Output Equipment (Monitor)
-            for (MonitorSetBean b : monitors) {
-                MonitorSet mon = new MonitorSet();
-                mon.setQuantity(b.getQuantity());
-                mon.setPowered(b.getPowered());
-                outputEntities.add(mon);
-            }
-
-            // Other Equipment (Aste e Cavi)
-            for (MicStandSetBean b : stands) {
-                MicStandSet ms = new MicStandSet();
-                ms.setQuantity(b.getQuantity());
-                ms.setTall(b.getTall());
-                otherEntities.add(ms);
-            }
-
-            for (CableSetBean b : cables) {
-                CableSet c = new CableSet();
-                c.setQuantity(b.getQuantity());
-                c.setFunction(b.getFunction());
-                otherEntities.add(c);
-            }
-
+            // 2. Creazione del Rider specifico in base al ruolo
             Session.UserRole role = Session.getSingletonInstance().getRole();
-            TechnicalRider rider = null;
-            if (role.equals(Session.UserRole.ARTIST)) {
-                Mixer foh = null;
-                Mixer stage = null;
-                while (!mixers.isEmpty()) {
-                    MixerBean bean = mixers.getFirst();
-                    Mixer mixer = new Mixer();
-                    Boolean bool = bean.isFOH();
-                    mixer.setFOH(bool);
-                    mixer.setHasPhantomPower(bean.getHasPhantomPower());
-                    mixer.setDigital(bean.getDigital());
-                    mixer.setAuxSends(bean.getAuxSends());
-                    mixer.setInputChannels(bean.getInputChannels());
-                    if (bool) foh = mixer;
-                    else stage = mixer;
-                    mixers.removeFirst();
-                }
-                StageBox stageBox = null;
-                if (!stageBoxes.isEmpty()) {
-                    StageBoxBean bean = stageBoxes.getFirst();
-                    stageBox = new StageBox();
-                    stageBox.setInputChannels(bean.getInputChannels());
-                    stageBox.setDigital(bean.getDigital());
-                    stageBoxes.removeFirst();
-                }
-                rider = new ArtistRider(foh, stage, stageBox);
-            } else if (role.equals(Session.UserRole.MANAGER)) {
-                for (MixerBean b : mixers) {
-                    Mixer m = new Mixer();
-                    m.setInputChannels(b.getInputChannels());
-                    m.setAuxSends(b.getAuxSends());
-                    m.setDigital(b.getDigital());
-                    m.setFOH(b.isFOH());
-                    m.setHasPhantomPower(b.getHasPhantomPower());
-                    mixerEntities.add(m);
-                }
-                for (StageBoxBean b : stageBoxes) {
-                    StageBox sb = new StageBox();
-                    sb.setInputChannels(b.getInputChannels());
-                    sb.setDigital(b.getDigital());
-                    stageBoxEntities.add(sb);
-                }
-                rider = new ManagerRider(mixerEntities, stageBoxEntities);
-            }
-            rider.setInputs(inputEntities);
-            rider.setOutputs(outputEntities);
-            rider.setOthers(otherEntities);
+            TechnicalRider rider = createRiderByRole(role, mixers, stageBoxes);
 
-            // 2. PERSISTENZA: Chiamata al DAO
-            TechnicalRiderDAO dao = new TechnicalRiderDAO();
-            dao.create(rider);
+            // 3. Completamento e Persistenza
+            rider.setInputs(inputs);
+            rider.setOutputs(outputs);
+            rider.setOthers(others);
 
-            // Esegue la pulizia dei vecchi equipment e l'inserimento dei nuovi in una transazione
-//            dao.updateRiderEquipment(currentRiderId, mixerEntities, stageBoxEntities,
-//                    inputEntities, outputEntities, otherEntities);
+            new TechnicalRiderDAO().create(rider);
 
         } catch (Exception e) {
-            // Se il mapping fallisce, il DAO non viene chiamato e il DB resta intatto
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante la preparazione delle Entity: " + e.getMessage());
+            throw new RuntimeException("Errore durante la preparazione delle Entity: " + e.getMessage(), e);
         }
+    }
+
+    private List<InputEquipment> mapInputs(List<MicrophoneSetBean> mics, List<DIBoxSetBean> diBoxes) {
+        List<InputEquipment> inputs = new ArrayList<>();
+        for (MicrophoneSetBean b : mics) {
+            inputs.add(new MicrophoneSet(b.getQuantity(), b.getNeedsPhantomPower()));
+        }
+        for (DIBoxSetBean b : diBoxes) {
+            inputs.add(new DIBoxSet(b.getQuantity(), b.getActive()));
+        }
+        return inputs;
+    }
+
+    private List<OutputEquipment> mapOutputs(List<MonitorSetBean> monitors) {
+        List<OutputEquipment> outputs = new ArrayList<>();
+        for (MonitorSetBean b : monitors) {
+            outputs.add(new MonitorSet(b.getQuantity(), b.getPowered()));
+        }
+        return outputs;
+    }
+
+    private List<OtherEquipment> mapOthers(List<MicStandSetBean> stands, List<CableSetBean> cables) {
+        List<OtherEquipment> others = new ArrayList<>();
+        for (MicStandSetBean b : stands) {
+            others.add(new MicStandSet(b.getQuantity(), b.getTall()));
+        }
+        for (CableSetBean b : cables) {
+            others.add(new CableSet(b.getQuantity(), b.getFunction()));
+        }
+        return others;
+    }
+
+    private TechnicalRider createRiderByRole(Session.UserRole role, List<MixerBean> mixers, List<StageBoxBean> sbs) {
+        if (role.equals(Session.UserRole.ARTIST)) {
+            return createArtistRider(mixers, sbs);
+        } else {
+            return createManagerRider(mixers, sbs);
+        }
+    }
+
+    private ArtistRider createArtistRider(List<MixerBean> mixers, List<StageBoxBean> sbs) {
+        Mixer foh = null;
+        Mixer stage = null;
+        for (MixerBean b : mixers) {
+            Mixer m = mapMixer(b);
+            if (b.isFOH()) foh = m; else stage = m;
+        }
+        StageBox sb = sbs.isEmpty() ? null : mapStageBox(sbs.get(0));
+        return new ArtistRider(foh, stage, sb);
+    }
+
+    private ManagerRider createManagerRider(List<MixerBean> mixers, List<StageBoxBean> sbs) {
+        List<Mixer> mixerList = new ArrayList<>();
+        List<StageBox> sbList = new ArrayList<>();
+        for (MixerBean b : mixers) mixerList.add(mapMixer(b));
+        for (StageBoxBean b : sbs) sbList.add(mapStageBox(b));
+        return new ManagerRider(mixerList, sbList);
+    }
+
+    private Mixer mapMixer(MixerBean b) {
+        Mixer m = new Mixer();
+        m.setInputChannels(b.getInputChannels());
+        m.setAuxSends(b.getAuxSends());
+        m.setDigital(b.getDigital());
+        m.setFOH(b.isFOH());
+        m.setHasPhantomPower(b.getHasPhantomPower());
+        return m;
+    }
+
+    private StageBox mapStageBox(StageBoxBean b) {
+        StageBox sb = new StageBox();
+        sb.setInputChannels(b.getInputChannels());
+        sb.setDigital(b.getDigital());
+        return sb;
     }
 }

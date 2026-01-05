@@ -6,6 +6,12 @@ public class CableSet extends OtherEquipment {
     private CableFunction function;
     private int quantity;
 
+    public CableSet(int quantity, CableFunction function) {
+        super();
+        this.quantity = quantity;
+        this.function = function;
+    }
+
     public CableFunction getFunction() {
         return function;
     }
@@ -31,9 +37,5 @@ public class CableSet extends OtherEquipment {
 
     private boolean isFunctionOk(CableSet requested) {
         return getFunction() == requested.getFunction();
-    }
-
-    private boolean isQuantityOk(CableSet requested) {
-        return getQuantity() == requested.getQuantity();
     }
 }

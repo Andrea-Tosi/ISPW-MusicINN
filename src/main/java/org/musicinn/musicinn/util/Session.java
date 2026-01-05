@@ -1,7 +1,5 @@
 package org.musicinn.musicinn.util;
 
-import org.musicinn.musicinn.controller.controller_application.LoginController;
-
 public class Session {
     public enum UserRole{ARTIST, MANAGER}
     private UserRole role;

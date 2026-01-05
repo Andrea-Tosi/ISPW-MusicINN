@@ -138,8 +138,8 @@ public class PublishAnnouncementControllerGUI implements Initializable {
     public List<MusicalGenre> getSelectedGenres() {
         return containerGenres.getChildren().stream()
                 // Filtriamo solo i nodi che sono ToggleButton
-                .filter(node -> node instanceof ToggleButton)
-                .map(node -> (ToggleButton) node)
+                .filter(ToggleButton.class::isInstance)
+                .map(ToggleButton.class::cast)
                 // Prendiamo solo quelli selezionati dall'utente
                 .filter(ToggleButton::isSelected)
                 // Estraiamo l'oggetto Enum che abbiamo salvato nel userData
@@ -164,8 +164,8 @@ public class PublishAnnouncementControllerGUI implements Initializable {
     public List<TypeArtist> getSelectedTypesArtist() {
         return containerGenres.getChildren().stream()
                 // Filtriamo solo i nodi che sono ToggleButton
-                .filter(node -> node instanceof ToggleButton)
-                .map(node -> (ToggleButton) node)
+                .filter(ToggleButton.class::isInstance)
+                .map(ToggleButton.class::cast)
                 // Prendiamo solo quelli selezionati dall'utente
                 .filter(ToggleButton::isSelected)
                 // Estraiamo l'oggetto Enum che abbiamo salvato nel userData
