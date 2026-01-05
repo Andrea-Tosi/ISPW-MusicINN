@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="840.0" style="-fx-background-color: #00CCFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.ManagementTechnicalRiderControllerGUI">
+   <top>
+      <HBox alignment="CENTER" prefHeight="123.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="MusicINN">
+               <font>
+                  <Font name="Berlin Sans FB" size="36.0" />
+               </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="Gestione Rider Tecnico">
+               <font>
+                  <Font name="Comic Sans MS" size="36.0" />
+               </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <children>
+                  <Label text="Username" />
+                  <ImageView fx:id="iconaUtente" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Icona Utente.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+         <BorderPane.margin>
+            <Insets left="35.0" right="35.0" />
+         </BorderPane.margin>
+      </HBox>
+   </top>
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <content>
+            <VBox style="-fx-background-color: #00CCFF;">
+               <children>
+                  <VBox spacing="5.0">
+                     <children>
+                        <HBox alignment="CENTER" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Mixer audio">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label text="Le informazioni del tuo locale sono prelevate dal tuo profilo. Puoi modificarle nella sezione Gestione profilo o Gestione Rider Tecnico.">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox fx:id="mixersVBox" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="addMixerButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddMixer" text="Aggiungi mixer" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator prefWidth="200.0" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator />
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Stage Box">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox fx:id="stageBoxesVBox" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="addStageBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddStageBox" text="Aggiungi stage box" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator prefWidth="200.0" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator prefWidth="200.0" />
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Attrezzatura Input (Microfoni, DI Box)">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox fx:id="inputEquipmentsVBox" HBox.hgrow="ALWAYS" />
+                              <VBox>
+                                 <children>
+                                    <Button fx:id="addMicrophone" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddMicrophone" text="Aggiungi microfono" />
+                                    <Button fx:id="addDIBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddDIBox" prefWidth="122.4" text="Aggiungi DI box" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator prefWidth="200.0" />
+                  <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Attrezzatura Output (Monitor)">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox fx:id="outputEquipmentsVBox" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="addMonitor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddMonitor" text="Aggiungi monitor" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <Separator />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator prefWidth="200.0" />
+                  <VBox spacing="5.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Attrezzature varie (Cavi, Aste per microfoni)">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox fx:id="otherEquipmentsVBox" HBox.hgrow="ALWAYS" />
+                              <VBox>
+                                 <children>
+                                    <Button fx:id="addCable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddCable" text="Aggiungi cavo" />
+                                    <Button fx:id="addMicStand" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddMicStand" prefWidth="92.8" text="Aggiungi asta" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator prefWidth="200.0" />
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label fx:id="statusLabel" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBackButton" prefWidth="99.2" text="Indietro" />
+                              <Button fx:id="saveChangesButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleSaveChangesButton" text="Salva modifiche" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </center>
+</BorderPane>

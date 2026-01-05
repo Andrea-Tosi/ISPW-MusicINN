@@ -2,12 +2,18 @@ package org.musicinn.musicinn.model;
 
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Venue {
     private String name;
     private String city;
     private String address;
     private TypeVenue type;
     private boolean isActive;
+    private Calendar calendar;
+    private TechnicalRider rider;
+    private List<Announcement> announcements;
 
     public Venue(String name, String city, String address, TypeVenue typeVenue) {
         this.name = name;
@@ -55,5 +61,36 @@ public class Venue {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public Calendar getCalendar() {
+        return calendar;
+    }
+
+    public void setCalendar(Calendar calendar) {
+        this.calendar = calendar;
+    }
+
+    public TechnicalRider getRider() {
+        return rider;
+    }
+
+    public void setRider(TechnicalRider rider) {
+        this.rider = rider;
+    }
+
+    public List<Announcement> getAnnouncements() {
+        return announcements;
+    }
+
+    public void setAnnouncements(List<Announcement> announcements) {
+        this.announcements = announcements;
+    }
+
+    public void addAnnouncement(Announcement announcement) {
+        if (getAnnouncements() == null) {
+            setAnnouncements(new ArrayList<>());
+        }
+        getAnnouncements().add(announcement);
     }
 }

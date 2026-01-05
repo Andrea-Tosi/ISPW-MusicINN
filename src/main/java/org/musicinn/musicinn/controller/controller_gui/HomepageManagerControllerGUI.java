@@ -25,4 +25,6 @@ public class HomepageManagerControllerGUI {
     //ad esempio se introducessi la possibilità di scegliere se visualizzare le date fissate in un calendario o in un carosello
     @FXML
     private CalendarGUI calendarGUI;
+
+
 }

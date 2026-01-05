@@ -5,6 +5,7 @@ import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.EmailVerifier;
+import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.ArtistDAO;
 import org.musicinn.musicinn.util.dao.ManagerDAO;
 import org.musicinn.musicinn.util.dao.UserDAO;
@@ -41,6 +42,11 @@ public class LoginController {
             return null;
         } else {
             if (Objects.equals(credentialsBean.getPassword(), user.getHashedPassword())) {
+                if (user instanceof Artist) {
+                    Session.getSingletonInstance().setRole(Session.UserRole.ARTIST);
+                } else if(user instanceof Manager) {
+                    Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);
+                }
                 return user;
             } else {
                 System.out.println("password relativa a " + user.getUsername() + " errata");
@@ -85,6 +91,8 @@ public class LoginController {
 
         ArtistDAO artistDAO = new ArtistDAO();
         artistDAO.create(artist);
+
+        Session.getSingletonInstance().setRole(Session.UserRole.ARTIST);
     }
 
     public void completeSignup(ManagerRegistrationBean mrb) {
@@ -97,5 +105,7 @@ public class LoginController {
         managerDAO.create(manager);
         VenueDAO venueDAO = new VenueDAO();
         venueDAO.create(venue);
+
+        Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);
     }
 }

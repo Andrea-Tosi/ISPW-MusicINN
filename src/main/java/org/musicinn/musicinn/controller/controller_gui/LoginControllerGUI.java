@@ -127,9 +127,9 @@ public class LoginControllerGUI implements Initializable {
         Stage stage = (Stage) currentScene.getWindow();
 
         if (user instanceof Manager) {
-            nextFxmlPath = FxmlPathLoader.getPath("fxml.manager.home");
+            nextFxmlPath = FxmlPathLoader.getPath("fxml.management_technical_rider.view");
         } else if (user instanceof Artist) {
-            nextFxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
+            nextFxmlPath = FxmlPathLoader.getPath("fxml.management_technical_rider.view");
         }
         NavigationGUI.navigateToPath(stage, nextFxmlPath);
     }

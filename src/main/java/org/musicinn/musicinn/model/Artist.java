@@ -81,9 +81,9 @@ public class Artist extends User{
     }
 
     public void addSocialAccount(SocialAccount socialAccount) {
-        if (this.socialAccounts == null) {
-            this.socialAccounts = new ArrayList<>();
+        if (getSocialAccounts() == null) {
+            setSocialAccounts(new ArrayList<>());
         }
-        this.socialAccounts.add(socialAccount);
+        getSocialAccounts().add(socialAccount);
     }
 }
