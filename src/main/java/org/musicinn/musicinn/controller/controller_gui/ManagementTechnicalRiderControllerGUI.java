@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @FXML
@@ -76,6 +75,11 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @FXML
     private Button saveChangesButton;
 
+    private final static String DESCRIPTION_PAGE = "Gestisci Rider Tecnico";
+
+    @FXML
+    private HeaderControllerGUI headerController;
+
     private Button fohRemoveButton;
     private VBox fohVBox = new VBox(5);
     private VBox stageVBox = new VBox(5);
@@ -83,6 +87,8 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        headerController.setPageLabelText(DESCRIPTION_PAGE);
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
         Session.UserRole role = Session.getSingletonInstance().getRole();
         if (role.equals(Session.UserRole.ARTIST)) setupArtistView();
     }

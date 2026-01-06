@@ -1,0 +1,20 @@
+/* Stile base dei bottoni (non selezionati) */
+.toggle-button {
+    -fx-background-color: #ffffff; /* Bianco pulito */
+    -fx-text-fill: #333333;
+    -fx-cursor: hand;
+}
+
+/* Stile quando il bottone è SELEZIONATO */
+.toggle-button:selected {
+    -fx-background-color: #003366; /* Blu scuro per contrasto */
+    -fx-text-fill: white;          /* Testo bianco per leggibilità */
+    -fx-font-weight: bold;
+    /* Effetto ombra per farlo "staccare" dallo sfondo */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 0);
+}
+
+/* Effetto quando passi sopra col mouse (Hover) */
+.toggle-button:hover {
+    -fx-background-color: #e0e0e0;
+}

@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="840.0" style="-fx-background-color: #00CCFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.PublishAnnouncementControllerGUI">
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <content>
+            <VBox style="-fx-background-color: #00CCFF;">
+               <children>
+                  <VBox spacing="5.0">
+                     <children>
+                        <HBox alignment="CENTER" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Informazioni Locale">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label text="Le informazioni del tuo locale sono prelevate dal tuo profilo. Puoi modificarle nella sezione Gestione profilo o Gestione Rider Tecnico.">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Posizione" textFill="#6f6f6f">
+                                       <font>
+                                          <Font name="System Bold" size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Via Roma 112, Milano, MI 20121" textFill="WHITE" />
+                                 </children>
+                              </VBox>
+                              <Button fx:id="profileManagementButton" mnemonicParsing="false" text="Gestione Profilo" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Rider Tecnico" textFill="#6f6f6f">
+                                       <font>
+                                          <Font name="System Bold" size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Impianto audio professionale 2000W, mixer 16 canali, 5 monitor da palco" textFill="WHITE" />
+                                 </children>
+                              </VBox>
+                              <Button fx:id="riderManagementButton" mnemonicParsing="false" onAction="#handleRiderManagementButton" text="Gestione Rider Tecnico" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator prefWidth="200.0" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator />
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Informazioni Evento">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label text="Data di inizio:" textFill="#6f6f6f">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <DatePicker fx:id="eventDatePicker" editable="true" promptText="gg/mm/aaaa" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label text="Ora di inizio:" textFill="#6f6f6f">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="hoursStartTime" promptText="hh" />
+                              <ComboBox fx:id="minutesStartTime" promptText="mm" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label text="Durata:" textFill="#6f6f6f">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="hoursDuration" promptText="hh" />
+                              <ComboBox fx:id="minutesDuration" promptText="mm" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label text="Cachet offerto (€):" textFill="#6f6f6f">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="cachetField" alignment="CENTER" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label text="Cauzione richiesta (€):" textFill="#6f6f6f">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="depositField" alignment="CENTER" />
+                           </children>
+                           <padding>
+                              <Insets left="100.0" right="100.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator prefWidth="200.0" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator prefWidth="200.0" />
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Requisiti Artista">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Generi musicali richiesti:" textFill="#6f6f6f">
+                                       <font>
+                                          <Font name="System Bold" size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <FlowPane fx:id="containerGenres" hgap="10.0" stylesheets="@style.css" vgap="10.0" VBox.vgrow="ALWAYS">
+<!--                                       <children>-->
+<!--                                          <ToggleButton fx:id="rockToggle" mnemonicParsing="false" text="Rock" />-->
+<!--                                          <ToggleButton fx:id="popToggle" mnemonicParsing="false" text="Pop" />-->
+<!--                                          <ToggleButton fx:id="jazzToggle" mnemonicParsing="false" text="Jazz" />-->
+<!--                                          <ToggleButton fx:id="rapToggle" mnemonicParsing="false" text="Rap" />-->
+<!--                                          <ToggleButton fx:id="trapToggle" mnemonicParsing="false" text="Trap" />-->
+<!--                                          <ToggleButton fx:id="reggaeToggle" mnemonicParsing="false" text="Reggae" />-->
+<!--                                          <ToggleButton fx:id="classicaToggle" mnemonicParsing="false" text="Classica" />-->
+<!--                                          <ToggleButton fx:id="metalToggle" mnemonicParsing="false" text="Metal" />-->
+<!--                                          <ToggleButton fx:id="indieToggle" mnemonicParsing="false" text="Indie" />-->
+<!--                                          <ToggleButton fx:id="soulToggle" mnemonicParsing="false" text="Soul" />-->
+<!--                                          <ToggleButton fx:id="ReBToggle" mnemonicParsing="false" text="R&amp;B" />-->
+<!--                                          <ToggleButton fx:id="funkToggle" mnemonicParsing="false" text="Funk" />-->
+<!--                                          <ToggleButton fx:id="discoToggle" mnemonicParsing="false" text="Disco" />-->
+<!--                                          <ToggleButton fx:id="technoToggle" mnemonicParsing="false" text="Techno" />-->
+<!--                                          <ToggleButton fx:id="elettronicaToggle" mnemonicParsing="false" text="Elettronica" />-->
+<!--                                          <ToggleButton fx:id="ambienteToggle" mnemonicParsing="false" text="Ambiente" />-->
+<!--                                       </children>-->
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                                       </padding>
+                                    </FlowPane>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </VBox>
+                              <Separator orientation="VERTICAL" HBox.hgrow="ALWAYS" />
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Tipi di artista richiesti:" textFill="#6f6f6f">
+                                       <font>
+                                          <Font name="System Bold" size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <FlowPane fx:id="containerTypeArtist" hgap="10.0" prefHeight="70.0" prefWidth="0.0" stylesheets="@style.css" vgap="10.0">
+<!--                                       <children>-->
+<!--                                          <ToggleButton fx:id="solistaToggle" mnemonicParsing="false" text="Solista" />-->
+<!--                                          <ToggleButton fx:id="bandToggle" mnemonicParsing="false" text="Band" />-->
+<!--                                          <ToggleButton fx:id="gruppoToggle" mnemonicParsing="false" text="Gruppo" />-->
+<!--                                          <ToggleButton fx:id="DJToggle" mnemonicParsing="false" text="DJ" />-->
+<!--                                       </children>-->
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                                       </padding>
+                                    </FlowPane>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </VBox>
+                              <Separator orientation="VERTICAL" HBox.hgrow="ALWAYS" />
+                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <CheckBox fx:id="doesUnreleasedCheck" allowIndeterminate="true" mnemonicParsing="false" text="Inediti" />
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <Label text="attiva questa condizione" textFill="#6f6f6f" />
+                                          <Label text="se vuoi che l'artista richiesto" textFill="#6f6f6f" />
+                                          <Label text="esegua inediti" textFill="#6f6f6f" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <Separator />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Separator prefWidth="200.0" />
+                  <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                     <children>
+                        <HBox alignment="CENTER" spacing="5.0" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Descrizione Evento (facoltativo)">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label text="Nell'area di testo sottostante, puoi fornire una breve descrizione dell'evento che stai organizzando">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <TextArea fx:id="descriptionArea" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" wrapText="true" VBox.vgrow="NEVER" />
+                     </children>
+                  </VBox>
+                  <Separator />
+                  <Separator layoutX="10.0" layoutY="512.0" />
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label fx:id="statusLabel" textFill="RED" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBackButton" prefWidth="115.2" text="Indietro" />
+                        <Button fx:id="publishAnnouncementButton" alignment="CENTER" mnemonicParsing="false" onAction="#handlePublishAnnouncementButton" text="Pubblica Annuncio" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </center>
+   <top>
+      <StackPane prefHeight="123.0" BorderPane.alignment="CENTER">
+          <children>
+              <fx:include fx:id="header" source="Header.fxml" />
+          </children>
+         <BorderPane.margin>
+            <Insets left="35.0" right="35.0" />
+         </BorderPane.margin>
+      </StackPane>
+   </top>
+</BorderPane>

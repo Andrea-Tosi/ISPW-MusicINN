@@ -3,6 +3,7 @@ package org.musicinn.musicinn.util;
 public class Session {
     public enum UserRole{ARTIST, MANAGER}
     private UserRole role;
+    private String username;
 
     private Session() {}
 
@@ -20,5 +21,13 @@ public class Session {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

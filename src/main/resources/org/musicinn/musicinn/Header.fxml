@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.control.SeparatorMenuItem?>
+<HBox alignment="CENTER" prefHeight="123.0" style="-fx-background-color: #00ccff;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.HeaderControllerGUI">
+
+    <Label text="MusicINN">
+        <font>
+            <Font name="Berlin Sans FB" size="36.0" />
+        </font>
+    </Label>
+
+    <Region HBox.hgrow="ALWAYS" />
+
+    <Label fx:id="pageLabel">
+        <font>
+            <Font name="Comic Sans MS" size="36.0" />
+        </font>
+    </Label>
+
+    <Region HBox.hgrow="ALWAYS" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+        <Label fx:id="usernameLabel" onMouseClicked="#handleMenu" text="Username">
+         <contextMenu>
+            <ContextMenu fx:id="menu">
+              <items>
+                  <MenuItem onAction="#handleRiderManagement" mnemonicParsing="false" text="Gestisci Rider Tecnico" />
+                  <MenuItem mnemonicParsing="false" text="Gestisci Profilo" />
+                  <SeparatorMenuItem mnemonicParsing="false"/>
+                  <MenuItem mnemonicParsing="false" text="Valida profilo Instagram" />
+                  <MenuItem mnemonicParsing="false" text="Valida profilo Spotify" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+        </Label>
+        <ImageView fx:id="userIcon" fitHeight="50.0" fitWidth="50.0" onMouseClicked="#handleUserIcon" pickOnBounds="true" preserveRatio="true">
+            <Image url="@Icona Utente.png" />
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+        </ImageView>
+    </HBox>
+
+</HBox>

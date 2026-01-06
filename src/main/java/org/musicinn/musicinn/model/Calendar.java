@@ -29,7 +29,7 @@ public class Calendar {
         // Controlla sovrapposizioni con prenotazioni esistenti
         for (SchedulableEvent event : getEvents()) {
             LocalDateTime startExisting = LocalDateTime.of(event.getStartEventDay(), event.getStartEventTime());
-            LocalDateTime endExisting = LocalDateTime.of(event.getEndEventDay(), event.getEndEventTime());
+            LocalDateTime endExisting = startExisting.plus(event.getDuration());
 
             // Formula della sovrapposizione: (Inizio1 < Fine2) AND (Fine1 > Inizio2)
             if (startRequested.isBefore(endExisting) && endRequested.isAfter(startExisting)) {

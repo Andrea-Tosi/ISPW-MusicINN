@@ -1,21 +1,48 @@
-package org.musicinn.musicinn.model;
+package org.musicinn.musicinn.util.technical_rider_bean;
 
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class Announcement extends SchedulableEvent {
+public class AnnouncementBean {
+    private LocalDate startingDate;
+    private LocalTime startingTime;
+    private Duration duration;
     private Double cachet;
     private Double deposit;
-    private LocalTime soundcheckTime;
     private List<MusicalGenre> requestedGenres;
     private List<TypeArtist> requestedTypesArtist;
     private Boolean doesUnreleased;
     private String description;
-    private AnnouncementState state;
+
+    public LocalDate getStartingDate() {
+        return startingDate;
+    }
+
+    public void setStartingDate(LocalDate startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public LocalTime getStartingTime() {
+        return startingTime;
+    }
+
+    public void setStartingTime(LocalTime startingTime) {
+        this.startingTime = startingTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
 
     public Double getCachet() {
         return cachet;
@@ -31,14 +58,6 @@ public class Announcement extends SchedulableEvent {
 
     public void setDeposit(Double deposit) {
         this.deposit = deposit;
-    }
-
-    public LocalTime getSoundcheckTime() {
-        return soundcheckTime;
-    }
-
-    public void setSoundcheckTime(LocalTime soundcheckTime) {
-        this.soundcheckTime = soundcheckTime;
     }
 
     public List<MusicalGenre> getRequestedGenres() {
@@ -71,13 +90,5 @@ public class Announcement extends SchedulableEvent {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public AnnouncementState getState() {
-        return state;
-    }
-
-    public void setState(AnnouncementState state) {
-        this.state = state;
     }
 }
