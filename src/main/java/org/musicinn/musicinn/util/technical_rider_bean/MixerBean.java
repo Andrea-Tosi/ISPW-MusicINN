@@ -1,7 +1,7 @@
 package org.musicinn.musicinn.util.technical_rider_bean;
 
 public class MixerBean {
-    private Boolean isFOH;
+    private boolean isFOH;
     private int inputChannels;
     private int auxSends;
     private Boolean digital;
@@ -14,11 +14,11 @@ public class MixerBean {
         this.hasPhantomPower = hasPhantomPower;
     }
 
-    public Boolean isFOH() {
+    public boolean isFOH() {
         return isFOH;
     }
 
-    public void setFOH(Boolean foh) {
+    public void setFOH(boolean foh) {
         isFOH = foh;
     }
 

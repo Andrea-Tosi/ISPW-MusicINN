@@ -35,16 +35,16 @@ public class PublishAnnouncementControllerGUI implements Initializable {
     private DatePicker eventDatePicker;
 
     @FXML
-    private ComboBox<String> hoursStartTime;
+    private ComboBox<String> hoursStartTimeBox;
 
     @FXML
-    private ComboBox<String> minutesStartTime;
+    private ComboBox<String> minutesStartTimeBox;
 
     @FXML
-    private ComboBox<String> hoursDuration;
+    private ComboBox<String> hoursDurationBox;
 
     @FXML
-    private ComboBox<String> minutesDuration;
+    private ComboBox<String> minutesDurationBox;
 
     @FXML
     private TextField cachetField;
@@ -55,68 +55,8 @@ public class PublishAnnouncementControllerGUI implements Initializable {
     @FXML
     private FlowPane containerGenres;
 
-//    @FXML
-//    private ToggleButton rockToggle;
-//
-//    @FXML
-//    private ToggleButton popToggle;
-//
-//    @FXML
-//    private ToggleButton jazzToggle;
-//
-//    @FXML
-//    private ToggleButton rapToggle;
-//
-//    @FXML
-//    private ToggleButton trapToggle;
-//
-//    @FXML
-//    private ToggleButton reggaeToggle;
-//
-//    @FXML
-//    private ToggleButton classicalToggle;
-//
-//    @FXML
-//    private ToggleButton metalToggle;
-//
-//    @FXML
-//    private ToggleButton indieToggle;
-//
-//    @FXML
-//    private ToggleButton soulToggle;
-//
-//    @FXML
-//    private ToggleButton ReBToggle;
-//
-//    @FXML
-//    private ToggleButton funkToggle;
-//
-//    @FXML
-//    private ToggleButton discoToggle;
-//
-//    @FXML
-//    private ToggleButton technoToggle;
-//
-//    @FXML
-//    private ToggleButton electronicToggle;
-//
-//    @FXML
-//    private ToggleButton ambientToggle;
-
     @FXML
     private FlowPane containerTypeArtist;
-
-//    @FXML
-//    private ToggleButton singerToggle;
-//
-//    @FXML
-//    private ToggleButton bandToggle;
-//
-//    @FXML
-//    private ToggleButton groupToggle;
-//
-//    @FXML
-//    private ToggleButton DJToggle;
 
     @FXML
     private CheckBox doesUnreleasedCheck;
@@ -136,7 +76,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
     @FXML
     private HeaderControllerGUI headerController;
 
-    private final static String DESCRIPTION_PAGE = "Pubblica Annuncio";
+    private static final String DESCRIPTION_PAGE = "Pubblica Annuncio";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -164,14 +104,14 @@ public class PublishAnnouncementControllerGUI implements Initializable {
         // Popola le Ore (00-23)
         for (int i = 0; i < 24; i++) {
             // String.format("%02d", i) aggiunge uno zero davanti se il numero è a una cifra
-            hoursStartTime.getItems().add(String.format("%02d", i));
-            hoursDuration.getItems().add(String.format("%02d", i));
+            hoursStartTimeBox.getItems().add(String.format("%02d", i));
+            hoursDurationBox.getItems().add(String.format("%02d", i));
         }
 
         // Popola i Minuti (00-59)
         for (int i = 0; i < 60; i++) {
-            minutesStartTime.getItems().add(String.format("%02d", i));
-            minutesDuration.getItems().add(String.format("%02d", i));
+            minutesStartTimeBox.getItems().add(String.format("%02d", i));
+            minutesDurationBox.getItems().add(String.format("%02d", i));
         }
     }
 
@@ -181,9 +121,6 @@ public class PublishAnnouncementControllerGUI implements Initializable {
 
             // Collega l'oggetto Enum al bottone
             btn.setUserData(genre);
-
-            // Applichiamo stile (opzionale, puoi usare CSS)
-//            btn.setMinWidth(80);
 
             containerGenres.getChildren().add(btn);
         }
@@ -210,9 +147,6 @@ public class PublishAnnouncementControllerGUI implements Initializable {
 
             // Collega l'oggetto Enum al bottone
             btn.setUserData(typeArtist);
-
-            // Applichiamo stile (opzionale, puoi usare CSS)
-//            btn.setMinWidth(80);
 
             containerTypeArtist.getChildren().add(btn);
         }
@@ -254,10 +188,10 @@ public class PublishAnnouncementControllerGUI implements Initializable {
     private void handlePublishAnnouncementButton() {
         // 1. Recupero dei dati semplici
         LocalDate startingDate = eventDatePicker.getValue();
-        String hoursTimeString = hoursStartTime.getValue();
-        String minutesTimeString = minutesStartTime.getValue();
-        String hoursDurationString = hoursDuration.getValue();
-        String minutesDurationString = minutesDuration.getValue();
+        String hoursTimeString = hoursStartTimeBox.getValue();
+        String minutesTimeString = minutesStartTimeBox.getValue();
+        String hoursDurationString = hoursDurationBox.getValue();
+        String minutesDurationString = minutesDurationBox.getValue();
         Double cachet = toDouble(cachetField.getText());
         Double deposit = toDouble(depositField.getText());
 

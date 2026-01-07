@@ -10,7 +10,6 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,11 +29,8 @@ public class HomepageManagerControllerGUI implements Initializable {
     @FXML
     private Button reviewButton;
 
-    private final static String DESCRIPTION_PAGE = "HomePage";
+    private static final String DESCRIPTION_PAGE = "HomePage";
 
-    //    @FXML
-//    private Node calendar; //serve per modificare l'aspetto grafico dell'elemento, ma potrebbe non servire nel mio caso
-    //ad esempio se introducessi la possibilità di scegliere se visualizzare le date fissate in un calendario o in un carosello
     @FXML
     private CalendarGUI calendarGUI;
 
@@ -47,7 +43,7 @@ public class HomepageManagerControllerGUI implements Initializable {
         headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
     }
 
-    public void handlePublishAnnouncementButton(javafx.event.ActionEvent event) {
+    public void handlePublishAnnouncementButton() {
         String nextFxmlPath = FxmlPathLoader.getPath("fxml.publish_announcement.view");
         Scene currentScene = publishAnnouncementButton.getScene();
         Stage stage = (Stage) currentScene.getWindow();

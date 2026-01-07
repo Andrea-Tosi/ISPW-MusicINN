@@ -58,8 +58,7 @@ public class LoginController {
 
     private User isIdentifierOccupied(String identifier) {
         UserDAO userDAO = new UserDAO();
-        User user = userDAO.findByIdentifier(identifier);
-        return user;
+        return userDAO.findByIdentifier(identifier);
     }
 
     public void startSignup(CredentialsBean credentialsBean) {

@@ -5,7 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import org.musicinn.musicinn.util.Session;
 
-import java.awt.event.ActionEvent;
+import javafx.event.ActionEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -25,7 +25,7 @@ public class HomepageArtistControllerGUI implements Initializable {
     @FXML
     private HeaderControllerGUI headerController;
 
-    private final static String DESCRIPTION_PAGE = "HomePage";
+    private static final String DESCRIPTION_PAGE = "HomePage";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

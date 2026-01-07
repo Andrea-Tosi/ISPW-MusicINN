@@ -3,6 +3,7 @@ package org.musicinn.musicinn.controller.controller_application;
 import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Calendar;
 import org.musicinn.musicinn.model.SchedulableEvent;
+import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.technical_rider_bean.AnnouncementBean;
 
 import org.musicinn.musicinn.util.dao.AnnouncementDAO;
@@ -28,17 +29,7 @@ public class PublishAnnouncementController {
         }
 
         // 3. Mapping dal Bean all'Entity di Dominio
-        Announcement announcement = new Announcement();
-        announcement.setStartEventDay(ab.getStartingDate());
-        announcement.setStartEventTime(ab.getStartingTime());
-        announcement.setDuration(ab.getDuration());
-        announcement.setCachet(ab.getCachet());
-
-        // Passiamo la lista di generi (già validata o popolata con i default nel Controller UI)
-        announcement.setRequestedGenres(ab.getRequestedGenres());
-
-        // Altri campi (es. flag ineditì, tipo artista)
-        // announcement.setAcceptsUnreleased(ab.isNeedsUnreleased());
+        Announcement announcement = getAnnouncement(ab);
 
         // 4. Persistenza
         announcementDAO.save(announcement);
@@ -46,6 +37,22 @@ public class PublishAnnouncementController {
         // 5. Post-operazioni (Opzionale)
         // Qui potresti triggerare l'invio di notifiche o log di sistema
         System.out.println("Annuncio pubblicato correttamente per la data: " + ab.getStartingDate());
+    }
+
+    private static Announcement getAnnouncement(AnnouncementBean ab) {
+        Announcement announcement = new Announcement();
+        announcement.setStartEventDay(ab.getStartingDate());
+        announcement.setStartEventTime(ab.getStartingTime());
+        announcement.setDuration(ab.getDuration());
+        announcement.setCachet(ab.getCachet());
+        announcement.setCachet(ab.getCachet());
+        announcement.setDeposit(ab.getDeposit());
+        announcement.setRequestedGenres(ab.getRequestedGenres());
+        announcement.setRequestedTypesArtist(ab.getRequestedTypesArtist());
+        announcement.setDoesUnreleased(ab.getDoesUnreleased());
+        announcement.setDescription(ab.getDescription().isBlank() ? "." : ab.getDescription());
+        announcement.setState(AnnouncementState.OPEN);
+        return announcement;
     }
 }
 //TODO eccezione causata dal fatto che la data richiesta non è disponibile (è già occupata)

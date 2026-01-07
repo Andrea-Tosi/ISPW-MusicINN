@@ -110,16 +110,16 @@
                                     <Font name="System Bold" size="14.0" />
                                  </font>
                               </Label>
-                              <ComboBox fx:id="hoursStartTime" promptText="hh" />
-                              <ComboBox fx:id="minutesStartTime" promptText="mm" />
+                              <ComboBox fx:id="hoursStartTimeBox" promptText="hh" />
+                              <ComboBox fx:id="minutesStartTimeBox" promptText="mm" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label text="Durata:" textFill="#6f6f6f">
                                  <font>
                                     <Font name="System Bold" size="14.0" />
                                  </font>
                               </Label>
-                              <ComboBox fx:id="hoursDuration" promptText="hh" />
-                              <ComboBox fx:id="minutesDuration" promptText="mm" />
+                              <ComboBox fx:id="hoursDurationBox" promptText="hh" />
+                              <ComboBox fx:id="minutesDurationBox" promptText="mm" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER">

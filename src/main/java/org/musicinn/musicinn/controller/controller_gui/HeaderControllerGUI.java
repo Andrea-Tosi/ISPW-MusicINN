@@ -1,6 +1,5 @@
 package org.musicinn.musicinn.controller.controller_gui;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
@@ -34,11 +33,11 @@ public class HeaderControllerGUI {
         usernameLabel.setText(s);
     }
 
-    public void handleMenu(MouseEvent event) {
+    public void handleMenu() {
         menu.show(usernameLabel, Side.BOTTOM, 0, 0);
     }
 
-    public void handleUserIcon(MouseEvent event) {
+    public void handleUserIcon() {
         usernameLabel.fireEvent(new MouseEvent(
                 MouseEvent.MOUSE_CLICKED, // Tipo di evento
                 0, 0,                     // Coordinate X, Y (rispetto al nodo)
@@ -55,7 +54,7 @@ public class HeaderControllerGUI {
         ));
     }
 
-    public void handleRiderManagement(ActionEvent event) {
+    public void handleRiderManagement() {
         String nextFxmlPath = FxmlPathLoader.getPath("fxml.management_technical_rider.view");
         Scene currentScene = usernameLabel.getScene();
         Stage stage = (Stage) currentScene.getWindow();

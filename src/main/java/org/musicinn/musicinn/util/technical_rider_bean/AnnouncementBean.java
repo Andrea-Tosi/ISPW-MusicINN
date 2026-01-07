@@ -1,6 +1,5 @@
 package org.musicinn.musicinn.util.technical_rider_bean;
 
-import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 

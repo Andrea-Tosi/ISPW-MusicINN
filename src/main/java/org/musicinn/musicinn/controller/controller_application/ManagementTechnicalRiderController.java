@@ -78,9 +78,10 @@ public class ManagementTechnicalRiderController {
         Mixer stage = null;
         for (MixerBean b : mixers) {
             Mixer m = mapMixer(b);
-            if (b.isFOH()) foh = m; else stage = m;
+            if (b.isFOH()) foh = m;
+            else stage = m;
         }
-        StageBox sb = sbs.isEmpty() ? null : mapStageBox(sbs.get(0));
+        StageBox sb = sbs.isEmpty() ? null : mapStageBox(sbs.getFirst());
         return new ArtistRider(foh, stage, sb);
     }
 

@@ -75,15 +75,15 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @FXML
     private Button saveChangesButton;
 
-    private final static String DESCRIPTION_PAGE = "Gestisci Rider Tecnico";
+    private static final String DESCRIPTION_PAGE = "Gestisci Rider Tecnico";
 
     @FXML
     private HeaderControllerGUI headerController;
 
     private Button fohRemoveButton;
-    private VBox fohVBox = new VBox(5);
-    private VBox stageVBox = new VBox(5);
-    private VBox sbVBox = new VBox(5);
+    private final VBox fohVBox = new VBox(5);
+    private final VBox stageVBox = new VBox(5);
+    private final VBox sbVBox = new VBox(5);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -313,7 +313,11 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         handleEquipmentLogic("fxml.microphone_features.modal", "Microfoni", inputEquipmentsVBox,
                 c -> ((MicrophoneSetPopupControllerGUI) c).getCreatedMicrophoneSet(),
                 (o, n) -> getAttr(o, "getNeedsPhantomPower", false).equals(getAttr(n, "getNeedsPhantomPower", false)),
-                obj -> String.format("%s phantom, (qt: %d)", (boolean) getAttr(obj, "getNeedsPhantomPower", false) ? "Con" : "Senza", getAttr(obj, "getQuantity", 0))
+                obj -> {
+                    boolean hasPhantom = Boolean.TRUE.equals(getAttr(obj, "getNeedsPhantomPower", false));
+                    int quantity = getAttr(obj, "getQuantity", 0);
+                    return String.format("%s phantom, (qt: %d)", hasPhantom ? "Con" : "Senza", quantity);
+                }
         );
     }
 
@@ -322,7 +326,11 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         handleEquipmentLogic("fxml.di_box_features.modal", "DI Box", inputEquipmentsVBox,
                 c -> ((DIBoxSetPopupControllerGUI) c).getCreatedDIBoxSet(),
                 (o, n) -> getAttr(o, "getActive", false).equals(getAttr(n, "getActive", false)),
-                obj -> String.format("DI Box %s, (qt: %d)", (boolean) getAttr(obj, "getActive", false) ? "Attiva" : "Passiva", getAttr(obj, "getQuantity", 0))
+                obj -> {
+                    boolean isActive = Boolean.TRUE.equals(getAttr(obj, "getActive", false));
+                    int quantity = getAttr(obj, "getQuantity", 0);
+                    return String.format("DI Box %s, (qt: %d)", isActive ? "Attiva" : "Passiva", quantity);
+                }
         );
     }
 
@@ -331,7 +339,11 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         handleEquipmentLogic("fxml.monitor_features.modal", "Monitor", outputEquipmentsVBox,
                 c -> ((MonitorSetPopupControllerGUI) c).getCreatedMonitorSet(),
                 (o, n) -> getAttr(o, "getPowered", false).equals(getAttr(n, "getPowered", false)),
-                obj -> String.format("Monitor %s, (qt: %d)", (boolean) getAttr(obj, "getPowered", false) ? "Attivo" : "Passivo", getAttr(obj, "getQuantity", 0))
+                obj -> {
+                    boolean powered = Boolean.TRUE.equals(getAttr(obj, "getPowered", false));
+                    int quantity = getAttr(obj, "getQuantity", 0);
+                    return String.format("Monitor %s, (qt: %d)", powered ? "Attivo" : "Passivo", quantity);
+                }
         );
     }
 
@@ -340,7 +352,11 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         handleEquipmentLogic("fxml.mic_stand_features.modal", "Aste", otherEquipmentsVBox,
                 c -> ((MicStandSetPopupControllerGUI) c).getCreatedMicStandSet(),
                 (o, n) -> getAttr(o, "getTall", false).equals(getAttr(n, "getTall", false)),
-                obj -> String.format("Asta %s, (qt: %d)", (boolean) getAttr(obj, "getTall", false) ? "Alta" : "Bassa", getAttr(obj, "getQuantity", 0))
+                obj -> {
+                    boolean isTall = Boolean.TRUE.equals(getAttr(obj, "getTall", false));
+                    int quantity = getAttr(obj, "getQuantity", 0);
+                    return String.format("Asta %s, (qt: %d)", isTall ? "Alta" : "Bassa", quantity);
+                }
         );
     }
 
