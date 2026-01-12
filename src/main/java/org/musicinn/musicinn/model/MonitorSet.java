@@ -10,7 +10,7 @@ public class MonitorSet extends OutputEquipment {
         this.isPowered = powered;
     }
 
-    public Boolean isPowered() {
+    public Boolean getPowered() {
         return isPowered;
     }
 
@@ -34,8 +34,8 @@ public class MonitorSet extends OutputEquipment {
     }
 
     private boolean isPoweredOk (MonitorSet requested) {
-        if (requested.isPowered() != null) {
-            return isPowered().equals(requested.isPowered());
+        if (requested.getPowered() != null) {
+            return getPowered().equals(requested.getPowered());
         } else {
             return true;
         }

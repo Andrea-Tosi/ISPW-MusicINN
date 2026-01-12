@@ -12,7 +12,7 @@ public class Venue {
     private TypeVenue type;
     private boolean isActive;
     private Calendar calendar;
-    private TechnicalRider rider;
+    private ManagerRider rider;
     private List<Announcement> announcements;
 
     public Venue(String name, String city, String address, TypeVenue typeVenue) {
@@ -71,11 +71,11 @@ public class Venue {
         this.calendar = calendar;
     }
 
-    public TechnicalRider getRider() {
+    public ManagerRider getRider() {
         return rider;
     }
 
-    public void setRider(TechnicalRider rider) {
+    public void setRider(ManagerRider rider) {
         this.rider = rider;
     }
 

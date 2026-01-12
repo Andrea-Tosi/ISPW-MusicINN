@@ -20,17 +20,11 @@
                <children>
                   <VBox spacing="5.0">
                      <children>
-                        <HBox alignment="CENTER" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
+                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #FFFFFF;" VBox.vgrow="NEVER">
                            <children>
                               <Label text="Mixer audio">
                                  <font>
                                     <Font size="16.0" />
-                                 </font>
-                              </Label>
-                              <Region HBox.hgrow="ALWAYS" />
-                              <Label text="Le informazioni del tuo locale sono prelevate dal tuo profilo. Puoi modificarle nella sezione Gestione profilo o Gestione Rider Tecnico.">
-                                 <font>
-                                    <Font size="10.0" />
                                  </font>
                               </Label>
                            </children>

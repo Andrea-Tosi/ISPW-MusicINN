@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.technical_rider_bean;
+package org.musicinn.musicinn.util.bean.technical_rider_bean;
 
 public class MonitorSetBean {
     private Boolean isPowered;

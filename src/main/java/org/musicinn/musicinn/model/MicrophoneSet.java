@@ -19,7 +19,7 @@ public class MicrophoneSet extends InputEquipment {
         this.quantity = quantity;
     }
 
-    public Boolean isPhantomPowerNeeded() {
+    public Boolean getNeedsPhantomPower() {
         return needsPhantomPower;
     }
 
@@ -30,7 +30,7 @@ public class MicrophoneSet extends InputEquipment {
     @Override
     public boolean requiresPhantomPower() {
         // Se è null, lo considera false (non obbligatorio)
-        return isPhantomPowerNeeded() != null  &&  isPhantomPowerNeeded();
+        return getNeedsPhantomPower() != null  &&  getNeedsPhantomPower();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class MicrophoneSet extends InputEquipment {
     }
 
     private boolean isTypeOk (MicrophoneSet requested) {
-        if (requested.isPhantomPowerNeeded() != null) {
-            return isPhantomPowerNeeded().equals(requested.isPhantomPowerNeeded());
+        if (requested.getNeedsPhantomPower() != null) {
+            return getNeedsPhantomPower().equals(requested.getNeedsPhantomPower());
         } else {
             return true;
         }

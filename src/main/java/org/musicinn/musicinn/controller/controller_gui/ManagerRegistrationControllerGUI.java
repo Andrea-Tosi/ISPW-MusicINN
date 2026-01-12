@@ -14,7 +14,7 @@ import org.musicinn.musicinn.controller.controller_application.LoginController;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
-import org.musicinn.musicinn.util.login_bean.ManagerRegistrationBean;
+import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
 
 import java.net.URL;
 import java.util.ResourceBundle;

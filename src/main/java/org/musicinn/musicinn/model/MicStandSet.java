@@ -10,7 +10,7 @@ public class MicStandSet extends OtherEquipment {
         this.isTall = tall;
     }
 
-    public Boolean isTall() {
+    public Boolean getTall() {
         return isTall;
     }
 
@@ -34,8 +34,8 @@ public class MicStandSet extends OtherEquipment {
     }
 
     private boolean isHeightOk(MicStandSet requested) {
-        if (requested.isTall() != null) {
-            return isTall().equals(requested.isTall());
+        if (requested.getTall() != null) {
+            return getTall().equals(requested.getTall());
         } else {
             return true;
         }

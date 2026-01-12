@@ -12,6 +12,8 @@ public class ManagerRider extends TechnicalRider {
         this.stageBoxes = stageBoxes;
     }
 
+    public ManagerRider() {}
+
     public List<Mixer> getMixers() {
         return mixers;
     }

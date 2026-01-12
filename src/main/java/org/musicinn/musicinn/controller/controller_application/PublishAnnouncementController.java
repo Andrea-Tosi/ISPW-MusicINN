@@ -4,7 +4,7 @@ import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Calendar;
 import org.musicinn.musicinn.model.SchedulableEvent;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
-import org.musicinn.musicinn.util.technical_rider_bean.AnnouncementBean;
+import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import org.musicinn.musicinn.util.dao.AnnouncementDAO;
 

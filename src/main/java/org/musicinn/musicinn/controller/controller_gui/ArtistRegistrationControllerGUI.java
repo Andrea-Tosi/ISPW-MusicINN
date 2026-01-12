@@ -12,7 +12,7 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
-import org.musicinn.musicinn.util.login_bean.ArtistRegistrationBean;
+import org.musicinn.musicinn.util.bean.login_bean.ArtistRegistrationBean;
 
 import java.net.URL;
 import java.util.Arrays;

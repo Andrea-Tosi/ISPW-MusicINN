@@ -12,7 +12,7 @@ import org.musicinn.musicinn.controller.controller_application.LoginController;
 import org.musicinn.musicinn.util.EmailValidator;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
-import org.musicinn.musicinn.util.login_bean.CredentialsBean;
+import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
 
 import java.io.IOException;
 import java.net.URL;

@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.musicinn.musicinn.util.enumerations.CableFunction;
-import org.musicinn.musicinn.util.technical_rider_bean.CableSetBean;
+import org.musicinn.musicinn.util.bean.technical_rider_bean.CableSetBean;
 
 import java.net.URL;
 import java.util.ResourceBundle;

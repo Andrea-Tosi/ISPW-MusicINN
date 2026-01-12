@@ -11,7 +11,9 @@ public class ArtistRider extends TechnicalRider {
         this.stageBox = stageBox;
     }
 
-    protected Mixer getFohMixer() {
+    public ArtistRider() {}
+
+    public Mixer getFohMixer() {
         return this.fohMixer;
     }
 

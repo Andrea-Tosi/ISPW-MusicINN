@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.login_bean;
+package org.musicinn.musicinn.util.bean.login_bean;
 
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;

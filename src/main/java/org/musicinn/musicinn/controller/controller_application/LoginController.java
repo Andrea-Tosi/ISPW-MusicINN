@@ -10,9 +10,9 @@ import org.musicinn.musicinn.util.dao.ArtistDAO;
 import org.musicinn.musicinn.util.dao.ManagerDAO;
 import org.musicinn.musicinn.util.dao.UserDAO;
 import org.musicinn.musicinn.util.dao.VenueDAO;
-import org.musicinn.musicinn.util.login_bean.ArtistRegistrationBean;
-import org.musicinn.musicinn.util.login_bean.CredentialsBean;
-import org.musicinn.musicinn.util.login_bean.ManagerRegistrationBean;
+import org.musicinn.musicinn.util.bean.login_bean.ArtistRegistrationBean;
+import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
+import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
 
 import java.util.Objects;
 

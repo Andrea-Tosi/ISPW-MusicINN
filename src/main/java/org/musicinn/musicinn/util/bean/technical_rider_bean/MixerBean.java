@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.technical_rider_bean;
+package org.musicinn.musicinn.util.bean.technical_rider_bean;
 
 public class MixerBean {
     private boolean isFOH;
@@ -7,7 +7,7 @@ public class MixerBean {
     private Boolean digital;
     private Boolean hasPhantomPower;
 
-    public MixerBean(int inputChannels, int auxSends, boolean digital, boolean hasPhantomPower) {
+    public MixerBean(int inputChannels, int auxSends, Boolean digital, Boolean hasPhantomPower) {
         this.inputChannels = inputChannels;
         this.auxSends = auxSends;
         this.digital = digital;

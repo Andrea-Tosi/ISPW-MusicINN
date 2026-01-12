@@ -14,6 +14,7 @@ public class Artist extends User{
     private String address;
     private List<MusicalGenre> genresList;
     private List<SocialAccount> socialAccounts;
+    private ArtistRider rider;
 
     public Artist(String username, String email, String password, String stageName, TypeArtist typeArtist, boolean doesUnreleased, String city, String address) {
         super(username, email, password);
@@ -85,5 +86,13 @@ public class Artist extends User{
             setSocialAccounts(new ArrayList<>());
         }
         getSocialAccounts().add(socialAccount);
+    }
+
+    public ArtistRider getRider() {
+        return rider;
+    }
+
+    public void setRider(ArtistRider rider) {
+        this.rider = rider;
     }
 }

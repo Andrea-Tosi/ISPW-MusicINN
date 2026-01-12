@@ -4,18 +4,21 @@ import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 public class Announcement extends SchedulableEvent {
     private Double cachet;
     private Double deposit;
-    private LocalTime soundcheckTime;
+    private LocalDateTime soundcheckTime;
     private List<MusicalGenre> requestedGenres;
     private List<TypeArtist> requestedTypesArtist;
     private Boolean doesUnreleased;
     private String description;
     private AnnouncementState state;
+    private Venue venue;
+    private List<Application> applicationList;
 
     public Double getCachet() {
         return cachet;
@@ -33,11 +36,11 @@ public class Announcement extends SchedulableEvent {
         this.deposit = deposit;
     }
 
-    public LocalTime getSoundcheckTime() {
+    public LocalDateTime getSoundcheckTime() {
         return soundcheckTime;
     }
 
-    public void setSoundcheckTime(LocalTime soundcheckTime) {
+    public void setSoundcheckTime(LocalDateTime soundcheckTime) {
         this.soundcheckTime = soundcheckTime;
     }
 
@@ -79,5 +82,21 @@ public class Announcement extends SchedulableEvent {
 
     public void setState(AnnouncementState state) {
         this.state = state;
+    }
+
+    public Venue getVenue() {
+        return venue;
+    }
+
+    public void setVenue(Venue venue) {
+        this.venue = venue;
+    }
+
+    public List<Application> getApplicationList() {
+        return applicationList;
+    }
+
+    public void setApplicationList(List<Application> applicationList) {
+        this.applicationList = applicationList;
     }
 }

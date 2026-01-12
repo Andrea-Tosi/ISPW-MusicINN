@@ -1,10 +1,11 @@
-package org.musicinn.musicinn.util.technical_rider_bean;
+package org.musicinn.musicinn.util.bean;
 
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class AnnouncementBean {
     private Duration duration;
     private Double cachet;
     private Double deposit;
+    private LocalDateTime soundcheckTime;
     private List<MusicalGenre> requestedGenres;
     private List<TypeArtist> requestedTypesArtist;
     private Boolean doesUnreleased;
@@ -57,6 +59,14 @@ public class AnnouncementBean {
 
     public void setDeposit(Double deposit) {
         this.deposit = deposit;
+    }
+
+    public LocalDateTime getSoundcheckTime() {
+        return soundcheckTime;
+    }
+
+    public void setSoundcheckTime(LocalDateTime soundcheckTime) {
+        this.soundcheckTime = soundcheckTime;
     }
 
     public List<MusicalGenre> getRequestedGenres() {

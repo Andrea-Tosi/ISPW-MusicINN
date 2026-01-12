@@ -8,7 +8,6 @@ public abstract class TechnicalRider {
     protected List<InputEquipment> inputs;
     protected List<OutputEquipment> outputs;
     protected List<OtherEquipment> others;
-//    protected List<Equipment> equipments;
 
     public int getMinLengthStage() {
         return minLengthStage;

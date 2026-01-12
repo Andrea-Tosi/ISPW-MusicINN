@@ -4,9 +4,12 @@ import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.model.Venue;
+import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.musicinn.musicinn.util.enumerations.TypeArtist.SINGER;
@@ -27,6 +30,7 @@ public class UserDAO {
                 "Rome",
                 "Via Roma, 67"
         );
+        artist1.setGenresList(List.of(MusicalGenre.FUNK, MusicalGenre.ROCK, MusicalGenre.POP, MusicalGenre.SOUL));
         utentiRegistrati.put(artist1.getUsername(), artist1);
 
         Manager manager1 = new Manager(

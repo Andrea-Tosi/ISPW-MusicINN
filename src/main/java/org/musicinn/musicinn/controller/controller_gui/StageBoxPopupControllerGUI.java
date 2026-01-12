@@ -6,7 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.musicinn.musicinn.util.technical_rider_bean.StageBoxBean;
+import org.musicinn.musicinn.util.bean.technical_rider_bean.StageBoxBean;
 
 import java.net.URL;
 import java.util.ResourceBundle;

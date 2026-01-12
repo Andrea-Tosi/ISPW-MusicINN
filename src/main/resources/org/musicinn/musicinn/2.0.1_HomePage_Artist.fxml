@@ -12,7 +12,7 @@
    <right>
       <VBox alignment="CENTER" prefWidth="320.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="applyButton" mnemonicParsing="false" prefWidth="250.0" style="-fx-border-radius: 50; -fx-background-radius: 50;" text="Candidati" VBox.vgrow="NEVER">
+            <Button fx:id="applyButton" onAction="#handleApplyButton" mnemonicParsing="false" prefWidth="250.0" style="-fx-border-radius: 50; -fx-background-radius: 50;" text="Candidati" VBox.vgrow="NEVER">
                <font>
                   <Font size="24.0" />
                </font>

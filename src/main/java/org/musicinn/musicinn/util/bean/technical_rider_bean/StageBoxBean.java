@@ -1,10 +1,10 @@
-package org.musicinn.musicinn.util.technical_rider_bean;
+package org.musicinn.musicinn.util.bean.technical_rider_bean;
 
 public class StageBoxBean {
     private int inputChannels;
     private Boolean isDigital;
 
-    public StageBoxBean(int inputChannels, boolean isDigital) {
+    public StageBoxBean(int inputChannels, Boolean isDigital) {
         this.inputChannels = inputChannels;
         this.isDigital = isDigital;
     }

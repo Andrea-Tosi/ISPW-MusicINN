@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.technical_rider_bean;
+package org.musicinn.musicinn.util.bean.technical_rider_bean;
 
 import org.musicinn.musicinn.util.enumerations.CableFunction;
 

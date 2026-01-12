@@ -14,7 +14,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
-import org.musicinn.musicinn.util.technical_rider_bean.AnnouncementBean;
+import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import java.net.URL;
 import java.time.Duration;

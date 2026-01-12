@@ -9,7 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
-import org.musicinn.musicinn.util.technical_rider_bean.MicStandSetBean;
+import org.musicinn.musicinn.util.bean.technical_rider_bean.MicStandSetBean;
 
 import java.net.URL;
 import java.util.ResourceBundle;

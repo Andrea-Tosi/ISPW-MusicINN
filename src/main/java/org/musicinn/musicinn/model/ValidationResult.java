@@ -45,7 +45,7 @@ public class ValidationResult {
 
         StringBuilder sb = new StringBuilder();
         if (!errors.isEmpty()) {
-            sb.append("ERRORI:\n- ").append(String.join("\n- ", errors)).append("\n");
+            sb.append("- ").append(String.join("\n- ", errors)).append("\n");
         }
         return sb.toString();
     }
