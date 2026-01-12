@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox onMouseClicked="#handleCardClick" alignment="TOP_CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="300.0" spacing="20.0" style="-fx-border-color: #aaaaaa; -fx-border-radius: 15; -fx-background-radius: 15;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.EventCardControllerGUI">
+    <children>
+        <HBox alignment="CENTER_LEFT">
+            <children>
+                <Label fx:id="venueNameLabel" text="Nome del Locale">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER_LEFT" spacing="2.0" style="-fx-border-color: #aaaaaa;">
+                    <children>
+                        <ImageView fitHeight="40.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@Icona Edificio ritagliata.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="typeVenueLabel" text="Ristorante" />
+                    </children>
+                    <padding>
+                        <Insets right="2.0" />
+                    </padding>
+                </HBox>
+            </children>
+        </HBox>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="134.20001220703125" minWidth="-Infinity" />
+                <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="10.0" />
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="260.6000061035156" minWidth="-Infinity" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+            </rowConstraints>
+            <children>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@Icona Map Pin.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <VBox alignment="CENTER_LEFT" GridPane.columnIndex="2">
+                    <children>
+                        <Label fx:id="addressVenueLabel" text="Via Roma 123, Milano, MI, 20121" />
+                        <Label fx:id="distanceLabel" text="dista X km da te" />
+                    </children>
+                </VBox>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
+                    <image>
+                        <Image url="@Icona Calendario.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <Label fx:id="dateEventLabel" text="2026-05-24" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                    </GridPane.margin>
+                </Label>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="2">
+                    <image>
+                        <Image url="@Icona Euro.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <Label fx:id="cachetLabel" text="150" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                    </GridPane.margin>
+                </Label>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="3">
+                    <image>
+                        <Image url="@Icona Musica.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <FlowPane fx:id="genresContainer" alignment="CENTER_LEFT" hgap="5.0" vgap="3.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                    <GridPane.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                    </GridPane.margin>
+                </FlowPane>
+            </children>
+        </GridPane>
+        <HBox alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
+            <children>
+                <HBox fx:id="riderCompatibilityHBox" alignment="CENTER" fillHeight="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" spacing="10.0">
+                    <children>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@Icona Check circle.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="riderCompatibilityLabel" />
+                    </children>
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                    <padding>
+                        <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                    </padding>
+                </HBox>
+            </children>
+        </HBox>
+    </children>
+    <padding>
+        <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+    </padding>
+   <cursor>
+      <Cursor fx:constant="HAND" />
+   </cursor>
+</VBox>
