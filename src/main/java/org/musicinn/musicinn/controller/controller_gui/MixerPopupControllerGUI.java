@@ -9,6 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
+import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.MixerBean;
 
 import java.net.URL;
@@ -41,6 +42,9 @@ public class MixerPopupControllerGUI implements Initializable {
         // Assegna la fabbrica allo spinner
         inputChannelsField.setValueFactory(valueFactory1);
         auxSendsField.setValueFactory(valueFactory2);
+
+        digitalCheck.setAllowIndeterminate(Session.UserRole.ARTIST.equals(Session.getSingletonInstance().getRole()));
+        phantomCheck.setAllowIndeterminate(Session.UserRole.ARTIST.equals(Session.getSingletonInstance().getRole()));
     }
 
     @FXML
@@ -48,8 +52,11 @@ public class MixerPopupControllerGUI implements Initializable {
         int inputChannels = inputChannelsField.getValue();
         int auxSends = auxSendsField.getValue();
 
+        Boolean isDigital = digitalCheck.isIndeterminate() ? null : digitalCheck.isSelected();
+        Boolean phantom = phantomCheck.isIndeterminate() ? null : phantomCheck.isSelected();
+
         // Creazione dell'oggetto basata sui dati inseriti
-        createdMixer = new MixerBean(inputChannels, auxSends, digitalCheck.isSelected(), phantomCheck.isSelected());
+        createdMixer = new MixerBean(inputChannels, auxSends, isDigital, phantom);
 
         // Chiusura della finestra modale
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

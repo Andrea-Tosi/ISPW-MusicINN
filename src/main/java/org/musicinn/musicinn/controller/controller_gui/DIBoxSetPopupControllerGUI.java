@@ -9,6 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
+import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.DIBoxSetBean;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,14 +33,18 @@ public class DIBoxSetPopupControllerGUI implements Initializable {
 
         // Assegna la fabbrica allo spinner
         quantityField.setValueFactory(valueFactory);
+
+        phantomCheck.setAllowIndeterminate(Session.UserRole.ARTIST.equals(Session.getSingletonInstance().getRole()));
     }
 
     @FXML
     private void handleAddDIBoxSet(ActionEvent event) {
         int quantity = quantityField.getValue();
 
+        Boolean phantom = phantomCheck.isIndeterminate() ? null : phantomCheck.isSelected();
+
         // Creazione dell'oggetto basata sui dati inseriti
-        createdDIBoxSet = new DIBoxSetBean(quantity, phantomCheck.isSelected());
+        createdDIBoxSet = new DIBoxSetBean(quantity, phantom);
 
         // Chiusura della finestra modale
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

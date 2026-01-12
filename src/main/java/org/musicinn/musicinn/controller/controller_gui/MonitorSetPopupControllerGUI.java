@@ -9,6 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
+import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.MonitorSetBean;
 
 import java.net.URL;
@@ -33,14 +34,18 @@ public class MonitorSetPopupControllerGUI implements Initializable {
 
         // Assegna la fabbrica allo spinner
         quantityField.setValueFactory(valueFactory);
+
+        externalAmpliCheck.setAllowIndeterminate(Session.UserRole.ARTIST.equals(Session.getSingletonInstance().getRole()));
     }
 
     @FXML
     private void handleAddMonitorSet(ActionEvent event) {
         int quantity = quantityField.getValue();
 
+        Boolean externalAmpli = externalAmpliCheck.isIndeterminate() ? null : externalAmpliCheck.isSelected();
+
         // Creazione dell'oggetto basata sui dati inseriti
-        createdMonitorSet = new MonitorSetBean(quantity, externalAmpliCheck.isSelected());
+        createdMonitorSet = new MonitorSetBean(quantity, externalAmpli);
 
         // Chiusura della finestra modale
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

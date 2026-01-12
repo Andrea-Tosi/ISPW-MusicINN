@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.StageBoxBean;
 
 import java.net.URL;
@@ -33,14 +34,18 @@ public class StageBoxPopupControllerGUI implements Initializable {
 
         // Assegna la fabbrica allo spinner
         inputChannelsField.setValueFactory(valueFactory);
+
+        digitalCheck.setAllowIndeterminate(Session.UserRole.ARTIST.equals(Session.getSingletonInstance().getRole()));
     }
 
     @FXML
     private void handleAddStageBox(ActionEvent event) {
         int inputChannels = inputChannelsField.getValue();
 
+        Boolean isDigital = digitalCheck.isIndeterminate() ? null : digitalCheck.isSelected();
+
         // Creazione dell'oggetto basata sui dati inseriti
-        createdStageBox = new StageBoxBean(inputChannels, digitalCheck.isSelected());
+        createdStageBox = new StageBoxBean(inputChannels, isDigital);
 
         // Chiusura della finestra modale
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

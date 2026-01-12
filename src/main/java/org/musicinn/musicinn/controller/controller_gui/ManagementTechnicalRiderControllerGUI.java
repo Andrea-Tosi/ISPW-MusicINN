@@ -24,10 +24,7 @@ import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @FXML
@@ -163,7 +160,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         if (obj == null) return defaultValue;
         try {
             Object result = obj.getClass().getMethod(methodName).invoke(obj);
-            if (result == null) return defaultValue;
+//            if (result == null) return defaultValue;
 
             // Se ci aspettiamo una Stringa ma l'oggetto è un Enum o altro, usiamo toString()
             if (defaultValue instanceof String && !(result instanceof String)) {
@@ -257,10 +254,23 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
             // Estrazione dati tramite getAttr
             int ch = getAttr(m, "getInputChannels", 0);
             int aux = getAttr(m, "getAuxSends", 0);
-            boolean isDig = getAttr(m, "getDigital", false);
-            boolean ph = getAttr(m, "getHasPhantomPower", false);
+            Boolean isDig = getAttr(m, "getDigital", null);
+            Boolean ph = getAttr(m, "getHasPhantomPower", null);
 
-            String desc = String.format("%d ch, %d AUX, %s, %sconsente il phantom power", ch, aux, isDig ? "Digitale" : "Analogico", ph ? "" : "non ");
+            StringBuilder descBuilder = new StringBuilder();
+            descBuilder.append(ch).append(" ch, ");
+            descBuilder.append(aux).append(" AUX, ");
+            if (isDig != null) {
+                descBuilder.append(isDig ? "Digitale" : "Analogico").append(", ");
+            }
+            if (ph != null) {
+                descBuilder.append(ph ? "consente phantom power" : "non consente phantom power");
+            }
+            // Rimuove l'eventuale virgola e spazio finale se la stringa finisce così
+            String desc = descBuilder.toString().trim();
+            if (desc.endsWith(",")) {
+                desc = desc.substring(0, desc.length() - 1);
+            }
 
             Session.UserRole role = Session.getSingletonInstance().getRole();
             if (role.equals(Session.UserRole.ARTIST)) {
@@ -291,9 +301,16 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
 
             // Estrazione dati tramite getAttr
             int ch = getAttr(sb, "getInputChannels", 0);
-            boolean isDig = getAttr(sb, "getDigital", false);
+            Boolean isDig = getAttr(sb, "getDigital", null);
 
-            String desc = String.format("%d in, %s", ch, isDig ? "Digitale" : "Analogica");
+            StringBuilder descBuilder = new StringBuilder();
+
+            descBuilder.append(ch).append(" in");
+            if (isDig != null) {
+                // Se abbiamo aggiunto i canali prima, mettiamo una virgola di separazione
+                descBuilder.append(", ").append(isDig ? "Digitale" : "Analogica");
+            }
+            String desc = descBuilder.toString();
 
             Session.UserRole role = Session.getSingletonInstance().getRole();
             if (role.equals(Session.UserRole.ARTIST)) {
@@ -312,11 +329,12 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddMicrophone(ActionEvent event) {
         handleEquipmentLogic("fxml.microphone_features.modal", "Microfoni", inputEquipmentsVBox,
                 c -> ((MicrophoneSetPopupControllerGUI) c).getCreatedMicrophoneSet(),
-                (o, n) -> getAttr(o, "getNeedsPhantomPower", false).equals(getAttr(n, "getNeedsPhantomPower", false)),
+                (o, n) -> Objects.equals(getAttr(o, "getNeedsPhantomPower", false), getAttr(n, "getNeedsPhantomPower", false)),
                 obj -> {
-                    boolean hasPhantom = Boolean.TRUE.equals(getAttr(obj, "getNeedsPhantomPower", false));
+                    Boolean hasPhantom = getAttr(obj, "getNeedsPhantomPower", false);
+                    String typeStr = (hasPhantom == null) ? "" : (hasPhantom ? " con" : " senza");
                     int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("%s phantom, (qt: %d)", hasPhantom ? "Con" : "Senza", quantity);
+                    return String.format("Microfono:%s phantom (qt: %d)", typeStr, quantity);
                 }
         );
     }
@@ -325,11 +343,12 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddDIBox(ActionEvent event) {
         handleEquipmentLogic("fxml.di_box_features.modal", "DI Box", inputEquipmentsVBox,
                 c -> ((DIBoxSetPopupControllerGUI) c).getCreatedDIBoxSet(),
-                (o, n) -> getAttr(o, "getActive", false).equals(getAttr(n, "getActive", false)),
+                (o, n) -> Objects.equals(getAttr(o, "getActive", null), getAttr(n, "getActive", null)),
                 obj -> {
-                    boolean isActive = Boolean.TRUE.equals(getAttr(obj, "getActive", false));
+                    Boolean active = getAttr(obj, "getActive", null);
+                    String typeStr = (active == null) ? "" : (active ? " Attiva" : " Passiva");
                     int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("DI Box %s, (qt: %d)", isActive ? "Attiva" : "Passiva", quantity);
+                    return String.format("DI Box:%s (qt: %d)", typeStr, quantity);
                 }
         );
     }
@@ -338,11 +357,12 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddMonitor(ActionEvent event) {
         handleEquipmentLogic("fxml.monitor_features.modal", "Monitor", outputEquipmentsVBox,
                 c -> ((MonitorSetPopupControllerGUI) c).getCreatedMonitorSet(),
-                (o, n) -> getAttr(o, "getPowered", false).equals(getAttr(n, "getPowered", false)),
+                (o, n) -> Objects.equals(getAttr(o, "getPowered", null), getAttr(n, "getPowered", null)),
                 obj -> {
-                    boolean powered = Boolean.TRUE.equals(getAttr(obj, "getPowered", false));
+                    Boolean powered = getAttr(obj, "getPowered", null);
+                    String typeStr = (powered == null) ? "" : (powered ? " Attivo" : " Passivo");
                     int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("Monitor %s, (qt: %d)", powered ? "Attivo" : "Passivo", quantity);
+                    return String.format("Monitor:%s (qt: %d)", typeStr, quantity);
                 }
         );
     }
@@ -351,11 +371,12 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void handleAddMicStand(ActionEvent event) {
         handleEquipmentLogic("fxml.mic_stand_features.modal", "Aste", otherEquipmentsVBox,
                 c -> ((MicStandSetPopupControllerGUI) c).getCreatedMicStandSet(),
-                (o, n) -> getAttr(o, "getTall", false).equals(getAttr(n, "getTall", false)),
+                (o, n) -> Objects.equals(getAttr(o, "getTall", false), getAttr(n, "getTall", false)),
                 obj -> {
-                    boolean isTall = Boolean.TRUE.equals(getAttr(obj, "getTall", false));
+                    Boolean isTall = getAttr(obj, "getTall", false);
+                    String typeStr = (isTall == null) ? "" : (isTall ? " Alta" : " Bassa");
                     int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("Asta %s, (qt: %d)", isTall ? "Alta" : "Bassa", quantity);
+                    return String.format("Asta:%s, (qt: %d)", typeStr, quantity);
                 }
         );
     }
@@ -365,7 +386,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         handleEquipmentLogic("fxml.cable_features.modal", "Cavi", otherEquipmentsVBox,
                 c -> ((CableSetPopupControllerGUI) c).getCreatedCableSet(),
                 (o, n) -> getAttr(o, "getFunction", "").equals(getAttr(n, "getFunction", "")),
-                obj -> String.format("Cavo %s, (qt: %d)", getAttr(obj, "getFunction", ""), getAttr(obj, "getQuantity", 0))
+                obj -> String.format("Cavo: %s (qt: %d)", getAttr(obj, "getFunction", ""), getAttr(obj, "getQuantity", 0))
         );
     }
 
@@ -401,7 +422,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         if (role.equals(Session.UserRole.ARTIST)) {
             stageBoxes = collectTypedBeans(sbVBox, StageBoxBean.class);
         } else {
-            collectTypedBeans(stageBoxesVBox, StageBoxBean.class);
+            stageBoxes = collectTypedBeans(stageBoxesVBox, StageBoxBean.class);
         }
 
         List<MicrophoneSetBean> mics = collectTypedBeans(inputEquipmentsVBox, MicrophoneSetBean.class);
