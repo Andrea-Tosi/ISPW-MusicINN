@@ -332,7 +332,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 (o, n) -> Objects.equals(getAttr(o, "getNeedsPhantomPower", false), getAttr(n, "getNeedsPhantomPower", false)),
                 obj -> {
                     Boolean hasPhantom = getAttr(obj, "getNeedsPhantomPower", false);
-                    String typeStr = (hasPhantom == null) ? "" : (hasPhantom ? " con" : " senza");
+                    String typeStr = formatStatus(hasPhantom, "con", "senza");
                     int quantity = getAttr(obj, "getQuantity", 0);
                     return String.format("Microfono:%s phantom (qt: %d)", typeStr, quantity);
                 }
@@ -346,7 +346,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 (o, n) -> Objects.equals(getAttr(o, "getActive", null), getAttr(n, "getActive", null)),
                 obj -> {
                     Boolean active = getAttr(obj, "getActive", null);
-                    String typeStr = (active == null) ? "" : (active ? " Attiva" : " Passiva");
+                    String typeStr = formatStatus(active, "Attiva", "Passiva");
                     int quantity = getAttr(obj, "getQuantity", 0);
                     return String.format("DI Box:%s (qt: %d)", typeStr, quantity);
                 }
@@ -360,7 +360,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 (o, n) -> Objects.equals(getAttr(o, "getPowered", null), getAttr(n, "getPowered", null)),
                 obj -> {
                     Boolean powered = getAttr(obj, "getPowered", null);
-                    String typeStr = (powered == null) ? "" : (powered ? " Attivo" : " Passivo");
+                    String typeStr = formatStatus(powered, "Attivo", "Passivo");
                     int quantity = getAttr(obj, "getQuantity", 0);
                     return String.format("Monitor:%s (qt: %d)", typeStr, quantity);
                 }
@@ -374,7 +374,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 (o, n) -> Objects.equals(getAttr(o, "getTall", false), getAttr(n, "getTall", false)),
                 obj -> {
                     Boolean isTall = getAttr(obj, "getTall", false);
-                    String typeStr = (isTall == null) ? "" : (isTall ? " Alta" : " Bassa");
+                    String typeStr = formatStatus(isTall, "Alta", "Bassa");
                     int quantity = getAttr(obj, "getQuantity", 0);
                     return String.format("Asta:%s, (qt: %d)", typeStr, quantity);
                 }
@@ -388,6 +388,11 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 (o, n) -> getAttr(o, "getFunction", "").equals(getAttr(n, "getFunction", "")),
                 obj -> String.format("Cavo: %s (qt: %d)", getAttr(obj, "getFunction", ""), getAttr(obj, "getQuantity", 0))
         );
+    }
+
+    private String formatStatus(Boolean value, String trueLabel, String falseLabel) {
+        if (value == null) return "";
+        return value ? " " + trueLabel : " " + falseLabel;
     }
 
     @FXML

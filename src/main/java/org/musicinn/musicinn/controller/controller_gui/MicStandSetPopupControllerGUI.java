@@ -45,7 +45,7 @@ public class MicStandSetPopupControllerGUI implements Initializable {
         Boolean height = heightCheck.isIndeterminate() ? null : heightCheck.isSelected();
 
         // Creazione dell'oggetto basata sui dati inseriti
-        createdMicStandSet = new MicStandSetBean(quantity, heightCheck.isSelected());
+        createdMicStandSet = new MicStandSetBean(quantity, height);
 
         // Chiusura della finestra modale
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
