@@ -50,7 +50,6 @@ public class ApplyViewChooseEventControllerGUI {
         isLoading = true;
 
         ApplyController controller = new ApplyController();
-        EventCardControllerGUI cardControllerGUI = new EventCardControllerGUI();
 
         // Chiamata al controller applicativo per la pagina corrente
         List<EventBean> newEvents = controller.getCompatibleEvents(currentPage);

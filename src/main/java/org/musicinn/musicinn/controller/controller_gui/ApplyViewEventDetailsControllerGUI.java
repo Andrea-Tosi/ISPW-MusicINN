@@ -3,7 +3,6 @@ package org.musicinn.musicinn.controller.controller_gui;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -150,7 +149,8 @@ public class ApplyViewEventDetailsControllerGUI {
             doesUnreleasedBox.setVisible(false);
             doesUnreleasedBox.setManaged(false);
         } else {
-            doesUnreleasedLabel.setText("L'artista deve fare " + (ab.getDoesUnreleased() ? "inediti" : "cover"));
+            boolean doesUnreleased = ab.getDoesUnreleased();
+            doesUnreleasedLabel.setText("L'artista deve fare " + (doesUnreleased ? "inediti" : "cover"));
         }
 
         TechnicalRiderBean trb = eventBean.getTechnicalRiderBean();

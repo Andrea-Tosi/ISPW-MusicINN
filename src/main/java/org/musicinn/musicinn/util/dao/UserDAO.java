@@ -7,7 +7,6 @@ import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

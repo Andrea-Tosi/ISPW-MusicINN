@@ -52,7 +52,7 @@
             <HBox alignment="CENTER" VBox.vgrow="NEVER">
                <children>
                   <Button fx:id="backButton" onAction="#handleBackButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Indietro" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="ModifyRiderButton" onAction="#handleModifyRiderButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Modifica Rider Tecnico" HBox.hgrow="ALWAYS">
+                  <Button fx:id="modifyRiderButton" onAction="#handleModifyRiderButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Modifica Rider Tecnico" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

@@ -3,6 +3,8 @@ package org.musicinn.musicinn.util;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 
 public class TechnicalRiderFormatter {
+    private TechnicalRiderFormatter(){}
+
     public static String format(TechnicalRiderBean trBean, Session.UserRole role) {
         if (trBean == null) return "Dati tecnici non disponibili.";
 
@@ -24,23 +26,28 @@ public class TechnicalRiderFormatter {
 
         for (MixerBean m : trBean.getMixers()) {
             if (role.equals(Session.UserRole.ARTIST)) {
-                sb.append(m.isFOH() ? "Foh" : "Stage").append(" Mixer: ");
-            } else {
-                sb.append("Mixer: ");
+                sb.append(m.isFOH() ? "Foh" : "Stage");
             }
+            sb.append(" Mixer:");
 
-            sb.append(m.getInputChannels()).append(" canali input, ")
-                    .append(m.getAuxSends()).append(" mandate aux");
-
-            if (m.getDigital() != null) {
-                sb.append(", ").append(m.getDigital() ? "Digitale" : "Analogico");
-            }
-
-            if (m.getHasPhantomPower() != null) {
-                sb.append(m.getHasPhantomPower() ? ", consente phantom" : ", no phantom");
-            }
-            sb.append("\n");
+            appendMixersData(m, sb);
         }
+    }
+
+    private static void appendMixersData(MixerBean m, StringBuilder sb) {
+        sb.append(m.getInputChannels()).append(" canali input, ")
+                .append(m.getAuxSends()).append(" mandate aux");
+
+        if (m.getDigital() != null) {
+            boolean isDigital = m.getDigital();
+            sb.append(", ").append(isDigital ? "Digitale" : "Analogico");
+        }
+
+        if (m.getHasPhantomPower() != null) {
+            boolean hasPhantomPower = m.getHasPhantomPower();
+            sb.append(hasPhantomPower ? ", consente phantom" : ", no phantom");
+        }
+        sb.append("\n");
     }
 
     private static void appendStageBoxes(TechnicalRiderBean trBean, StringBuilder sb) {
@@ -48,7 +55,8 @@ public class TechnicalRiderFormatter {
         for (StageBoxBean sbb : trBean.getStageBoxes()) {
             sb.append("Stage Box: ").append(sbb.getInputChannels()).append(" canali input");
             if (sbb.getDigital() != null) {
-                sb.append(", ").append(sbb.getDigital() ? "Digitale" : "Analogico");
+                boolean isDigital = sbb.getDigital();
+                sb.append(", ").append(isDigital ? "Digitale" : "Analogico");
             }
             sb.append("\n");
         }
@@ -59,7 +67,8 @@ public class TechnicalRiderFormatter {
         for (MicrophoneSetBean ms : trBean.getMics()) {
             sb.append("Microfono: ");
             if (ms.getNeedsPhantomPower() != null) {
-                sb.append(ms.getNeedsPhantomPower() ? "richiede phantom " : "no phantom ");
+                boolean needsPhantomPower = ms.getNeedsPhantomPower();
+                sb.append(needsPhantomPower ? "richiede phantom " : "no phantom ");
             }
             sb.append("(x").append(ms.getQuantity()).append(")\n");
         }
@@ -70,7 +79,8 @@ public class TechnicalRiderFormatter {
         for (DIBoxSetBean di : trBean.getDiBoxes()) {
             sb.append("DI Box: ");
             if (di.getActive() != null) {
-                sb.append(di.getActive() ? "Attivo (phantom) " : "Passivo ");
+                boolean isDigital = di.getActive();
+                sb.append(isDigital ? "Attivo (phantom) " : "Passivo ");
             }
             sb.append("(x").append(di.getQuantity()).append(")\n");
         }
@@ -81,7 +91,8 @@ public class TechnicalRiderFormatter {
         for (MonitorSetBean ms : trBean.getMonitors()) {
             sb.append("Monitor: ");
             if (ms.getPowered() != null) {
-                sb.append(ms.getPowered() ? "Attivo " : "Passivo ");
+                boolean isPowered = ms.getPowered();
+                sb.append(isPowered ? "Attivo " : "Passivo ");
             }
             sb.append("(x").append(ms.getQuantity()).append(")\n");
         }
@@ -90,8 +101,11 @@ public class TechnicalRiderFormatter {
     private static void appendMicStands(TechnicalRiderBean trBean, StringBuilder sb) {
         if (trBean.getMicStands() == null) return;
         for (MicStandSetBean mss : trBean.getMicStands()) {
-            sb.append("Asta microfono: ").append(Boolean.TRUE.equals(mss.getTall()) ? "Alta " : "Bassa ")
-                    .append("(x").append(mss.getQuantity()).append(")\n");
+            sb.append("Asta microfono: ");
+            if (mss.getTall() != null) {
+                boolean isTall = mss.getTall();
+                sb.append(isTall ? "Alta" : "Bassa").append("(x").append(mss.getQuantity()).append(")\n");
+            }
         }
     }
 

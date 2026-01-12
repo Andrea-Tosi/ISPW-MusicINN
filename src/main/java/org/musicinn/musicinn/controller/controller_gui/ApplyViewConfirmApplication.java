@@ -10,7 +10,6 @@ import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 

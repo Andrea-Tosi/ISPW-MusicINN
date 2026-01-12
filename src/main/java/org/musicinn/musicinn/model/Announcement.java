@@ -5,7 +5,6 @@ import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 public class Announcement extends SchedulableEvent {
