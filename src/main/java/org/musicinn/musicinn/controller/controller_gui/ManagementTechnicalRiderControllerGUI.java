@@ -258,14 +258,8 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
             Boolean ph = getAttr(m, "getHasPhantomPower", null);
 
             StringBuilder descBuilder = new StringBuilder();
-            descBuilder.append(ch).append(" ch, ");
-            descBuilder.append(aux).append(" AUX, ");
-            if (isDig != null) {
-                descBuilder.append(isDig ? "Digitale" : "Analogico").append(", ");
-            }
-            if (ph != null) {
-                descBuilder.append(ph ? "consente phantom power" : "non consente phantom power");
-            }
+            buildString(ch, aux, isDig, ph, descBuilder);
+
             // Rimuove l'eventuale virgola e spazio finale se la stringa finisce così
             String desc = descBuilder.toString().trim();
             if (desc.endsWith(",")) {
@@ -291,6 +285,17 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                 mixersVBox.getChildren().add(row);
             }
         });
+    }
+
+    private void buildString(int channels, int aux, Boolean digital, Boolean phantom, StringBuilder stringBuilder) {
+        stringBuilder.append(channels).append(" ch, ");
+        stringBuilder.append(aux).append(" AUX, ");
+        if (digital != null) {
+            stringBuilder.append(digital ? "Digitale" : "Analogico").append(", ");
+        }
+        if (phantom != null) {
+            stringBuilder.append(phantom ? "consente phantom power" : "non consente phantom power");
+        }
     }
 
     @FXML
