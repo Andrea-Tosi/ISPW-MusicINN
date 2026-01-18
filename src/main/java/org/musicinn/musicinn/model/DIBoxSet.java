@@ -20,7 +20,7 @@ public class DIBoxSet extends InputEquipment {
         this.quantity = quantity;
     }
 
-    public Boolean isActive() {
+    public Boolean getActive() {
         return isActive;
     }
 
@@ -31,7 +31,7 @@ public class DIBoxSet extends InputEquipment {
     @Override
     public boolean requiresPhantomPower() {
         // Se è null, lo considera false (non obbligatorio)
-        return isActive() != null  &&  isActive();
+        return getActive() != null  &&  getActive();
     }
 
     @Override
@@ -42,8 +42,8 @@ public class DIBoxSet extends InputEquipment {
     }
 
     private boolean isTypeOk (DIBoxSet requested) {
-        if (requested.isActive() != null) {
-            return isActive().equals(requested.isActive());
+        if (requested.getActive() != null) {
+            return getActive().equals(requested.getActive());
         } else {
             return true;
         }

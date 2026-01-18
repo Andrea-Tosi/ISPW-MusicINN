@@ -14,6 +14,14 @@ public class MixerBean {
         this.hasPhantomPower = hasPhantomPower;
     }
 
+    public MixerBean(int inputChannels, int auxSends, Boolean digital, Boolean hasPhantomPower, boolean foh) {
+        this.inputChannels = inputChannels;
+        this.auxSends = auxSends;
+        this.digital = digital;
+        this.hasPhantomPower = hasPhantomPower;
+        this.isFOH = foh;
+    }
+
     public boolean isFOH() {
         return isFOH;
     }

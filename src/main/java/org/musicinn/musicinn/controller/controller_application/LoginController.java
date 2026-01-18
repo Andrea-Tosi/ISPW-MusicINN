@@ -6,13 +6,16 @@ import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.EmailVerifier;
 import org.musicinn.musicinn.util.Session;
-import org.musicinn.musicinn.util.dao.ArtistDAO;
-import org.musicinn.musicinn.util.dao.ManagerDAO;
-import org.musicinn.musicinn.util.dao.UserDAO;
-import org.musicinn.musicinn.util.dao.VenueDAO;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
+import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
+import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
+import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
 import org.musicinn.musicinn.util.bean.login_bean.ArtistRegistrationBean;
 import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
 import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
+import org.musicinn.musicinn.util.exceptions.EmailAlreadyUsedException;
+import org.musicinn.musicinn.util.exceptions.UsernameAlreadyUsedException;
 
 import java.util.Objects;
 
@@ -57,18 +60,18 @@ public class LoginController {
     }
 
     private User isIdentifierOccupied(String identifier) {
-        UserDAO userDAO = new UserDAO();
+        UserDAO userDAO = DAOFactory.getUserDAO();
         return userDAO.findByIdentifier(identifier);
     }
 
-    public void startSignup(CredentialsBean credentialsBean) {
+    public void startSignup(CredentialsBean credentialsBean) throws UsernameAlreadyUsedException, EmailAlreadyUsedException {
         User userUsername = isIdentifierOccupied(credentialsBean.getUsername());
         User userEmail = isIdentifierOccupied(credentialsBean.getEmail());
         if (userUsername != null) {
-            //TODO: lancia l'eccezione (ancora da modellare) usernameAlreadyUsed
+            throw new UsernameAlreadyUsedException();
         }
         if (userEmail != null) {
-            //TODO: lancia l'eccezione (ancora da modellare) emailAlreadyUsed
+            throw new EmailAlreadyUsedException();
         }
 
         EmailVerifier.getSingletonInstance().sendCode(credentialsBean.getEmail());
@@ -89,7 +92,7 @@ public class LoginController {
         Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword(), arb.getStageName(), arb.getTypeArtist(), arb.getDoesUnreleased(), arb.getCity(), arb.getAddress());
         artist.setGenresList(arb.getGenresList());
 
-        ArtistDAO artistDAO = new ArtistDAO();
+        ArtistDAO artistDAO = DAOFactory.getArtistDAO();
         artistDAO.create(artist);
 
         Session.getSingletonInstance().setUsername(cb.getUsername());
@@ -102,10 +105,10 @@ public class LoginController {
         manager.getVenueList().add(venue);
         manager.setActiveVenue(venue);
 
-        ManagerDAO managerDAO = new ManagerDAO();
+        ManagerDAO managerDAO = DAOFactory.getManagerDAO();
         managerDAO.create(manager);
-        VenueDAO venueDAO = new VenueDAO();
-        venueDAO.create(venue);
+        VenueDAO venueDAO = DAOFactory.getVenueDAO();
+        venueDAO.create(venue, manager.getUsername());
 
         Session.getSingletonInstance().setUsername(cb.getUsername());
         Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);

@@ -1,7 +1,8 @@
-package org.musicinn.musicinn.util.dao;
+package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
@@ -14,7 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AnnouncementDAO {
+public class AnnouncementDAOMemory implements AnnouncementDAO {
+    @Override
     public void save(Announcement announcement) {
         System.out.println("Annuncio" + announcement + "salvato");
     }
@@ -105,6 +107,7 @@ public class AnnouncementDAO {
 //        }
 //    }
 
+    @Override
     public List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) {
         List<Announcement> allAnnouncements = generateMockData(); // Simula la tabella DB
         List<Announcement> filteredResults = new ArrayList<>();
@@ -140,7 +143,7 @@ public class AnnouncementDAO {
         List<Announcement> list = new ArrayList<>();
 
         Venue venue = new Venue("The Rock Club", "Roma", "Via del Corso 10", TypeVenue.CLUB);
-        TechnicalRiderDAO dao = new TechnicalRiderDAO();
+        TechnicalRiderDAOMemory dao = new TechnicalRiderDAOMemory();
         ManagerRider rider = (ManagerRider) dao.read(Session.UserRole.MANAGER);
         venue.setRider(rider);
 

@@ -49,20 +49,25 @@
                   </VBox>
                </content>
             </ScrollPane>
-            <HBox alignment="CENTER" VBox.vgrow="NEVER">
-               <children>
-                  <Button fx:id="backButton" onAction="#handleBackButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Indietro" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="modifyRiderButton" onAction="#handleModifyRiderButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Modifica Rider Tecnico" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="continueButton" onAction="#handleContinueButton" alignment="CENTER" layoutX="301.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Continua" HBox.hgrow="ALWAYS" />
-               </children>
+            <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="NEVER">
                <VBox.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" />
                </VBox.margin>
-            </HBox>
+               <children>
+                  <Label fx:id="statusLabel" textFill="RED" />
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Button fx:id="backButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleBackButton" prefWidth="0.0" text="Indietro" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="modifyRiderButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleModifyRiderButton" prefWidth="0.0" text="Modifica Rider Tecnico" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="continueButton" alignment="CENTER" layoutX="301.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleContinueButton" prefWidth="0.0" text="Continua" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
          <BorderPane.margin>
             <Insets bottom="50.0" left="125.0" right="125.0" />

@@ -1,4 +1,4 @@
-package org.musicinn.musicinn.util.dao;
+package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.musicinn.musicinn.util.enumerations.TypeArtist.SINGER;
+import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
 
-public class UserDAO {
+public class UserDAOMemory implements UserDAO {
     private static final Map<String, User> utentiRegistrati = new HashMap<>();
     static{
         Venue venueA = new Venue("The Rock Club", "Roma", "Via del Corso 10", TypeVenue.CLUB);
@@ -40,7 +41,18 @@ public class UserDAO {
         utentiRegistrati.put(manager1.getUsername(), manager1);
     }
 
+    @Override
     public User findByIdentifier(String identifier){
-        return utentiRegistrati.get(identifier);
+        // Prova a cercare per username (chiave della mappa)
+        User user = utentiRegistrati.get(identifier);
+
+        // Se non lo trova, cerca tra i valori per email
+        if (user == null) {
+            user = utentiRegistrati.values().stream()
+                    .filter(u -> u.getEmail().equalsIgnoreCase(identifier))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return user;
     }
 }

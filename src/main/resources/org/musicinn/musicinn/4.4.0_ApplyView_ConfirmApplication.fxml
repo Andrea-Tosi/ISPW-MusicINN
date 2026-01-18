@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="203.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.ApplyViewConfirmApplication">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.ApplyViewConfirmApplication">
    <children>
       <Label layoutX="92.0" layoutY="14.0" text="Ora di Arrivo per Soundcheck">
          <font>
@@ -21,7 +21,8 @@
          </font>
       </Label>
       <Label layoutX="23.0" layoutY="111.0" prefHeight="38.0" prefWidth="298.0" text="Inviando la candidatura, confermi di aver letto i dettagli dell'annuncio e di essere disponibile per la data indicata." wrapText="true" />
-      <Button fx:id="confirmButton" onAction="#handleConfirmButton" layoutX="177.0" layoutY="160.0" mnemonicParsing="false" text="Conferma Candidatura" />
-      <Button fx:id="deleteButton" onAction="#handleDeleteButton" layoutX="75.0" layoutY="160.0" mnemonicParsing="false" text="Annulla" />
+      <Button fx:id="confirmButton" layoutX="177.0" layoutY="203.0" mnemonicParsing="false" onAction="#handleConfirmButton" text="Conferma Candidatura" />
+      <Button fx:id="deleteButton" layoutX="76.0" layoutY="203.0" mnemonicParsing="false" onAction="#handleDeleteButton" text="Annulla" />
+      <Label fx:id="statusLabel" alignment="CENTER" layoutX="2.0" layoutY="168.0" textAlignment="CENTER" textFill="RED" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>

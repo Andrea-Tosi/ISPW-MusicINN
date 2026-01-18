@@ -1,13 +1,16 @@
 package org.musicinn.musicinn.model;
 
+import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Announcement extends SchedulableEvent {
+    private int id;
     private Double cachet;
     private Double deposit;
     private LocalDateTime soundcheckTime;
@@ -18,6 +21,20 @@ public class Announcement extends SchedulableEvent {
     private AnnouncementState state;
     private Venue venue;
     private List<Application> applicationList;
+
+    public Announcement() {
+        this.requestedGenres = new ArrayList<>();
+        this.requestedTypesArtist = new ArrayList<>();
+        this.applicationList = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Double getCachet() {
         return cachet;

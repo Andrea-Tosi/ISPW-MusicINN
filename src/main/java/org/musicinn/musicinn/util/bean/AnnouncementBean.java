@@ -7,9 +7,11 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnnouncementBean {
+    private int id;
     private LocalDate startingDate;
     private LocalTime startingTime;
     private Duration duration;
@@ -20,6 +22,19 @@ public class AnnouncementBean {
     private List<TypeArtist> requestedTypesArtist;
     private Boolean doesUnreleased;
     private String description;
+
+    public AnnouncementBean() {
+        this.requestedGenres = new ArrayList<>();
+        this.requestedTypesArtist = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public LocalDate getStartingDate() {
         return startingDate;

@@ -12,7 +12,11 @@ public class ManagerRider extends TechnicalRider {
         this.stageBoxes = stageBoxes;
     }
 
-    public ManagerRider() {}
+    public ManagerRider() {
+        super();
+        this.mixers = new ArrayList<>();
+        this.stageBoxes = new ArrayList<>();
+    }
 
     public List<Mixer> getMixers() {
         return mixers;

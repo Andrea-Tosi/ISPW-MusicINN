@@ -26,9 +26,9 @@ public class TechnicalRiderFormatter {
 
         for (MixerBean m : trBean.getMixers()) {
             if (role.equals(Session.UserRole.ARTIST)) {
-                sb.append(m.isFOH() ? "Foh" : "Stage");
+                sb.append(m.isFOH() ? "Foh " : "Stage ");
             }
-            sb.append(" Mixer:");
+            sb.append("Mixer: ");
 
             appendMixersData(m, sb);
         }

@@ -9,7 +9,7 @@ public class Venue {
     private String name;
     private String city;
     private String address;
-    private TypeVenue type;
+    private TypeVenue typeVenue;
     private boolean isActive;
     private Calendar calendar;
     private ManagerRider rider;
@@ -19,8 +19,11 @@ public class Venue {
         this.name = name;
         this.city = city;
         this.address = address;
-        this.type = typeVenue;
+        this.typeVenue = typeVenue;
         this.isActive = true;
+    }
+
+    public Venue() {
     }
 
     public String getName() {
@@ -47,12 +50,12 @@ public class Venue {
         this.address = addressVenue;
     }
 
-    public TypeVenue getType() {
-        return type;
+    public TypeVenue getTypeVenue() {
+        return typeVenue;
     }
 
-    public void setType(TypeVenue type) {
-        this.type = type;
+    public void setTypeVenue(TypeVenue typeVenue) {
+        this.typeVenue = typeVenue;
     }
 
     public boolean isActive() {

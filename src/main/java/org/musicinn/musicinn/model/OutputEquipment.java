@@ -11,3 +11,4 @@ public abstract class OutputEquipment implements Equipment {
         this.linesRequired = linesRequired;
     }
 }
+//TODO supportare le linee richieste a partire dall'interfaccia grafica (modale dei monitor), per arrivare al controller e al database

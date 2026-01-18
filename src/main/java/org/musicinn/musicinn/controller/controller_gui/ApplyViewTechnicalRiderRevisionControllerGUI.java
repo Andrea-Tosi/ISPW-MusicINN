@@ -15,6 +15,8 @@ import org.musicinn.musicinn.util.TechnicalRiderFormatter;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 
 import javafx.event.ActionEvent;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,6 +32,9 @@ public class ApplyViewTechnicalRiderRevisionControllerGUI implements Initializab
 
     @FXML
     private Label riderLabel;
+
+    @FXML
+    private Label statusLabel;
 
     @FXML
     private Button backButton;
@@ -55,7 +60,11 @@ public class ApplyViewTechnicalRiderRevisionControllerGUI implements Initializab
         ApplyController controller = new ApplyController();
         if (ROLE.equals(Session.UserRole.ARTIST)) riderHeaderLabel.setText("Attrezzatura richiesta");
         else if (ROLE.equals(Session.UserRole.MANAGER)) riderHeaderLabel.setText("Attrezzatura a disposizione");
-        controller.getEquipmentBeans(trBean);
+        try {
+            controller.getEquipmentBeans(trBean);
+        } catch (DatabaseException e) {
+            statusLabel.setText("Errore del database: Nessun rider precedente trovato.");
+        }
         setupStageDimensionsLabel(trBean);
         riderLabel.setText(TechnicalRiderFormatter.format(trBean, ROLE));
     }

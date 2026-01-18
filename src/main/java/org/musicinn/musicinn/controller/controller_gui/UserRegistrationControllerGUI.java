@@ -13,6 +13,8 @@ import org.musicinn.musicinn.util.EmailValidator;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
+import org.musicinn.musicinn.util.exceptions.EmailAlreadyUsedException;
+import org.musicinn.musicinn.util.exceptions.UsernameAlreadyUsedException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -109,7 +111,6 @@ public class UserRegistrationControllerGUI implements Initializable {
         confirmButton.fire();
     }
 
-    //TODO: gestire l'errore per cui un username o un indirizzo email è stato preso (magari con la gestione di un eccezione che arriva dal controller applicativo)
     @FXML
     protected void handleRegistration() {
         statusLabel.setText("");
@@ -135,13 +136,17 @@ public class UserRegistrationControllerGUI implements Initializable {
             return;
         }
 
-        statusLabel.setText("Attendere l'arrivo della mail per la verifica dell'indirizzo email fornito (potrebbe volerci un po')");
-
         CredentialsBean credentialsBean = new CredentialsBean(username, email, password);
         LoginController loginController = LoginController.getSingletonInstance();
-        loginController.startSignup(credentialsBean);
-        //crea una finestra modale dove l'utente deve inserire il codice a 6 cifre mandato all'email per verificarla
-        showVerificationModalStage(email);
+        try {
+            loginController.startSignup(credentialsBean);
+            statusLabel.setText("Attendere l'arrivo della mail per la verifica dell'indirizzo email fornito (potrebbe volerci un po')");
+
+            //crea una finestra modale dove l'utente deve inserire il codice a 6 cifre mandato all'email per verificarla
+            showVerificationModalStage(email);
+        } catch (UsernameAlreadyUsedException | EmailAlreadyUsedException e) {
+            statusLabel.setText(e.getMessage());
+        }
     }
 
     private void showVerificationModalStage(String email) {

@@ -53,13 +53,13 @@
                                           <Font name="System Bold" size="14.0" />
                                        </font>
                                     </Label>
-                                    <Label text="Via Roma 112, Milano, MI 20121" textFill="WHITE" />
+                                    <Label fx:id="positionVenueLabel" text="Via Roma 112, Milano, MI 20121" textFill="WHITE" />
                                  </children>
                               </VBox>
                               <Button fx:id="profileManagementButton" mnemonicParsing="false" text="Gestione Profilo" />
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER">
+                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
                            <children>
                               <VBox HBox.hgrow="ALWAYS">
                                  <children>
@@ -68,7 +68,7 @@
                                           <Font name="System Bold" size="14.0" />
                                        </font>
                                     </Label>
-                                    <Label text="Impianto audio professionale 2000W, mixer 16 canali, 5 monitor da palco" textFill="WHITE" />
+                                    <Label fx:id="riderVenueLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="Impianto audio professionale 2000W, mixer 16 canali, 5 monitor da palco" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS" />
                                  </children>
                               </VBox>
                               <Button fx:id="riderManagementButton" mnemonicParsing="false" onAction="#handleRiderManagementButton" text="Gestione Rider Tecnico" />

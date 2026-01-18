@@ -12,9 +12,13 @@ import org.musicinn.musicinn.controller.controller_application.PublishAnnounceme
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.TechnicalRiderFormatter;
+import org.musicinn.musicinn.util.bean.VenueBean;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
+import org.musicinn.musicinn.util.exceptions.CalendarException;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.net.URL;
 import java.time.Duration;
@@ -25,6 +29,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class PublishAnnouncementControllerGUI implements Initializable {
+    @FXML
+    private Label positionVenueLabel;
+
+    @FXML
+    private Label riderVenueLabel;
+
     @FXML
     private Button profileManagementButton;
 
@@ -86,6 +96,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
         setupTimeComboBox();
         setupGenresList();
         setupTypesArtistList();
+        setupInfoVenue();
 
         // Impedisce l'inserimento di caratteri non numerici nei text field di cachet e cauzione
         cachetField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -167,6 +178,21 @@ public class PublishAnnouncementControllerGUI implements Initializable {
         else return selected;
     }
 
+    private void setupInfoVenue() {
+        try {
+            VenueBean bean = new VenueBean();
+            PublishAnnouncementController controller = new PublishAnnouncementController();
+
+            controller.getVenueData(bean);
+            positionVenueLabel.setText(bean.getAddress() + ", " + bean.getCity());
+            riderVenueLabel.setText(TechnicalRiderFormatter.format(bean.getRider(), Session.UserRole.MANAGER));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusLabel.setText("Si è verificata un errore nel database.");
+        }
+    }
+
     @FXML
     public void handleRiderManagementButton(ActionEvent event) {
         String nextFxmlPath = FxmlPathLoader.getPath("fxml.management_technical_rider.view");
@@ -246,8 +272,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
             statusLabel.setTextFill(Color.BLACK);
             statusLabel.setText("Annuncio pubblicato con successo!");
             statusLabel.setTextFill(Color.RED);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DatabaseException | CalendarException e) {
             statusLabel.setText("Errore durante la pubblicazione: " + e.getMessage());
         }
     }

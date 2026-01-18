@@ -3,17 +3,25 @@ package org.musicinn.musicinn.controller.controller_application;
 import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Calendar;
 import org.musicinn.musicinn.model.SchedulableEvent;
+import org.musicinn.musicinn.model.Venue;
+import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.bean.VenueBean;
+import org.musicinn.musicinn.util.bean.technical_rider_bean.TechnicalRiderBean;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
+import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
-import org.musicinn.musicinn.util.dao.AnnouncementDAO;
+import org.musicinn.musicinn.util.exceptions.CalendarException;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.util.List;
 
 public class PublishAnnouncementController {
-    public void publish(AnnouncementBean ab) {
+    public void publish(AnnouncementBean ab) throws DatabaseException, CalendarException {
         // Controlla Disponibilità Temporale
-        AnnouncementDAO announcementDAO = new AnnouncementDAO();
+        AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
 
         // Recuperiamo dal database solo gli eventi del locale per quel giorno specifico
         // per popolare il Calendar e verificare sovrapposizioni
@@ -24,8 +32,7 @@ public class PublishAnnouncementController {
 
         // Invochiamo il metodo isAvailable della classe Calendar
         if (!calendar.isAvailable(ab.getStartingDate(), ab.getStartingTime(), ab.getDuration())) {
-            System.out.println("L'orario selezionato non è disponibile: si sovrappone a un altro impegno nel calendario.");
-//                throw new Exception("L'orario selezionato non è disponibile: si sovrappone a un altro impegno nel calendario.");
+            throw new CalendarException();
         }
 
         // 3. Mapping dal Bean all'Entity di Dominio
@@ -54,5 +61,20 @@ public class PublishAnnouncementController {
         announcement.setState(AnnouncementState.OPEN);
         return announcement;
     }
+
+    public void getVenueData(VenueBean bean) throws DatabaseException {
+        VenueDAO venueDAO = DAOFactory.getVenueDAO();
+        Venue venue = venueDAO.read(Session.getSingletonInstance().getUsername());
+
+        bean.setName(venue.getName());
+        bean.setCity(venue.getCity());
+        bean.setAddress(venue.getAddress());
+        bean.setTypeVenue(venue.getTypeVenue());
+
+        ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
+        TechnicalRiderBean trBean = new TechnicalRiderBean();
+        controller.loadRiderData(trBean);
+
+        bean.setRider(trBean);
+    }
 }
-//TODO eccezione causata dal fatto che la data richiesta non è disponibile (è già occupata)

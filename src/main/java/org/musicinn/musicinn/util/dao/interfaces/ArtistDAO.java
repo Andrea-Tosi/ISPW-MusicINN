@@ -1,0 +1,13 @@
+package org.musicinn.musicinn.util.dao.interfaces;
+
+import org.musicinn.musicinn.model.Artist;
+import org.musicinn.musicinn.util.enumerations.MusicalGenre;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
+
+import java.util.List;
+
+public interface ArtistDAO {
+    public void create(Artist artist);
+    Artist read(String username) throws DatabaseException;
+    List<MusicalGenre> loadArtistGenres(String username) throws DatabaseException;
+}

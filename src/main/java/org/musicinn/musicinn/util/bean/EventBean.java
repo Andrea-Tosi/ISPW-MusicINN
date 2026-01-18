@@ -10,8 +10,14 @@ public class EventBean {
     private String venueName;
     private TypeVenue typeVenue;
     private String venueAddress;
+    private String venueCity;
     private int distance; // distanza tra locale e artista utente (visibile durante lo UC Candidati)
     private ValidationResult report;
+
+    public EventBean() {
+        this.technicalRiderBean = new TechnicalRiderBean();
+        this.announcementBean = new AnnouncementBean();
+    }
 
     public TechnicalRiderBean getTechnicalRiderBean() {
         return technicalRiderBean;
@@ -51,6 +57,14 @@ public class EventBean {
 
     public void setVenueAddress(String venueAddress) {
         this.venueAddress = venueAddress;
+    }
+
+    public String getVenueCity() {
+        return venueCity;
+    }
+
+    public void setVenueCity(String venueCity) {
+        this.venueCity = venueCity;
     }
 
     public int getDistance() {

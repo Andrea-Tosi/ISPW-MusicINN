@@ -3,6 +3,7 @@ package org.musicinn.musicinn.controller.controller_gui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -14,6 +15,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.EventBean;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,7 +64,7 @@ public class EventCardControllerGUI {
         AnnouncementBean ab = bean.getAnnouncementBean();
         venueNameLabel.setText(bean.getVenueName());
         typeVenueLabel.setText(bean.getTypeVenue().toString());
-        addressVenueLabel.setText(bean.getVenueAddress());
+        addressVenueLabel.setText(bean.getVenueAddress() + ", " + bean.getVenueCity());
         String distanceString = "dista " + bean.getDistance() + " km da te";
         distanceLabel.setText(distanceString);
         dateEventLabel.setText(ab.getStartingDate().toString());
@@ -125,14 +127,21 @@ public class EventCardControllerGUI {
 
             if (eventBean.getAnnouncementBean().getSoundcheckTime() != null) {
                 ApplyController controller = new ApplyController();
-                controller.createApplication(eventBean.getAnnouncementBean().getSoundcheckTime());
+                controller.createApplication(eventBean);
+
+                // Feedback all'utente
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Candidatura inviata con successo!");
+                alert.show();
 
                 fxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
                 currentScene = venueNameLabel.getScene();
                 Stage stage = (Stage) currentScene.getWindow();
                 NavigationGUI.navigateToPath(stage, fxmlPath);
             }
-
+        } catch (DatabaseException e){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Errore nel salvataggio della candidatura nel database. Riprovare.");
+            alert.show();
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

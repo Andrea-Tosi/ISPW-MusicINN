@@ -1,21 +1,20 @@
-package org.musicinn.musicinn.util.dao;
+package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
 import org.musicinn.musicinn.util.enumerations.CableFunction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TechnicalRiderDAO {
+public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
+    @Override
     public void create(TechnicalRider rider) {
         System.out.println("rider tecnico " + rider + " creato");
     }
 
     public TechnicalRider read(Session.UserRole role) {
-        // In un sistema reale qui ci sarebbe la query SQL.
-        // Simuliamo il recupero di un ArtistRider per testare la logica più complessa.
-
         // 1. Creazione Mixer (FOH e Stage)
         TechnicalRider mockRider = role.equals(Session.UserRole.ARTIST) ? getArtistRider() : getManagerRider();
 

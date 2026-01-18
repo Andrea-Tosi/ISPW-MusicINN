@@ -12,7 +12,7 @@ public class StageBox implements Equipment {
         this.inputChannels = inputChannels;
     }
 
-    public Boolean isDigital() {
+    public Boolean getDigital() {
         return this.isDigital;
     }
 
@@ -32,8 +32,8 @@ public class StageBox implements Equipment {
     }
 
     private boolean isDigitalOk (StageBox requested) {
-        if (requested.isDigital() != null) {
-            return isDigital().equals(requested.isDigital());
+        if (requested.getDigital() != null) {
+            return getDigital().equals(requested.getDigital());
         } else {
             return true;
         }

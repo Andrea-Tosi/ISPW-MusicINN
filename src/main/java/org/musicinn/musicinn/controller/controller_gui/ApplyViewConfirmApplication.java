@@ -5,7 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import org.musicinn.musicinn.controller.controller_application.ApplyController;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import java.net.URL;
@@ -19,6 +21,9 @@ public class ApplyViewConfirmApplication implements Initializable {
 
     @FXML
     private ComboBox<String> minutesComboBox;
+
+    @FXML
+    private Label statusLabel;
 
     @FXML
     private Button confirmButton;
@@ -61,12 +66,18 @@ public class ApplyViewConfirmApplication implements Initializable {
 
     @FXML
     private void handleConfirmButton(ActionEvent event) {
+        if (hoursComboBox.getValue() == null || minutesComboBox.getValue() == null) {
+            statusLabel.setText("Riempi tutti i campi");
+            return;
+        }
+
         int hours = Integer.parseInt(hoursComboBox.getValue());
         int minutes = Integer.parseInt(minutesComboBox.getValue());
         Duration duration = Duration.ofMinutes(minutes).plusHours(hours);
         LocalDateTime soundcheckTime = LocalDateTime.of(announcementBean.getStartingDate(), announcementBean.getStartingTime());
         soundcheckTime = soundcheckTime.minus(duration);
         announcementBean.setSoundcheckTime(soundcheckTime);
+
         ((Stage) confirmButton.getScene().getWindow()).close();
     }
 }

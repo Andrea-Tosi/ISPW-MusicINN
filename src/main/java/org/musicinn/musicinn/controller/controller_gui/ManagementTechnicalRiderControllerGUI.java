@@ -20,6 +20,8 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -86,376 +88,241 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
         headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
-        Session.UserRole role = Session.getSingletonInstance().getRole();
-        if (role.equals(Session.UserRole.ARTIST)) setupArtistView();
+        if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) setupArtistView();
+        loadExistingData();
     }
 
-    private void setupArtistView() {
-        setupArtistDefaultRows();
-        setupLimitListeners();
+    private void loadExistingData() {
+        try {
+            ManagementTechnicalRiderController appController = new ManagementTechnicalRiderController();
+            TechnicalRiderBean trBean = new TechnicalRiderBean();
+            appController.loadRiderData(trBean);
+
+            // Per il caricamento iniziale non serve il check duplicati perché il DB è già aggregato
+            if (trBean.getMixers() != null) trBean.getMixers().forEach(this::displayMixer);
+            if (trBean.getStageBoxes() != null) trBean.getStageBoxes().forEach(this::displayStageBox);
+            if (trBean.getMics() != null) trBean.getMics().forEach(this::displayMicrophone);
+            if (trBean.getDiBoxes() != null) trBean.getDiBoxes().forEach(this::displayDIBox);
+            if (trBean.getMonitors() != null) trBean.getMonitors().forEach(this::displayMonitor);
+            if (trBean.getMicStands() != null) trBean.getMicStands().forEach(this::displayMicStand);
+            if (trBean.getCables() != null) trBean.getCables().forEach(this::displayCable);
+        } catch (DatabaseException e) {
+            statusLabel.setText("Errore del database: Nessun rider precedente trovato.");
+        }
     }
 
-    private void setupArtistDefaultRows() {
-        // Creazione delle righe predefinite per l'artista
-        HBox fohRow = new HBox(5, new Label("FOH Mixer: "), fohVBox);
-        fohRow.setAlignment(Pos.CENTER_LEFT);
-        HBox stageRow = new HBox(5, new Label("Stage Mixer: "), stageVBox);
-        stageRow.setAlignment(Pos.CENTER_LEFT);
-        HBox sbRow = new HBox(5, new Label("Stage Box: "), sbVBox);
-        sbRow.setAlignment(Pos.CENTER_LEFT);
+    // --- LOGICA DISPLAY CON GESTIONE DUPLICATI ---
 
-        // Aggiunta ai rispettivi contenitori
-        mixersVBox.getChildren().addAll(fohRow, stageRow);
-        stageBoxesVBox.getChildren().add(sbRow);
-    }
-
-    private void setupLimitListeners() {
-        stageVBox.getChildren().addListener((ListChangeListener<Node>) c -> {
-            boolean hasStageMixer = !stageVBox.getChildren().isEmpty();
-            // Se c'è lo Stage Mixer, disabilita il tasto "Aggiungi"
-            addMixerButton.setDisable(hasStageMixer);
-            // Se c'è lo Stage Mixer, blocca la rimozione del FOH
-            if (fohRemoveButton != null) {
-                fohRemoveButton.setDisable(hasStageMixer);
+    private void displayMicrophone(MicrophoneSetBean newBean) {
+        for (Node node : inputEquipmentsVBox.getChildren()) {
+            if (node.getUserData() instanceof MicrophoneSetBean existing &&
+                    existing.getNeedsPhantomPower() == newBean.getNeedsPhantomPower()) {
+                existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
+                updateRowLabel(node, formatMic(existing));
+                return;
             }
-        });
-
-        // Monitoraggio Stage Box (Limite 1)
-        sbVBox.getChildren().addListener((ListChangeListener<Node>) c -> {
-            boolean hasStageBox = !sbVBox.getChildren().isEmpty();
-            // Se c'è già una Stage Box, disabilita il tasto "Aggiungi Stage Box"
-            addStageBox.setDisable(hasStageBox);
-        });
+        }
+        addNewRow(inputEquipmentsVBox, newBean, formatMic(newBean));
     }
 
-    private <C, B> void handleEquipmentLogic(
-            String fxmlKey, String title, VBox container,
-            java.util.function.Function<C, B> beanRetriever,
-            java.util.function.BiPredicate<Object, Object> similarityChecker,
-            java.util.function.Function<Object, String> formatter
-    ) {
-        handlePopupLogic(fxmlKey, title, (C controller) -> {
-            B newBean = beanRetriever.apply(controller);
-            if (newBean == null) return;
+    private void displayDIBox(DIBoxSetBean newBean) {
+        for (Node node : inputEquipmentsVBox.getChildren()) {
+            if (node.getUserData() instanceof DIBoxSetBean existing &&
+                    Objects.equals(existing.getActive(), newBean.getActive())) {
+                existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
+                updateRowLabel(node, formatDI(existing));
+                return;
+            }
+        }
+        addNewRow(inputEquipmentsVBox, newBean, formatDI(newBean));
+    }
 
-            Optional<Node> duplicate = container.getChildren().stream()
-                    .filter(n -> n.getUserData() != null)
-                    .filter(n -> n.getUserData().getClass().equals(newBean.getClass())) // Protezione ClassCastException
-                    .filter(n -> similarityChecker.test(n.getUserData(), newBean))
-                    .findFirst();
+    private void displayMonitor(MonitorSetBean newBean) {
+        for (Node node : outputEquipmentsVBox.getChildren()) {
+            if (node.getUserData() instanceof MonitorSetBean existing &&
+                    Objects.equals(existing.getPowered(), newBean.getPowered())) {
+                existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
+                updateRowLabel(node, formatMonitor(existing));
+                return;
+            }
+        }
+        addNewRow(outputEquipmentsVBox, newBean, formatMonitor(newBean));
+    }
 
-            if (duplicate.isPresent()) {
-                Object existing = duplicate.get().getUserData();
-                updateQuantity(existing, getAttr(newBean, "getQuantity", 0));
-                ((Label) ((HBox) duplicate.get()).getChildren().get(0)).setText(formatter.apply(existing));
+    private void displayMicStand(MicStandSetBean newBean) {
+        for (Node node : otherEquipmentsVBox.getChildren()) {
+            if (node.getUserData() instanceof MicStandSetBean existing &&
+                    existing.getTall() == newBean.getTall()) {
+                existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
+                updateRowLabel(node, formatStand(existing));
+                return;
+            }
+        }
+        addNewRow(otherEquipmentsVBox, newBean, formatStand(newBean));
+    }
+
+    private void displayCable(CableSetBean newBean) {
+        for (Node node : otherEquipmentsVBox.getChildren()) {
+            if (node.getUserData() instanceof CableSetBean existing &&
+                    existing.getFunction().equals(newBean.getFunction())) {
+                existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
+                updateRowLabel(node, formatCable(existing));
+                return;
+            }
+        }
+        addNewRow(otherEquipmentsVBox, newBean, formatCable(newBean));
+    }
+
+    // Mixer e StageBox solitamente non si sommano (hanno caratteristiche uniche)
+    private void displayMixer(MixerBean bean) {
+        StringBuilder sb = new StringBuilder();
+        buildString(bean.getInputChannels(), bean.getAuxSends(), bean.getDigital(), bean.getHasPhantomPower(), sb);
+        String desc = sb.toString().trim().replaceAll(",$", "");
+
+        if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) {
+            // Se il FOH è vuoto, il primo va lì
+            if (fohVBox.getChildren().isEmpty()) {
+                bean.setFOH(true);
+                HBox row = createManagedRow(fohVBox, desc, true);
+                row.setUserData(bean);
+                fohVBox.getChildren().add(row);
             } else {
-                HBox newRow = createManagedRow(container, formatter.apply(newBean), false);
-                newRow.setUserData(newBean);
-                container.getChildren().add(newRow);
+                // Altrimenti va nello Stage
+                bean.setFOH(false);
+                HBox row = createManagedRow(stageVBox, desc, false);
+                row.setUserData(bean);
+                stageVBox.getChildren().add(row);
             }
-        });
-    }
-
-    private <T> T getAttr(Object obj, String methodName, T defaultValue) {
-        if (obj == null) return defaultValue;
-        try {
-            Object result = obj.getClass().getMethod(methodName).invoke(obj);
-//            if (result == null) return defaultValue;
-
-            // Se ci aspettiamo una Stringa ma l'oggetto è un Enum o altro, usiamo toString()
-            if (defaultValue instanceof String && !(result instanceof String)) {
-                return (T) result.toString();
-            }
-
-            return (T) result;
-        } catch (Exception e) {
-            return defaultValue;
+        } else {
+            // Logica Manager (lista generica)
+            HBox row = createManagedRow(mixersVBox, desc, false);
+            row.setUserData(bean);
+            mixersVBox.getChildren().add(row);
         }
     }
 
-    private void setAttr(Object obj, String methodName, Object value) {
-        if (obj == null || value == null) return;
+    private void displayStageBox(StageBoxBean bean) {
+        String desc = bean.getInputChannels() + " in, " + (bean.getDigital() ? "Digitale" : "Analogica");
+        VBox target = Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST) ? sbVBox : stageBoxesVBox;
+        addNewRow(target, bean, desc);
+    }
 
-        try {
-            Method method = findMethod(obj.getClass(), methodName, value);
-            if (method != null) {
-                method.invoke(obj, value);
-            }
-        } catch (Exception e) {
-            // Logga l'eccezione in modo appropriato
-            e.printStackTrace();
+    // --- HELPER FORMATTAZIONE ---
+    private String formatMic(MicrophoneSetBean b) { return String.format("Microfono:%s (qt: %d)", formatStatus(b.getNeedsPhantomPower(), "con phantom", "senza phantom"), b.getQuantity()); }
+    private String formatDI(DIBoxSetBean b) { return String.format("DI Box:%s (qt: %d)", formatStatus(b.getActive(), "Attiva", "Passiva"), b.getQuantity()); }
+    private String formatMonitor(MonitorSetBean b) { return String.format("Monitor:%s (qt: %d)", formatStatus(b.getPowered(), "Attivo", "Passivo"), b.getQuantity()); }
+    private String formatStand(MicStandSetBean b) { return String.format("Asta:%s (qt: %d)", formatStatus(b.getTall(), "Alta", "Bassa"), b.getQuantity()); }
+    private String formatCable(CableSetBean b) { return String.format("Cavo: %s (qt: %d)", b.getFunction(), b.getQuantity()); }
+
+    // --- GESTIONE ROW ---
+    private void addNewRow(VBox container, Object bean, String desc) { addNewRow(container, bean, desc, false); }
+    private void addNewRow(VBox container, Object bean, String desc, boolean isFOH) {
+        HBox row = createManagedRow(container, desc, isFOH);
+        row.setUserData(bean);
+        container.getChildren().add(row);
+    }
+    private void updateRowLabel(Node node, String newText) {
+        if (node instanceof HBox row && !row.getChildren().isEmpty() && row.getChildren().get(0) instanceof Label label) {
+            label.setText(newText);
         }
     }
 
-    private Method findMethod(Class<?> clazz, String methodName, Object value) {
-        // Determina il tipo primitivo se il valore è un Integer
-        Class<?> primitiveType = (value instanceof Integer) ? int.class : value.getClass();
+    // --- HANDLERS ---
+    @FXML private void handleAddMixer(ActionEvent e) { handlePopupLogic("fxml.mixer_features.modal", "Mixer", (MixerPopupControllerGUI c) -> { if(c.getCreatedMixer()!=null) displayMixer(c.getCreatedMixer()); }); }
+    @FXML private void handleAddStageBox(ActionEvent e) { handlePopupLogic("fxml.stage_box_features.modal", "Stage Box", (StageBoxPopupControllerGUI c) -> { if(c.getCreatedStageBox()!=null) displayStageBox(c.getCreatedStageBox()); }); }
+    @FXML private void handleAddMicrophone(ActionEvent e) { handlePopupLogic("fxml.microphone_features.modal", "Microfoni", (MicrophoneSetPopupControllerGUI c) -> { if(c.getCreatedMicrophoneSet()!=null) displayMicrophone(c.getCreatedMicrophoneSet()); }); }
+    @FXML private void handleAddDIBox(ActionEvent e) { handlePopupLogic("fxml.di_box_features.modal", "DI Box", (DIBoxSetPopupControllerGUI c) -> { if(c.getCreatedDIBoxSet()!=null) displayDIBox(c.getCreatedDIBoxSet()); }); }
+    @FXML private void handleAddMonitor(ActionEvent e) { handlePopupLogic("fxml.monitor_features.modal", "Monitor", (MonitorSetPopupControllerGUI c) -> { if(c.getCreatedMonitorSet()!=null) displayMonitor(c.getCreatedMonitorSet()); }); }
+    @FXML private void handleAddMicStand(ActionEvent e) { handlePopupLogic("fxml.mic_stand_features.modal", "Aste", (MicStandSetPopupControllerGUI c) -> { if(c.getCreatedMicStandSet()!=null) displayMicStand(c.getCreatedMicStandSet()); }); }
+    @FXML private void handleAddCable(ActionEvent e) { handlePopupLogic("fxml.cable_features.modal", "Cavi", (CableSetPopupControllerGUI c) -> { if(c.getCreatedCableSet()!=null) displayCable(c.getCreatedCableSet()); }); }
 
+    @FXML
+    private void handleSaveChangesButton(ActionEvent event) {
         try {
-            // Tentativo 1: Tipo primitivo (es. setQuantity(int))
-            return clazz.getMethod(methodName, primitiveType);
-        } catch (NoSuchMethodException e) {
-            try {
-                // Tentativo 2: Tipo Wrapper (es. setQuantity(Integer))
-                return clazz.getMethod(methodName, value.getClass());
-            } catch (NoSuchMethodException ex) {
-                return null; // Metodo non trovato in nessuna forma
-            }
-        }
-    }
-    //TODO in realtà non penso serva un controllo sul tipo Integer dato che i setAttr sono tutti int
-
-    private void updateQuantity(Object obj, int extraQty) {
-        int currentQty = getAttr(obj, "getQuantity", 0);
-        setAttr(obj, "setQuantity", currentQty + extraQty);
+            ManagementTechnicalRiderController appCtrl = new ManagementTechnicalRiderController();
+            Session.UserRole role = Session.getSingletonInstance().getRole();
+            appCtrl.saveRiderData(
+                    role == Session.UserRole.ARTIST ? combine(fohVBox, stageVBox) : collectTypedBeans(mixersVBox, MixerBean.class),
+                    role == Session.UserRole.ARTIST ? collectTypedBeans(sbVBox, StageBoxBean.class) : collectTypedBeans(stageBoxesVBox, StageBoxBean.class),
+                    collectTypedBeans(inputEquipmentsVBox, MicrophoneSetBean.class),
+                    collectTypedBeans(inputEquipmentsVBox, DIBoxSetBean.class),
+                    collectTypedBeans(outputEquipmentsVBox, MonitorSetBean.class),
+                    collectTypedBeans(otherEquipmentsVBox, MicStandSetBean.class),
+                    collectTypedBeans(otherEquipmentsVBox, CableSetBean.class)
+            );
+            statusLabel.setText("Rider salvato con successo!");
+        } catch (Exception e) { statusLabel.setText("Errore: " + e.getMessage()); }
     }
 
-    private <C> void handlePopupLogic(String fxmlKey, String title, java.util.function.Consumer<C> resultHandler) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(FxmlPathLoader.getPath(fxmlKey)));
-            Parent root = loader.load();
+    // --- UTILS ---
+    private VBox getMixerContainer(MixerBean b) {
+        if (!Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) return mixersVBox;
+        return b.isFOH() ? fohVBox : stageVBox;
+    }
+    private List<MixerBean> combine(VBox v1, VBox v2) {
+        List<MixerBean> list = new ArrayList<>(collectTypedBeans(v1, MixerBean.class));
+        list.addAll(collectTypedBeans(v2, MixerBean.class));
+        return list;
+    }
 
-            Stage popupStage = new Stage();
-            popupStage.setTitle(title);
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setScene(new Scene(root));
-            popupStage.showAndWait();
+    private <T> List<T> collectTypedBeans(VBox c, Class<T> t) { return c.getChildren().stream().map(Node::getUserData).filter(t::isInstance).map(t::cast).toList(); }
 
-            // Passiamo il controller al gestore del risultato
-            C controller = loader.getController();
-            resultHandler.accept(controller);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    // Metodo universale per i booleani
+    private String formatStatus(Boolean value, String trueLabel, String falseLabel) {
+        if (value == null) return ""; // Non scrive nulla se indifferente
+        return " " + (value ? trueLabel : falseLabel);
+    }
+
+    // Metodo per il Mixer e la StageBox (gestione virgole pulita)
+    private void buildString(int ch, int aux, Boolean digital, Boolean phantom, StringBuilder sb) {
+        sb.append(ch).append(" ch, ").append(aux).append(" AUX");
+        if (digital != null) sb.append(", ").append(digital ? "Digitale" : "Analogico");
+        if (phantom != null) sb.append(", ").append(phantom ? "consente phantom" : "no phantom");
     }
 
     private HBox createManagedRow(VBox container, String description, boolean isFOH) {
-        HBox row = new HBox(15);
-        row.setAlignment(Pos.CENTER_LEFT);
-
+        HBox row = new HBox(15); row.setAlignment(Pos.CENTER_LEFT);
         Button removeButton = new Button("Rimuovi");
-        if (isFOH) fohRemoveButton = removeButton; // Salva il riferimento per i listener
-
-        removeButton.setOnAction(e -> {
-            if (removeButton == fohRemoveButton) fohRemoveButton = null;
-            container.getChildren().remove(row);
-        });
-
+        if (isFOH) fohRemoveButton = removeButton;
+        removeButton.setOnAction(e -> { if (removeButton == fohRemoveButton) fohRemoveButton = null; container.getChildren().remove(row); });
         row.getChildren().addAll(new Label(description), removeButton);
         return row;
     }
 
-    @FXML
-    private void handleAddMixer(ActionEvent event) {
-        handlePopupLogic("fxml.mixer_features.modal", "Configura Mixer", (MixerPopupControllerGUI c) -> {
-            Object m = c.getCreatedMixer(); // Riceviamo come Object per coerenza
-            if (m == null) return;
+    private void setupArtistView() {
+        // Creiamo dei contenitori orizzontali con allineamento centrale verticale
+        HBox fohRow = new HBox(10, new Label("FOH:  "), fohVBox);
+        fohRow.setAlignment(Pos.CENTER_LEFT);
 
-            // Estrazione dati tramite getAttr
-            int ch = getAttr(m, "getInputChannels", 0);
-            int aux = getAttr(m, "getAuxSends", 0);
-            Boolean isDig = getAttr(m, "getDigital", null);
-            Boolean ph = getAttr(m, "getHasPhantomPower", null);
+        HBox stageRow = new HBox(10, new Label("Stage:"), stageVBox);
+        stageRow.setAlignment(Pos.CENTER_LEFT);
 
-            StringBuilder descBuilder = new StringBuilder();
-            buildString(ch, aux, isDig, ph, descBuilder);
+        HBox sbRow = new HBox(10, new Label("SB:   "), sbVBox);
+        sbRow.setAlignment(Pos.CENTER_LEFT);
 
-            // Rimuove l'eventuale virgola e spazio finale se la stringa finisce così
-            String desc = descBuilder.toString().trim();
-            if (desc.endsWith(",")) {
-                desc = desc.substring(0, desc.length() - 1);
-            }
+        // Applichiamo un po' di spaziatura interna per staccarli dal bordo sinistro
+        fohRow.setStyle("-fx-padding: 0 0 0 5;");
+        stageRow.setStyle("-fx-padding: 0 0 0 5;");
+        sbRow.setStyle("-fx-padding: 0 0 0 5;");
 
-            Session.UserRole role = Session.getSingletonInstance().getRole();
-            if (role.equals(Session.UserRole.ARTIST)) {
-                if (fohVBox.getChildren().isEmpty()) {
-                    setAttr(m, "setFOH", true); // Imposta come mixer principale
-                    HBox row = createManagedRow(fohVBox, desc, true);
-                    row.setUserData(m);
-                    fohVBox.getChildren().add(row);
-                } else {
-                    setAttr(m, "setFOH", false); // Imposta come mixer di palco
-                    HBox row = createManagedRow(stageVBox, desc, false);
-                    row.setUserData(m);
-                    stageVBox.getChildren().add(row);
-                }
-            } else {
-                HBox row = createManagedRow(mixersVBox, desc, false);
-                row.setUserData(m);
-                mixersVBox.getChildren().add(row);
-            }
-        });
+        mixersVBox.getChildren().addAll(fohRow, stageRow);
+        stageBoxesVBox.getChildren().add(sbRow);
+
+        setupLimitListeners();
     }
 
-    private void buildString(int channels, int aux, Boolean digital, Boolean phantom, StringBuilder stringBuilder) {
-        stringBuilder.append(channels).append(" ch, ");
-        stringBuilder.append(aux).append(" AUX, ");
-        if (digital != null) {
-            stringBuilder.append(digital ? "Digitale" : "Analogico").append(", ");
-        }
-        if (phantom != null) {
-            stringBuilder.append(phantom ? "consente phantom power" : "non consente phantom power");
-        }
+    private void setupLimitListeners() {
+        stageVBox.getChildren().addListener((ListChangeListener<Node>) c -> { addMixerButton.setDisable(!stageVBox.getChildren().isEmpty()); if(fohRemoveButton!=null) fohRemoveButton.setDisable(!stageVBox.getChildren().isEmpty()); });
+        sbVBox.getChildren().addListener((ListChangeListener<Node>) c -> addStageBox.setDisable(!sbVBox.getChildren().isEmpty()));
     }
 
-    @FXML
-    private void handleAddStageBox(ActionEvent event) {
-        handlePopupLogic("fxml.stage_box_features.modal", "Configura Stage Box", (StageBoxPopupControllerGUI c) -> {
-            Object sb = c.getCreatedStageBox();
-            if (sb == null) return;
-
-            // Estrazione dati tramite getAttr
-            int ch = getAttr(sb, "getInputChannels", 0);
-            Boolean isDig = getAttr(sb, "getDigital", null);
-
-            StringBuilder descBuilder = new StringBuilder();
-
-            descBuilder.append(ch).append(" in");
-            if (isDig != null) {
-                // Se abbiamo aggiunto i canali prima, mettiamo una virgola di separazione
-                descBuilder.append(", ").append(isDig ? "Digitale" : "Analogica");
-            }
-            String desc = descBuilder.toString();
-
-            Session.UserRole role = Session.getSingletonInstance().getRole();
-            if (role.equals(Session.UserRole.ARTIST)) {
-                HBox row = createManagedRow(sbVBox, desc, false);
-                row.setUserData(sb);
-                sbVBox.getChildren().add(row);
-            } else {
-                HBox row = createManagedRow(stageBoxesVBox, desc, false);
-                row.setUserData(sb);
-                stageBoxesVBox.getChildren().add(row);
-            }
-        });
+    private <C> void handlePopupLogic(String fxml, String title, java.util.function.Consumer<C> handler) {
+        try {
+            FXMLLoader l = new FXMLLoader(getClass().getResource(FxmlPathLoader.getPath(fxml)));
+            Stage s = new Stage(); s.setScene(new Scene(l.load())); s.initModality(Modality.APPLICATION_MODAL); s.showAndWait();
+            handler.accept(l.getController());
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
-    @FXML
-    private void handleAddMicrophone(ActionEvent event) {
-        handleEquipmentLogic("fxml.microphone_features.modal", "Microfoni", inputEquipmentsVBox,
-                c -> ((MicrophoneSetPopupControllerGUI) c).getCreatedMicrophoneSet(),
-                (o, n) -> Objects.equals(getAttr(o, "getNeedsPhantomPower", false), getAttr(n, "getNeedsPhantomPower", false)),
-                obj -> {
-                    Boolean hasPhantom = getAttr(obj, "getNeedsPhantomPower", false);
-                    String typeStr = formatStatus(hasPhantom, "con", "senza");
-                    int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("Microfono:%s phantom (qt: %d)", typeStr, quantity);
-                }
-        );
-    }
-
-    @FXML
-    private void handleAddDIBox(ActionEvent event) {
-        handleEquipmentLogic("fxml.di_box_features.modal", "DI Box", inputEquipmentsVBox,
-                c -> ((DIBoxSetPopupControllerGUI) c).getCreatedDIBoxSet(),
-                (o, n) -> Objects.equals(getAttr(o, "getActive", null), getAttr(n, "getActive", null)),
-                obj -> {
-                    Boolean active = getAttr(obj, "getActive", null);
-                    String typeStr = formatStatus(active, "Attiva", "Passiva");
-                    int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("DI Box:%s (qt: %d)", typeStr, quantity);
-                }
-        );
-    }
-
-    @FXML
-    private void handleAddMonitor(ActionEvent event) {
-        handleEquipmentLogic("fxml.monitor_features.modal", "Monitor", outputEquipmentsVBox,
-                c -> ((MonitorSetPopupControllerGUI) c).getCreatedMonitorSet(),
-                (o, n) -> Objects.equals(getAttr(o, "getPowered", null), getAttr(n, "getPowered", null)),
-                obj -> {
-                    Boolean powered = getAttr(obj, "getPowered", null);
-                    String typeStr = formatStatus(powered, "Attivo", "Passivo");
-                    int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("Monitor:%s (qt: %d)", typeStr, quantity);
-                }
-        );
-    }
-
-    @FXML
-    private void handleAddMicStand(ActionEvent event) {
-        handleEquipmentLogic("fxml.mic_stand_features.modal", "Aste", otherEquipmentsVBox,
-                c -> ((MicStandSetPopupControllerGUI) c).getCreatedMicStandSet(),
-                (o, n) -> Objects.equals(getAttr(o, "getTall", false), getAttr(n, "getTall", false)),
-                obj -> {
-                    Boolean isTall = getAttr(obj, "getTall", false);
-                    String typeStr = formatStatus(isTall, "Alta", "Bassa");
-                    int quantity = getAttr(obj, "getQuantity", 0);
-                    return String.format("Asta:%s, (qt: %d)", typeStr, quantity);
-                }
-        );
-    }
-
-    @FXML
-    private void handleAddCable(ActionEvent event) {
-        handleEquipmentLogic("fxml.cable_features.modal", "Cavi", otherEquipmentsVBox,
-                c -> ((CableSetPopupControllerGUI) c).getCreatedCableSet(),
-                (o, n) -> getAttr(o, "getFunction", "").equals(getAttr(n, "getFunction", "")),
-                obj -> String.format("Cavo: %s (qt: %d)", getAttr(obj, "getFunction", ""), getAttr(obj, "getQuantity", 0))
-        );
-    }
-
-    private String formatStatus(Boolean value, String trueLabel, String falseLabel) {
-        if (value == null) return "";
-        return value ? " " + trueLabel : " " + falseLabel;
-    }
-
-    @FXML
-    private void handleBackButton(ActionEvent event) {
-        String nextFxmlPath = "";
-        Session.UserRole role = Session.getSingletonInstance().getRole();
-        if (role.equals(Session.UserRole.MANAGER)) {
-            nextFxmlPath = FxmlPathLoader.getPath("fxml.manager.home");
-        } else if (role.equals(Session.UserRole.ARTIST)) {
-            nextFxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
-        }
-
-        Scene currentScene = backButton.getScene();
-        Stage stage = (Stage) currentScene.getWindow();
-
-        NavigationGUI.navigateToPath(stage, nextFxmlPath);
-    }
-
-    @FXML
-    private void handleSaveChangesButton(ActionEvent event) {
-        // Liste perfettamente tipizzate
-        List<MixerBean> mixers = new ArrayList<>();
-        Session.UserRole role = Session.getSingletonInstance().getRole();
-        if (role.equals(Session.UserRole.ARTIST)) {
-            mixers.addAll(collectTypedBeans(fohVBox, MixerBean.class));
-            mixers.addAll(collectTypedBeans(stageVBox, MixerBean.class));
-        } else {
-            mixers.addAll(collectTypedBeans(mixersVBox, MixerBean.class));
-        }
-
-        List<StageBoxBean> stageBoxes = null;
-        if (role.equals(Session.UserRole.ARTIST)) {
-            stageBoxes = collectTypedBeans(sbVBox, StageBoxBean.class);
-        } else {
-            stageBoxes = collectTypedBeans(stageBoxesVBox, StageBoxBean.class);
-        }
-
-        List<MicrophoneSetBean> mics = collectTypedBeans(inputEquipmentsVBox, MicrophoneSetBean.class);
-        List<DIBoxSetBean> diBoxes = collectTypedBeans(inputEquipmentsVBox, DIBoxSetBean.class);
-
-        List<MonitorSetBean> monitors = collectTypedBeans(outputEquipmentsVBox, MonitorSetBean.class);
-
-        List<MicStandSetBean> micStands = collectTypedBeans(otherEquipmentsVBox, MicStandSetBean.class);
-        List<CableSetBean>  cables = collectTypedBeans(otherEquipmentsVBox, CableSetBean.class);
-
-        // Invio al controller applicativo con tipi forti
-        ManagementTechnicalRiderController applicationController = new ManagementTechnicalRiderController();
-        applicationController.saveRiderData(mixers, stageBoxes, mics, diBoxes, monitors, micStands, cables);
-
-        statusLabel.setText("Rider tecnico salvato correttamente");
-    }//TODO modellare l'eccezione lanciata dall'interno del sistema per cui validate fallisce e settare il testo nello statusLabel (solo nel caso in cui l'utente è di tipo Artist)
-
-    // Questo metodo ora accetta un tipo T e filtra automaticamente solo gli oggetti di quel tipo
-    private <T> List<T> collectTypedBeans(VBox container, Class<T> type) {
-        return container.getChildren().stream()
-                .map(Node::getUserData)
-                .filter(type::isInstance) // Prende solo se è del tipo giusto (es. MixerBean)
-                .map(type::cast)          // Converte in modo sicuro
-                .toList();
-    }
+    @FXML private void handleBackButton(ActionEvent e) { NavigationGUI.navigateToPath((Stage)backButton.getScene().getWindow(), FxmlPathLoader.getPath(Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER) ? "fxml.manager.home" : "fxml.artist.home")); }
 }

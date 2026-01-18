@@ -5,6 +5,11 @@ public class Session {
     private UserRole role;
     private String username;
 
+    public enum PersistenceType { DATABASE, MEMORY, FILE }
+    public enum InterfaceType { GUI, CLI }
+    private PersistenceType persistenceType = PersistenceType.DATABASE; // Default
+    private InterfaceType interfaceType = InterfaceType.GUI; // Default
+
     private Session() {}
 
     private static class SingletonContainer{
@@ -29,5 +34,21 @@ public class Session {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public PersistenceType getPersistenceType() {
+        return persistenceType;
+    }
+
+    public void setPersistenceType(PersistenceType persistenceType) {
+        this.persistenceType = persistenceType;
+    }
+
+    public InterfaceType getInterfaceType() {
+        return interfaceType;
+    }
+
+    public void setInterfaceType(InterfaceType interfaceType) {
+        this.interfaceType = interfaceType;
     }
 }

@@ -11,6 +11,9 @@ public abstract class User {
         this.hashedPassword = hashedPassword;
     }
 
+    public User() {
+    }
+
     public String getUsername() {
         return username;
     }

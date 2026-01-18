@@ -3,7 +3,9 @@ package org.musicinn.musicinn.controller.controller_application;
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
-import org.musicinn.musicinn.util.dao.TechnicalRiderDAO;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,27 +14,29 @@ public class ManagementTechnicalRiderController {
     public void saveRiderData(List<MixerBean> mixers, List<StageBoxBean> stageBoxes,
                               List<MicrophoneSetBean> mics, List<DIBoxSetBean> diBoxes,
                               List<MonitorSetBean> monitors, List<MicStandSetBean> stands,
-                              List<CableSetBean> cables) {
-        try {
-            // 1. Mapping dell'equipaggiamento comune
-            List<InputEquipment> inputs = mapInputs(mics, diBoxes);
-            List<OutputEquipment> outputs = mapOutputs(monitors);
-            List<OtherEquipment> others = mapOthers(stands, cables);
+                              List<CableSetBean> cables) throws DatabaseException, NotConsistentRiderException {
+        // 1. Mapping dell'equipaggiamento comune
+        List<InputEquipment> inputs = mapInputs(mics, diBoxes);
+        List<OutputEquipment> outputs = mapOutputs(monitors);
+        List<OtherEquipment> others = mapOthers(stands, cables);
 
-            // 2. Creazione del Rider specifico in base al ruolo
-            Session.UserRole role = Session.getSingletonInstance().getRole();
-            TechnicalRider rider = createRiderByRole(role, mixers, stageBoxes);
+        // 2. Creazione del Rider specifico in base al ruolo
+        Session.UserRole role = Session.getSingletonInstance().getRole();
+        TechnicalRider rider = createRiderByRole(role, mixers, stageBoxes);
 
-            // 3. Completamento e Persistenza
-            rider.setInputs(inputs);
-            rider.setOutputs(outputs);
-            rider.setOthers(others);
+        // 3. Completamento
+        rider.setInputs(inputs);
+        rider.setOutputs(outputs);
+        rider.setOthers(others);
 
-            new TechnicalRiderDAO().create(rider);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Errore durante la preparazione delle Entity: " + e.getMessage(), e);
+        // 4. Controllo coerenza nel caso di ArtistRider
+        if (rider instanceof ArtistRider ar) {
+            ValidationResult report = ar.validate();
+            if (!report.isValid()) throw new NotConsistentRiderException(report.toString());
         }
+
+        // 5. Persistenza
+        DAOFactory.getTechnicalRiderDAO().create(rider);
     }
 
     private List<InputEquipment> mapInputs(List<MicrophoneSetBean> mics, List<DIBoxSetBean> diBoxes) {
@@ -108,5 +112,99 @@ public class ManagementTechnicalRiderController {
         sb.setInputChannels(b.getInputChannels());
         sb.setDigital(b.getDigital());
         return sb;
+    }
+
+    public void loadRiderData(TechnicalRiderBean trBean) throws DatabaseException {
+        Session.UserRole role = Session.getSingletonInstance().getRole();
+        TechnicalRider rider = DAOFactory.getTechnicalRiderDAO().read(role);
+
+        if (rider == null) return;
+
+        // Mapping inverso: da Domain a Bean
+        List<MixerBean> mixers = new ArrayList<>();
+        List<StageBoxBean> sbs = new ArrayList<>();
+
+        int width = rider.getMinWidthStage();
+        int length = rider.getMinLengthStage();
+
+        if (rider instanceof ArtistRider ar) {
+            if (ar.getFohMixer() != null) mixers.add(mapToMixerBean(ar.getFohMixer()));
+            if (ar.getStageMixer() != null) mixers.add(mapToMixerBean(ar.getStageMixer()));
+            if (ar.getStageBox() != null) sbs.add(mapToStageBoxBean(ar.getStageBox()));
+        } else if (rider instanceof ManagerRider mr) {
+            if (mr.getMixers() != null) {
+                for (Mixer m : mr.getMixers()) mixers.add(mapToMixerBean(m));
+            }
+            if (mr.getStageBoxes() != null) {
+                for (StageBox sb : mr.getStageBoxes()) sbs.add(mapToStageBoxBean(sb));
+            }
+        }
+
+        // Mapping equipaggiamento comune
+        List<MicrophoneSetBean> mics = mapToMicrophoneBeans(rider.getInputs());
+        List<DIBoxSetBean> diBoxes = mapToDIBoxBeans(rider.getInputs());
+        List<MonitorSetBean> monitors = mapToMonitorBeans(rider.getOutputs());
+        List<MicStandSetBean> stands = mapToMicStandBeans(rider.getOthers());
+        List<CableSetBean> cables = mapToCableBeans(rider.getOthers());
+
+        // Invio tutto alla GUI modificando il bean che essa aveva creato
+        trBean.setMinWidthStage(width);
+        trBean.setMinLengthStage(length);
+        trBean.setMixers(mixers);
+        trBean.setStageBoxes(sbs);
+        trBean.setMics(mics);
+        trBean.setDiBoxes(diBoxes);
+        trBean.setMonitors(monitors);
+        trBean.setMicStands(stands);
+        trBean.setCables(cables);
+    }
+
+    // Helper privati per il mapping Domain -> Bean
+    private MixerBean mapToMixerBean(Mixer m) {
+        return new MixerBean(m.getInputChannels(), m.getAuxSends(), m.getDigital(), m.getHasPhantomPower(), m.isFOH());
+    }
+
+    private StageBoxBean mapToStageBoxBean(StageBox sb) {
+        return new StageBoxBean(sb.getInputChannels(), sb.getDigital());
+    }
+
+    private List<MicrophoneSetBean> mapToMicrophoneBeans(List<InputEquipment> inputs) {
+        return inputs.stream()
+                .filter(MicrophoneSet.class::isInstance)
+                .map(i -> (MicrophoneSet) i)
+                .map(m -> new MicrophoneSetBean(m.getQuantity(), m.getNeedsPhantomPower()))
+                .toList();
+    }
+
+    private List<DIBoxSetBean> mapToDIBoxBeans(List<InputEquipment> inputs) {
+        return inputs.stream()
+                .filter(DIBoxSet.class::isInstance)
+                .map(i -> (DIBoxSet) i)
+                .map(d -> new DIBoxSetBean(d.getQuantity(), d.getActive()))
+                .toList();
+    }
+
+    private List<MonitorSetBean> mapToMonitorBeans(List<OutputEquipment> outputs) {
+        return outputs.stream()
+                .filter(MonitorSet.class::isInstance)
+                .map(m -> (MonitorSet) m)
+                .map(m -> new MonitorSetBean(m.getQuantity(), m.getPowered()))
+                .toList();
+    }
+
+    private List<MicStandSetBean> mapToMicStandBeans(List<OtherEquipment> others) {
+        return others.stream()
+                .filter(MicStandSet.class::isInstance)
+                .map(i -> (MicStandSet) i)
+                .map(s -> new MicStandSetBean(s.getQuantity(), s.getTall()))
+                .toList();
+    }
+
+    private List<CableSetBean> mapToCableBeans(List<OtherEquipment> others) {
+        return others.stream()
+                .filter(CableSet.class::isInstance)
+                .map(i -> (CableSet) i)
+                .map(c -> new CableSetBean(c.getQuantity(), c.getFunction()))
+                .toList();
     }
 }

@@ -1,23 +1,33 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.*;
+import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.EventBean;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
-import org.musicinn.musicinn.util.dao.AnnouncementDAO;
-import org.musicinn.musicinn.util.dao.ApplicationDAO;
-import org.musicinn.musicinn.util.dao.TechnicalRiderDAO;
-import org.musicinn.musicinn.util.dao.UserDAO;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.dao.database.ArtistDAODatabase;
+import org.musicinn.musicinn.util.dao.interfaces.*;
+import org.musicinn.musicinn.util.dao.memory.AnnouncementDAOMemory;
+import org.musicinn.musicinn.util.dao.memory.ApplicationDAOMemory;
+import org.musicinn.musicinn.util.dao.memory.TechnicalRiderDAOMemory;
+import org.musicinn.musicinn.util.dao.memory.UserDAOMemory;
+import org.musicinn.musicinn.util.enumerations.ApplicationState;
+import org.musicinn.musicinn.util.enumerations.MusicalGenre;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ApplyController {
-    public void getEquipmentBeans(TechnicalRiderBean trBean) {
-        TechnicalRiderDAO dao = new TechnicalRiderDAO();
-        TechnicalRider rider = dao.read(Session.UserRole.ARTIST);
+    public void getEquipmentBeans(TechnicalRiderBean trBean) throws DatabaseException {
+        TechnicalRiderDAO technicalRiderDAO = DAOFactory.getTechnicalRiderDAO();
+        TechnicalRider rider = technicalRiderDAO.read(Session.UserRole.ARTIST);
+
+        trBean.setMinWidthStage(rider.getMinWidthStage());
+        trBean.setMinLengthStage(rider.getMinLengthStage());
 
         if(rider instanceof ArtistRider artistRider) setupBeanArtistRider(artistRider, trBean);
         else if (rider instanceof ManagerRider managerRider) setupBeanManagerRider(managerRider, trBean);
@@ -30,7 +40,7 @@ public class ApplyController {
                 MicrophoneSetBean micBean = new MicrophoneSetBean(mic.getQuantity(), mic.getNeedsPhantomPower());
                 mics.add(micBean);
             } else if (input instanceof DIBoxSet di) {
-                DIBoxSetBean diBean = new DIBoxSetBean(di.getQuantity(), di.isActive());
+                DIBoxSetBean diBean = new DIBoxSetBean(di.getQuantity(), di.getActive());
                 diBoxes.add(diBean);
             }
         }
@@ -80,7 +90,7 @@ public class ApplyController {
         StageBox sb = rider.getStageBox();
         List<StageBoxBean> stageBoxes = new ArrayList<>();
         if (sb != null) {
-            StageBoxBean sbBean = new StageBoxBean(sb.getInputChannels(), sb.isDigital());
+            StageBoxBean sbBean = new StageBoxBean(sb.getInputChannels(), sb.getDigital());
             stageBoxes.add(sbBean);
         }
         trBean.setStageBoxes(stageBoxes);
@@ -95,28 +105,32 @@ public class ApplyController {
 
         List<StageBoxBean> stageBoxes = new ArrayList<>();
         for (StageBox sb : rider.getStageBoxes()) {
-            stageBoxes.add(new StageBoxBean(sb.getInputChannels(), sb.isDigital()));
+            stageBoxes.add(new StageBoxBean(sb.getInputChannels(), sb.getDigital()));
         }
         trBean.setStageBoxes(stageBoxes);
     }
 
 
 
-    private final AnnouncementDAO announcementDAO = new AnnouncementDAO();
-    private final TechnicalRiderDAO riderDAO = new TechnicalRiderDAO();
+    private final AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
+    private final TechnicalRiderDAO riderDAO = DAOFactory.getTechnicalRiderDAO();
     // Supponiamo di avere un servizio per la distanza
 //    private final DistanceService distanceService = new DistanceService();
 
-    public List<EventBean> getCompatibleEvents(int page) {
+    public List<EventBean> getCompatibleEvents(int page) throws DatabaseException {
         // 1. Recupero Artista e il suo Rider dalla Sessione
         String currentUserId = Session.getSingletonInstance().getUsername();
-        UserDAO userDAO = new UserDAO();
+        UserDAO userDAO = DAOFactory.getUserDAO();
         Artist currentUser = (Artist) userDAO.findByIdentifier(currentUserId);
         // Carichiamo l'Entity completa del rider dell'artista per fare i confronti
         ArtistRider artistRider = (ArtistRider) riderDAO.read(Session.UserRole.ARTIST);
 
         // 2. FILTRO SQL (Strategia A): Annunci OPEN + Generi compatibili
         // Il DAO restituisce Announcement che hanno già al loro interno l'oggetto Venue
+        if (Session.getSingletonInstance().getPersistenceType().equals(Session.PersistenceType.DATABASE)) {
+            ArtistDAODatabase artistDAO = new ArtistDAODatabase();
+            currentUser.setGenresList(artistDAO.loadArtistGenres(Session.getSingletonInstance().getUsername()));
+        }
         List<Announcement> announcements = announcementDAO.findActiveByGenres(
                 currentUser.getGenresList(),
                 page,
@@ -136,7 +150,8 @@ public class ApplyController {
             // Dati del Locale
             bean.setVenueName(venue.getName());
             bean.setVenueAddress(venue.getAddress());
-            bean.setTypeVenue(venue.getType());
+            bean.setVenueCity(venue.getCity());
+            bean.setTypeVenue(venue.getTypeVenue());
 
             // Calcolo distanza (Logica di Business)
             //int dist = distanceService.calculate(currentUser.getAddress(), venue.getAddress());
@@ -156,6 +171,7 @@ public class ApplyController {
     private AnnouncementBean createAnnouncementBean(Announcement ann) {
         // Trasferisce i dati da Entity Announcement a AnnouncementBean
         AnnouncementBean bean = new AnnouncementBean();
+        bean.setId(ann.getId());
         bean.setStartingDate(ann.getStartEventDay());
         bean.setStartingTime(ann.getStartEventTime());
         bean.setDuration(ann.getDuration());
@@ -241,7 +257,7 @@ public class ApplyController {
     }
 
     private StageBoxBean mapSingleStageBoxToBean(StageBox sb) {
-        return new StageBoxBean(sb.getInputChannels(), sb.isDigital());
+        return new StageBoxBean(sb.getInputChannels(), sb.getDigital());
     }
 
     private MicrophoneSetBean mapMicrophonesToBean(MicrophoneSet ms) {
@@ -249,7 +265,7 @@ public class ApplyController {
     }
 
     private DIBoxSetBean mapDIBoxesToBean(DIBoxSet di) {
-        return new DIBoxSetBean(di.getQuantity(), di.isActive());
+        return new DIBoxSetBean(di.getQuantity(), di.getActive());
     }
 
     private MonitorSetBean mapMonitorsToBean(MonitorSet ms) {
@@ -264,8 +280,32 @@ public class ApplyController {
         return new CableSetBean(cs.getQuantity(), cs.getFunction());
     }
 
-    public void createApplication(LocalDateTime localDateTime) {
-        ApplicationDAO dao = new ApplicationDAO();
-        dao.save(localDateTime);
+    public void createApplication(EventBean eventBean) throws DatabaseException {
+        Application application = new Application();
+        application.setState(ApplicationState.PENDING);
+        application.setSoundcheckTime(eventBean.getAnnouncementBean().getSoundcheckTime());
+        List<MusicalGenre> requestedGenres = eventBean.getAnnouncementBean().getRequestedGenres();
+
+        ArtistDAO artistDAO = DAOFactory.getArtistDAO();
+        List<MusicalGenre> artistGenres = artistDAO.loadArtistGenres(Session.getSingletonInstance().getUsername());
+
+        long inCommon = requestedGenres.stream().filter(artistGenres::contains).count();
+        double genres_score = requestedGenres.isEmpty() ? 0.0 : (inCommon * 100.0) / requestedGenres.size();
+        application.setScore(genres_score);
+
+        Venue venue = new Venue();
+        venue.setName(eventBean.getVenueName());
+        venue.setAddress(eventBean.getVenueAddress());
+        venue.setCity(eventBean.getVenueCity());
+        venue.setTypeVenue(eventBean.getTypeVenue());
+
+        Announcement announcement = new Announcement();
+        announcement.setId(eventBean.getAnnouncementBean().getId());
+        announcement.setStartEventDay(eventBean.getAnnouncementBean().getStartingDate());
+        announcement.setStartEventTime(eventBean.getAnnouncementBean().getStartingTime());
+        announcement.setVenue(venue);
+
+        ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+        applicationDAO.save(application, announcement);
     }
 }

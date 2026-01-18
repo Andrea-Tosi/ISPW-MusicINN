@@ -25,6 +25,14 @@ public class Artist extends User{
         this.address = address;
     }
 
+    public Artist(String username, String email, String password) {
+        super(username, email, password);
+    }
+
+    public Artist() {
+        super();
+    }
+
     public String getStageName() {
         return stageName;
     }

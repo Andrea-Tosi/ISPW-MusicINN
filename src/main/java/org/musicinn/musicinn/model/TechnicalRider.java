@@ -1,13 +1,20 @@
 package org.musicinn.musicinn.model;
 
+import java.util.ArrayList;
 import java.util.List;
-
+//non vengono sfruttati i min...Stage
 public abstract class TechnicalRider {
     protected int minLengthStage;
     protected int minWidthStage;
     protected List<InputEquipment> inputs;
     protected List<OutputEquipment> outputs;
     protected List<OtherEquipment> others;
+
+    public TechnicalRider() {
+        this.inputs = new ArrayList<>();
+        this.outputs = new ArrayList<>();
+        this.others = new ArrayList<>();
+    }
 
     public int getMinLengthStage() {
         return minLengthStage;

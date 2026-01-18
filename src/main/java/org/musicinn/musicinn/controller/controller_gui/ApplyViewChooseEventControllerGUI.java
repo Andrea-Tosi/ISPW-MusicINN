@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
@@ -13,6 +14,7 @@ import org.musicinn.musicinn.controller.controller_application.ApplyController;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.EventBean;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +26,9 @@ public class ApplyViewChooseEventControllerGUI {
 
     @FXML
     private TilePane eventCardContainer;
+
+    @FXML
+    private Label statusLabel;
 
     @FXML
     private Button backButton;
@@ -52,17 +57,24 @@ public class ApplyViewChooseEventControllerGUI {
         ApplyController controller = new ApplyController();
 
         // Chiamata al controller applicativo per la pagina corrente
-        List<EventBean> newEvents = controller.getCompatibleEvents(currentPage);
+        List<EventBean> newEvents = null;
+        try {
+            newEvents = controller.getCompatibleEvents(currentPage);
 
-        if (!newEvents.isEmpty()) {
-            for (EventBean bean : newEvents) {
-                addEventCard(bean);
+
+            if (!newEvents.isEmpty()) {
+                for (EventBean bean : newEvents) {
+                    addEventCard(bean);
+                }
+                loadedEvents.addAll(newEvents);
+                currentPage++; // Incrementiamo la pagina per la prossima chiamata
             }
-            loadedEvents.addAll(newEvents);
-            currentPage++; // Incrementiamo la pagina per la prossima chiamata
-        }
 
-        isLoading = false;
+            isLoading = false;
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+            statusLabel.setText("Errore nel database.");
+        }
     }
 
     private void addEventCard(EventBean bean) {
