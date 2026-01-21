@@ -36,10 +36,8 @@ public class AcceptApplicationConfirmAcceptanceControllerGUI {
 
     @FXML
     private void handleConfirmButton() {
-        System.out.println("CONFERMA DA GESTIRE");
-
         try {
-            AcceptApplicationController controller = new AcceptApplicationController();
+            AcceptApplicationController controller = AcceptApplicationController.getSingletonInstance();
             controller.chooseApplication(announcementBean, applicationBean);
 
             int daysOfDeadline = 5;

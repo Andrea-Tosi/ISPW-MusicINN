@@ -1,6 +1,7 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.*;
+import org.musicinn.musicinn.model.observer_pattern.Observer;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.ApplicationBean;
@@ -11,6 +12,8 @@ import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
 import org.musicinn.musicinn.util.dao.interfaces.ApplicationDAO;
 import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
+import org.musicinn.musicinn.util.enumerations.AnnouncementState;
+import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.util.ArrayList;
@@ -18,6 +21,18 @@ import java.util.List;
 import java.util.Map;
 
 public class AcceptApplicationController {
+    List<Announcement> announcements;
+
+    private AcceptApplicationController() {}
+
+    private static class SingletonContainer{
+        public static final AcceptApplicationController singletonInstance = new AcceptApplicationController();
+    }
+
+    public static AcceptApplicationController getSingletonInstance() {
+        return AcceptApplicationController.SingletonContainer.singletonInstance;
+    }
+
     public List<AnnouncementBean> getAllManagerAnnouncements() throws DatabaseException {
         // 1. Recuperiamo l'utente corrente dalla sessione (deve essere un MANAGER)
         String currentManager = Session.getSingletonInstance().getUsername();
@@ -27,6 +42,7 @@ public class AcceptApplicationController {
 
         // 3. Chiamiamo il metodo del DAO (quello con la query che abbiamo appena spiegato)
         List<Announcement> announcements = ((AnnouncementDAODatabase) announcementDAO).findByManager(currentManager);
+        this.announcements = announcements;
 
         // 4. Trasformiamo la lista di Entity in una lista di Bean
         List<AnnouncementBean> beans = new ArrayList<>();
@@ -67,11 +83,16 @@ public class AcceptApplicationController {
         // Chiedo al DAO le applicazioni e i relativi username (mappa temporanea)
         Map<Application, String> appToUserMap = appDAO.findByAnnouncementId(annBean.getId());
 
+        Announcement announcement = findAnnouncementById(annBean.getId());
+
         // Costruisco i Bean finali unendo i pezzi
         List<ApplicationBean> beans = new ArrayList<>();
         for (Map.Entry<Application, String> entry : appToUserMap.entrySet()) {
             Application app = entry.getKey();
             String username = entry.getValue();
+            if (announcement != null) {
+                announcement.addObserver(app);
+            }
             Artist artist = artistDAO.read(username);
             ArtistRider rider = (ArtistRider) riderDAO.read(username, Session.UserRole.ARTIST);
 
@@ -83,6 +104,13 @@ public class AcceptApplicationController {
         // Ordinamento finale
         beans.sort((a, b) -> Double.compare(b.getTotalScore(), a.getTotalScore()));
         return beans;
+    }
+
+    private Announcement findAnnouncementById(int id) {
+        return announcements.stream()
+                .filter(a -> a.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     private ApplicationBean convertToBean(Application app, Artist artist) {
@@ -174,16 +202,25 @@ public class AcceptApplicationController {
     }
 
     public void chooseApplication(AnnouncementBean announcementBean, ApplicationBean applicationBean) throws DatabaseException {
-        Announcement ann = new Announcement();
-        ann.setId(announcementBean.getId());
+        Announcement ann = findAnnouncementById(announcementBean.getId());
+        Application app = (Application) findApplicationById(ann.getApplicationList(), applicationBean.getId());
 
-        Application app = new Application();
-        app.setId(applicationBean.getId());
+        app.setState(ApplicationState.ACCEPTED);
+        ann.setState(AnnouncementState.CLOSED);
 
         AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
         announcementDAO.updateAnnouncementState(ann);
 
         ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-        applicationDAO.updateApplicationState(app);
+        for (Observer observer : ann.getApplicationList()) {
+            applicationDAO.updateApplicationState((Application) observer);
+        }
+    }
+
+    private Observer findApplicationById(List<Observer> applications, int id) {
+        return applications.stream()
+                .filter(a -> a.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 }

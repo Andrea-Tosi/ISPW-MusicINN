@@ -5,6 +5,7 @@ import org.musicinn.musicinn.model.Application;
 import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.interfaces.ApplicationDAO;
+import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.sql.*;
@@ -51,7 +52,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                     app.setId(rs.getInt("id"));
                     app.setScore(rs.getDouble("score"));
                     app.setSoundcheckTime(rs.getObject("soundcheck_time", LocalDateTime.class));
-
+                    app.setState(ApplicationState.valueOf(rs.getString("state")));
                     String artistUser = rs.getString("artists_username");
                     results.put(app, artistUser);
                 }
@@ -65,19 +66,21 @@ public class ApplicationDAODatabase implements ApplicationDAO {
 
     @Override
     public void updateApplicationState(Application app) throws DatabaseException {
-        String query = "UPDATE applications SET state = 'ACCEPTED' WHERE id = ? AND state = 'PENDING'";
+        String query = "UPDATE applications SET state = ? WHERE id = ? AND state = 'PENDING'";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            pstmt.setInt(1, app.getId());
+            pstmt.setString(1, app.getState().toString());
+            pstmt.setInt(2, app.getId());
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new DatabaseException("Impossibile accettare la candidatura: ID non trovato o già accettato/rifiutato.");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio");
         }
     }

@@ -45,24 +45,24 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
     }
 
     private void loadAllAnnouncements() {
-        AcceptApplicationController controller = new AcceptApplicationController();
+        AcceptApplicationController controller = AcceptApplicationController.getSingletonInstance();
 
         try {
             // Chiamata al controller applicativo senza paginazione
-            List<AnnouncementBean> myAnnouncements = controller.getAllManagerAnnouncements();
+            List<AnnouncementBean> announcements = controller.getAllManagerAnnouncements();
 
-            if (myAnnouncements == null || myAnnouncements.isEmpty()) {
+            if (announcements == null || announcements.isEmpty()) {
                 statusLabel.setText("Non hai ancora pubblicato nessun annuncio.");
                 return;
             }
 
             // Puliamo il container e aggiungiamo tutte le card
             announcementCardsContainer.getChildren().clear();
-            for (AnnouncementBean bean : myAnnouncements) {
+            for (AnnouncementBean bean : announcements) {
                 addAnnouncementCard(bean);
             }
 
-            statusLabel.setText("Hai pubblicato " + myAnnouncements.size() + " annunci.");
+            statusLabel.setText("Hai pubblicato " + announcements.size() + " annunci.");
 
         } catch (DatabaseException e) {
             statusLabel.setText("Errore critico nel recupero degli annunci.");

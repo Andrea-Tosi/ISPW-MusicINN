@@ -1,6 +1,7 @@
 package org.musicinn.musicinn.model;
 
-import org.musicinn.musicinn.util.bean.AnnouncementBean;
+import org.musicinn.musicinn.model.observer_pattern.Observer;
+import org.musicinn.musicinn.model.observer_pattern.Subject;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Announcement extends SchedulableEvent {
+public class Announcement extends SchedulableEvent implements Subject {
     private int id;
     private Double cachet;
     private Double deposit;
@@ -20,7 +21,7 @@ public class Announcement extends SchedulableEvent {
     private String description;
     private AnnouncementState state;
     private Venue venue;
-    private List<Application> applicationList;
+    private List<Observer> applicationList;
     private int numOfApplications;
 
     public Announcement() {
@@ -99,6 +100,9 @@ public class Announcement extends SchedulableEvent {
 
     public void setState(AnnouncementState state) {
         this.state = state;
+        if (this.state.equals(AnnouncementState.CLOSED)) {
+            notifyObservers();
+        }
     }
 
     public Venue getVenue() {
@@ -109,11 +113,11 @@ public class Announcement extends SchedulableEvent {
         this.venue = venue;
     }
 
-    public List<Application> getApplicationList() {
+    public List<Observer> getApplicationList() {
         return applicationList;
     }
 
-    public void setApplicationList(List<Application> applicationList) {
+    public void setApplicationList(List<Observer> applicationList) {
         this.applicationList = applicationList;
     }
 
@@ -123,5 +127,22 @@ public class Announcement extends SchedulableEvent {
 
     public void setNumOfApplications(int numOfApplications) {
         this.numOfApplications = numOfApplications;
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        applicationList.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        applicationList.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : applicationList) {
+            observer.update(state);
+        }
     }
 }
