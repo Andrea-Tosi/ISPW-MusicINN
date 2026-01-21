@@ -24,7 +24,7 @@ import java.util.List;
 public class ApplyController {
     public void getEquipmentBeans(TechnicalRiderBean trBean) throws DatabaseException {
         TechnicalRiderDAO technicalRiderDAO = DAOFactory.getTechnicalRiderDAO();
-        TechnicalRider rider = technicalRiderDAO.read(Session.UserRole.ARTIST);
+        TechnicalRider rider = technicalRiderDAO.read(Session.getSingletonInstance().getUsername(), Session.UserRole.ARTIST);
 
         trBean.setMinWidthStage(rider.getMinWidthStage());
         trBean.setMinLengthStage(rider.getMinLengthStage());
@@ -123,7 +123,7 @@ public class ApplyController {
         UserDAO userDAO = DAOFactory.getUserDAO();
         Artist currentUser = (Artist) userDAO.findByIdentifier(currentUserId);
         // Carichiamo l'Entity completa del rider dell'artista per fare i confronti
-        ArtistRider artistRider = (ArtistRider) riderDAO.read(Session.UserRole.ARTIST);
+        ArtistRider artistRider = (ArtistRider) riderDAO.read(Session.getSingletonInstance().getUsername(), Session.UserRole.ARTIST);
 
         // 2. FILTRO SQL (Strategia A): Annunci OPEN + Generi compatibili
         // Il DAO restituisce Announcement che hanno già al loro interno l'oggetto Venue

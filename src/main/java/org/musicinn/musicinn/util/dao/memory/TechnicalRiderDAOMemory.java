@@ -14,7 +14,8 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
         System.out.println("rider tecnico " + rider + " creato");
     }
 
-    public TechnicalRider read(Session.UserRole role) {
+    @Override
+    public TechnicalRider read(String username, Session.UserRole role) {
         // 1. Creazione Mixer (FOH e Stage)
         TechnicalRider mockRider = role.equals(Session.UserRole.ARTIST) ? getArtistRider() : getManagerRider();
 

@@ -22,6 +22,7 @@ public class AnnouncementBean {
     private List<TypeArtist> requestedTypesArtist;
     private Boolean doesUnreleased;
     private String description;
+    private int numOfApplications;
 
     public AnnouncementBean() {
         this.requestedGenres = new ArrayList<>();
@@ -114,5 +115,13 @@ public class AnnouncementBean {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getNumOfApplications() {
+        return numOfApplications;
+    }
+
+    public void setNumOfApplications(int numOfApplications) {
+        this.numOfApplications = numOfApplications;
     }
 }

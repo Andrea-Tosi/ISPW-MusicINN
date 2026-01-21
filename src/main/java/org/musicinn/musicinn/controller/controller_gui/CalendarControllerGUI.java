@@ -18,7 +18,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class CalendarGUI implements Initializable {
+public class CalendarControllerGUI implements Initializable {
     @FXML
     private Button previousMonthButton;
 

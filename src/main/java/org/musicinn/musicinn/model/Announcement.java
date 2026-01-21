@@ -21,6 +21,7 @@ public class Announcement extends SchedulableEvent {
     private AnnouncementState state;
     private Venue venue;
     private List<Application> applicationList;
+    private int numOfApplications;
 
     public Announcement() {
         this.requestedGenres = new ArrayList<>();
@@ -114,5 +115,13 @@ public class Announcement extends SchedulableEvent {
 
     public void setApplicationList(List<Application> applicationList) {
         this.applicationList = applicationList;
+    }
+
+    public int getNumOfApplications() {
+        return numOfApplications;
+    }
+
+    public void setNumOfApplications(int numOfApplications) {
+        this.numOfApplications = numOfApplications;
     }
 }

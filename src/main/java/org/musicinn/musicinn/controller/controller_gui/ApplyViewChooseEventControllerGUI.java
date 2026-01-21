@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import org.musicinn.musicinn.controller.controller_application.ApplyController;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
+import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.EventBean;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
@@ -25,7 +26,7 @@ public class ApplyViewChooseEventControllerGUI {
     private ScrollPane scrollPane;
 
     @FXML
-    private TilePane eventCardContainer;
+    private TilePane eventCardsContainer;
 
     @FXML
     private Label statusLabel;
@@ -33,12 +34,20 @@ public class ApplyViewChooseEventControllerGUI {
     @FXML
     private Button backButton;
 
+    @FXML
+    private HeaderControllerGUI headerController;
+
+    private static final String DESCRIPTION_PAGE = "Candidati";
+
     private List<EventBean> loadedEvents = new ArrayList<>();
     private int currentPage = 0;
     private boolean isLoading = false; // Per evitare chiamate multiple simultanee
 
     @FXML
     public void initialize() {
+        headerController.setPageLabelText(DESCRIPTION_PAGE);
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
+
         // 1. Caricamento iniziale dei primi 10
         loadEvents();
 
@@ -91,7 +100,7 @@ public class ApplyViewChooseEventControllerGUI {
             cardController.setupEventCard(bean);
 
             // 4. Aggiungiamo la carta al FlowPane principale
-            eventCardContainer.getChildren().add(cardRoot);
+            eventCardsContainer.getChildren().add(cardRoot);
         } catch (IOException e) {
             e.printStackTrace();
         }

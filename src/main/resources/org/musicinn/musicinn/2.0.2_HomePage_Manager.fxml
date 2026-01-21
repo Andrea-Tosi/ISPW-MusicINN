@@ -18,7 +18,7 @@
                </font>
             </Button>
             <Region VBox.vgrow="ALWAYS" />
-            <Button fx:id="acceptApplicationButton" mnemonicParsing="false" prefWidth="250.0" style="-fx-background-radius: 50; -fx-border-radius: 50;" text="Accetta Candidatura" VBox.vgrow="NEVER">
+            <Button fx:id="acceptApplicationButton" onAction="#handleAcceptApplicationButton" mnemonicParsing="false" prefWidth="250.0" style="-fx-background-radius: 50; -fx-border-radius: 50;" text="Accetta Candidatura" VBox.vgrow="NEVER">
                <font>
                   <Font size="24.0" />
                </font>

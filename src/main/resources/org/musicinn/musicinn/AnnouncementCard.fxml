@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.Cursor?>
+
+<VBox onMouseClicked="#handleCardClick" alignment="TOP_CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="300.0" spacing="20.0" style="-fx-border-color: #00ccff; -fx-border-radius: 15; -fx-background-radius: 15;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.musicinn.musicinn.controller.controller_gui.AnnouncementCardControllerGUI">
+    <children>
+        <HBox alignment="CENTER_LEFT">
+            <children>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER_LEFT" spacing="2.0" style="-fx-border-color: #aaaaaa; -fx-background-color: #00ccff;">
+                    <children>
+                        <ImageView fitHeight="40.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@Icona Gruppo utenti.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="numOfApplicationLabel" text="X candidature" />
+                    </children>
+                    <padding>
+                        <Insets right="2.0" />
+                    </padding>
+                </HBox>
+                <Region HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="134.20001220703125" minWidth="-Infinity" />
+                <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="10.0" />
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="260.6000061035156" minWidth="-Infinity" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+            </rowConstraints>
+            <children>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@Icona Calendario.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <Label fx:id="eventDateLabel" text="2026-05-24" GridPane.columnIndex="2">
+                    <GridPane.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                    </GridPane.margin>
+                </Label>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
+                    <image>
+                        <Image url="@Icona Euro.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <Label fx:id="cachetLabel" text="150" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                    </GridPane.margin>
+                </Label>
+                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="2">
+                    <image>
+                        <Image url="@Icona Musica.png" />
+                    </image>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                    </GridPane.margin>
+                </ImageView>
+                <FlowPane fx:id="genresList" alignment="CENTER_LEFT" hgap="5.0" vgap="3.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <children>
+                        <Label style="-fx-border-color: #aaaaaa; -fx-background-radius: 15; -fx-border-radius: 15;" text="Label">
+                            <opaqueInsets>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </opaqueInsets>
+                            <FlowPane.margin>
+                                <Insets />
+                            </FlowPane.margin>
+                            <padding>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </padding>
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                        <Label style="-fx-border-color: #aaaaaa; -fx-background-radius: 15; -fx-border-radius: 15;" text="Label">
+                            <opaqueInsets>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </opaqueInsets>
+                            <padding>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </padding>
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                            <FlowPane.margin>
+                                <Insets />
+                            </FlowPane.margin>
+                        </Label>
+                        <Label style="-fx-border-color: #aaaaaa; -fx-background-radius: 15; -fx-border-radius: 15;" text="Label">
+                            <opaqueInsets>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </opaqueInsets>
+                            <padding>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </padding>
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                            <FlowPane.margin>
+                                <Insets />
+                            </FlowPane.margin>
+                        </Label>
+                        <Label style="-fx-border-color: #aaaaaa; -fx-background-radius: 15; -fx-border-radius: 15;" text="Label">
+                            <opaqueInsets>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </opaqueInsets>
+                            <padding>
+                                <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+                            </padding>
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                            <FlowPane.margin>
+                                <Insets />
+                            </FlowPane.margin>
+                        </Label>
+                    </children>
+                    <GridPane.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                    </GridPane.margin>
+                </FlowPane>
+            </children>
+        </GridPane>
+    </children>
+    <padding>
+        <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+    </padding>
+    <cursor>
+        <Cursor fx:constant="HAND" />
+    </cursor>
+</VBox>

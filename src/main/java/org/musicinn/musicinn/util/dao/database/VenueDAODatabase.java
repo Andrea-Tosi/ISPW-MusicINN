@@ -77,7 +77,7 @@ public class VenueDAODatabase implements VenueDAO {
                     venue.setTypeVenue(TypeVenue.valueOf(rs.getString("type_venue")));
 
                     TechnicalRiderDAODatabase riderDAO = new TechnicalRiderDAODatabase();
-                    ManagerRider rider = (ManagerRider) riderDAO.read(Session.UserRole.MANAGER); // se servisse potrei mettere role come ulteriore parametro di read()
+                    ManagerRider rider = (ManagerRider) riderDAO.read(usernameManager, Session.UserRole.MANAGER);
                     venue.setRider(rider);
                 }
             }

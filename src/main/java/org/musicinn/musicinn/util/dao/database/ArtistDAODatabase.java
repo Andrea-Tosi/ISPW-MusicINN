@@ -4,6 +4,7 @@ import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
+import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.sql.Connection;
@@ -42,7 +43,6 @@ public class ArtistDAODatabase implements ArtistDAO {
             conn.commit();
         } catch (SQLException e) {
             try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
-            e.printStackTrace();
         } finally {
             try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
         }
@@ -61,7 +61,10 @@ public class ArtistDAODatabase implements ArtistDAO {
 
     public Artist read(String username) throws DatabaseException {
         Artist artist = null;
-        String query = "SELECT stage_name, address, city, does_unreleased FROM artists WHERE username = ?";
+        String query = "SELECT a.stage_name, a.address, a.city, a.does_unreleased, t.artist_types_type " +
+                "FROM artists a " +
+                "JOIN artists_has_artist_types t ON a.username = t.artists_username " +
+                "WHERE a.username = ?";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
@@ -72,11 +75,12 @@ public class ArtistDAODatabase implements ArtistDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     artist = new Artist();
-                    artist.setUsername(rs.getString("username"));
+                    artist.setUsername(username);
                     artist.setStageName(rs.getString("stage_name"));
                     artist.setAddress(rs.getString("address"));
                     artist.setCity(rs.getString("city"));
                     artist.setDoesUnreleased(rs.getBoolean("does_unreleased"));
+                    artist.setTypeArtist(TypeArtist.valueOf(rs.getString("artist_types_type")));
 
                     // Carichiamo i generi associati all'artista
                     artist.setGenresList(loadArtistGenres(username));

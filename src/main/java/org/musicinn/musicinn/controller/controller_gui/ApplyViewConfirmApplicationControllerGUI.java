@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import org.musicinn.musicinn.controller.controller_application.ApplyController;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import java.net.URL;
@@ -15,7 +14,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
-public class ApplyViewConfirmApplication implements Initializable {
+public class ApplyViewConfirmApplicationControllerGUI implements Initializable {
     @FXML
     private ComboBox<String> hoursComboBox;
 

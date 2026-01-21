@@ -207,9 +207,8 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     @Override
-    public TechnicalRider read(Session.UserRole role) throws DatabaseException {
+    public TechnicalRider read(String username, Session.UserRole role) throws DatabaseException {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
-        String username = Session.getSingletonInstance().getUsername();
         TechnicalRider rider = null;
 
         try {

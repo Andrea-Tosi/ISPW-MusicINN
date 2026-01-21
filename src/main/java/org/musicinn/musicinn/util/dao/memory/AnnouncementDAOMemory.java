@@ -7,6 +7,7 @@ import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -144,7 +145,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
         Venue venue = new Venue("The Rock Club", "Roma", "Via del Corso 10", TypeVenue.CLUB);
         TechnicalRiderDAOMemory dao = new TechnicalRiderDAOMemory();
-        ManagerRider rider = (ManagerRider) dao.read(Session.UserRole.MANAGER);
+        ManagerRider rider = (ManagerRider) dao.read(Session.getSingletonInstance().getUsername(), Session.UserRole.MANAGER);
         venue.setRider(rider);
 
         // Esempio Annuncio 1: Compatibile
@@ -209,5 +210,10 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         }
 
         return list;
+    }
+
+    @Override
+    public void updateAnnouncementState(Announcement ann) throws DatabaseException {
+
     }
 }

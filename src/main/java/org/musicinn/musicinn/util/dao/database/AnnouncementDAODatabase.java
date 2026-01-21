@@ -178,13 +178,11 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             }
 
             if (!riderMapByVenueId.isEmpty()) {
+                // 1. Carichiamo l'attrezzatura del locale
                 loadAllEquipments(conn, riderMapByVenueId);
             }
 
             if (!announcementMap.isEmpty()) {
-                // 1. Carichiamo l'attrezzatura del locale
-                loadAllEquipments(conn, riderMapByVenueId);
-
                 // 2. Carichiamo i requisiti dell'annuncio (Generi e Tipi Artista)
                 loadAnnouncementRequirements(conn, announcementMap);
             }
@@ -192,6 +190,52 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
+        }
+        return announcements;
+    }
+
+    public List<Announcement> findByManager(String managerUsername) throws DatabaseException {
+        List<Announcement> announcements = new ArrayList<>();
+        Map<Integer, Announcement> announcementMap = new HashMap<>();
+
+        // Query che recupera gli annunci del manager e conta le candidature tramite subquery
+        String query = "SELECT a.*, a.id as ann_id, v.*, " +
+                "(SELECT COUNT(*) FROM applications WHERE announcements_id = a.id) as app_count " +
+                "FROM announcements a " +
+                "JOIN venues v ON a.venues_id = v.id " +
+                "WHERE v.manager_username = ? " +
+                "ORDER BY a.start_day DESC";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, managerUsername);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Announcement ann = new Announcement();
+                    mapAnnouncement(ann, rs);
+
+                    // Impostiamo il conteggio delle candidature (aggiungi il campo in Announcement se non c'è)
+                    ann.setNumOfApplications(rs.getInt("app_count"));
+
+                    Venue venue = new Venue();
+                    mapVenue(venue, rs);
+                    ann.setVenue(venue);
+
+                    announcements.add(ann);
+                    announcementMap.put(ann.getId(), ann);
+                }
+            }
+
+            // RIUTILIZZO: Carichiamo generi e tipi richiesti usando il metodo che hai già scritto
+            if (!announcementMap.isEmpty()) {
+                loadAnnouncementRequirements(conn, announcementMap);
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero degli annunci del manager.");
         }
         return announcements;
     }
@@ -354,6 +398,25 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     r.getOthers().add(new CableSet(rs.getInt("quantity"), CableFunction.valueOf(rs.getString("function"))));
                 }
             }
+        }
+    }
+
+    @Override
+    public void updateAnnouncementState(Announcement ann) throws DatabaseException {
+        String query = "UPDATE announcements SET state = 'CLOSED' WHERE id = ? AND state = 'OPEN'";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, ann.getId());
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DatabaseException("Impossibile chiudere l'annuncio: ID non trovato o già chiuso.");
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio");
         }
     }
 }

@@ -32,7 +32,7 @@ public class HomepageManagerControllerGUI implements Initializable {
     private static final String DESCRIPTION_PAGE = "HomePage";
 
     @FXML
-    private CalendarGUI calendarGUI;
+    private CalendarControllerGUI calendarControllerGUI;
 
     @FXML
     private HeaderControllerGUI headerController;
@@ -43,8 +43,17 @@ public class HomepageManagerControllerGUI implements Initializable {
         headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
     }
 
+    @FXML
     public void handlePublishAnnouncementButton() {
         String nextFxmlPath = FxmlPathLoader.getPath("fxml.publish_announcement.view");
+        Scene currentScene = publishAnnouncementButton.getScene();
+        Stage stage = (Stage) currentScene.getWindow();
+        NavigationGUI.navigateToPath(stage, nextFxmlPath);
+    }
+
+    @FXML
+    public void handleAcceptApplicationButton() {
+        String nextFxmlPath = FxmlPathLoader.getPath("fxml.accept_application_announcement_selection.view");
         Scene currentScene = publishAnnouncementButton.getScene();
         Stage stage = (Stage) currentScene.getWindow();
         NavigationGUI.navigateToPath(stage, nextFxmlPath);

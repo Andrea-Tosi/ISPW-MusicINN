@@ -211,7 +211,7 @@ public class ApplyViewEventDetailsControllerGUI {
             eventDetailsStage.setScene(new Scene(loader.load()));
 
             // 2. Passaggio dei dati al controller della modale
-            ApplyViewConfirmApplication controller = loader.getController();
+            ApplyViewConfirmApplicationControllerGUI controller = loader.getController();
             controller.setAnnouncementBean(eventBean.getAnnouncementBean());
 
             Scene currentScene = venueNameLabel.getScene();

@@ -116,7 +116,7 @@ public class ManagementTechnicalRiderController {
 
     public void loadRiderData(TechnicalRiderBean trBean) throws DatabaseException {
         Session.UserRole role = Session.getSingletonInstance().getRole();
-        TechnicalRider rider = DAOFactory.getTechnicalRiderDAO().read(role);
+        TechnicalRider rider = DAOFactory.getTechnicalRiderDAO().read(Session.getSingletonInstance().getUsername(), role);
 
         if (rider == null) return;
 
