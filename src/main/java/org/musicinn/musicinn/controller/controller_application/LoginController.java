@@ -1,11 +1,14 @@
 package org.musicinn.musicinn.controller.controller_application;
 
+import com.stripe.exception.StripeException;
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.EmailVerifier;
+import org.musicinn.musicinn.util.PaymentService;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.StripeService;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
 import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
@@ -88,9 +91,12 @@ public class LoginController {
         EmailVerifier.getSingletonInstance().invalidateVerificationCode(email);
     }
 
-    public void completeSignup(ArtistRegistrationBean arb) {
+    public void completeSignup(ArtistRegistrationBean arb) throws StripeException {
         Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword(), arb.getStageName(), arb.getTypeArtist(), arb.getDoesUnreleased(), arb.getCity(), arb.getAddress());
         artist.setGenresList(arb.getGenresList());
+
+        PaymentService ps = new StripeService();
+        artist.setPaymentServiceAccountId(ps.createPaymentAccount(artist.getEmail())); //TODO da correggere altrimenti il controller avrebbe collegamento forte con l'adapter (implementazione concreta dell'interfaccia PaymentService)
 
         ArtistDAO artistDAO = DAOFactory.getArtistDAO();
         artistDAO.create(artist);
@@ -99,11 +105,14 @@ public class LoginController {
         Session.getSingletonInstance().setRole(Session.UserRole.ARTIST);
     }
 
-    public void completeSignup(ManagerRegistrationBean mrb) {
+    public void completeSignup(ManagerRegistrationBean mrb) throws StripeException {
         Manager manager = new Manager(cb.getUsername(), cb.getEmail(), cb.getPassword());
         Venue venue = new Venue(mrb.getNameVenue(), mrb.getCityVenue(), mrb.getAddressVenue(), mrb.getTypeVenue());
         manager.getVenueList().add(venue);
         manager.setActiveVenue(venue);
+
+        PaymentService ps = new StripeService();
+        manager.setPaymentServiceAccountId(ps.createPaymentAccount(manager.getEmail())); //TODO da correggere altrimenti il controller avrebbe collegamento forte con l'adapter (implementazione concreta dell'interfaccia PaymentService)
 
         ManagerDAO managerDAO = DAOFactory.getManagerDAO();
         managerDAO.create(manager);

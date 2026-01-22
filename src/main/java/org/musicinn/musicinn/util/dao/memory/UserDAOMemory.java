@@ -7,6 +7,8 @@ import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,5 +56,10 @@ public class UserDAOMemory implements UserDAO {
                     .orElse(null);
         }
         return user;
+    }
+
+    @Override
+    public void insertBaseUser(User user, Connection conn) throws SQLException {
+
     }
 }

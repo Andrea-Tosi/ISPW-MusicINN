@@ -2,7 +2,9 @@ package org.musicinn.musicinn.util.dao.database;
 
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.util.DBConnectionManager;
+import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
+import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
@@ -22,7 +24,7 @@ public class ArtistDAODatabase implements ArtistDAO {
             conn.setAutoCommit(false);
 
             // 1. Delega la creazione dell'utente base
-            UserDAODatabase userDAO = new UserDAODatabase();
+            UserDAO userDAO = DAOFactory.getUserDAO();
             userDAO.insertBaseUser(artist, conn);
 
             // 2. Esegue l'inserimento specifico dell'artista

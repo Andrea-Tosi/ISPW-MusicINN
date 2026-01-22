@@ -4,14 +4,22 @@ public abstract class User {
     protected String username;
     protected String email;
     protected String hashedPassword;
+    protected String paymentServiceAccountId;
 
-    protected User(String username, String email, String hashedPassword){
+    protected User(String username, String email, String password, String paymentServiceAccountId){
         this.username = username;
         this.email = email;
-        this.hashedPassword = hashedPassword;
+        this.hashedPassword = password;
+        this.paymentServiceAccountId = paymentServiceAccountId;
     }
 
     public User() {
+    }
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.hashedPassword = password;
     }
 
     public String getUsername() {
@@ -36,5 +44,13 @@ public abstract class User {
 
     public void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
+    }
+
+    public String getPaymentServiceAccountId() {
+        return paymentServiceAccountId;
+    }
+
+    public void setPaymentServiceAccountId(String paymentServiceAccountId) {
+        this.paymentServiceAccountId = paymentServiceAccountId;
     }
 }

@@ -33,15 +33,16 @@ public class UserDAODatabase implements UserDAO {
                     String username = rs.getString("username");
                     String email = rs.getString("email");
                     String password = rs.getString("password");
+                    String paymentServiceAccountId = rs.getString("payment_service_account_id");
 
                     // Logica di distinzione
                     if (rs.getString("artist_check") != null) {
                         // È un Artista: qui dovresti recuperare anche gli altri campi
                         // (stage_name, etc.) o fare una query specifica in ArtistDAO
-                        return new Artist(username, email, password);
+                        return new Artist(username, email, password, paymentServiceAccountId);
                     } else if (rs.getString("manager_check") != null) {
                         // È un Manager
-                        return new Manager(username, email, password);
+                        return new Manager(username, email, password, paymentServiceAccountId);
                     }
                 }
             }
@@ -56,11 +57,12 @@ public class UserDAODatabase implements UserDAO {
      * Riceve la connessione per partecipare a una transazione esterna.
      */
     public void insertBaseUser(User user, Connection conn) throws SQLException {
-        String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (username, email, password, payment_service_account_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getHashedPassword());
+            ps.setString(4, user.getPaymentServiceAccountId());
             ps.executeUpdate();
         }
     }

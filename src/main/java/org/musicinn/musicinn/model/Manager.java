@@ -7,9 +7,13 @@ public class Manager extends User{
     private Venue activeVenue;
     private List<Venue> venueList;
 
-    public Manager(String username, String email,String password) {
-        super(username, email, password);
+    public Manager(String username, String email,String password, String paymentServiceAccountId) {
+        super(username, email, password, paymentServiceAccountId);
         venueList = new ArrayList<>();
+    }
+
+    public Manager(String username, String email, String password) {
+        super(username, email, password);
     }
 
     public Venue getActiveVenue() {

@@ -1,5 +1,6 @@
 package org.musicinn.musicinn.controller.controller_gui;
 
+import com.stripe.exception.StripeException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -204,13 +205,18 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         ArtistRegistrationBean artistRegistrationBean = new ArtistRegistrationBean(stageName, typeArtist, doesUnreleased, city, address);
         artistRegistrationBean.setGenresList(genreList);
 
-        LoginController loginController = LoginController.getSingletonInstance();
-        loginController.completeSignup(artistRegistrationBean);
+        try {
+            LoginController loginController = LoginController.getSingletonInstance();
+            loginController.completeSignup(artistRegistrationBean);
 
-        Scene currentScene = statusLabel.getScene();
-        Stage stage = (Stage) currentScene.getWindow();
-        String fxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
+            Scene currentScene = statusLabel.getScene();
+            Stage stage = (Stage) currentScene.getWindow();
+            String fxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
 
-        NavigationGUI.navigateToPath(stage, fxmlPath);
+            NavigationGUI.navigateToPath(stage, fxmlPath);
+        } catch (StripeException e) {
+            e.printStackTrace();
+            statusLabel.setText("C'è stato un problema con il servizio di pagamento per la creazione dell'account");
+        }
     }
 }
