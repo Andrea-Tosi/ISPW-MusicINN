@@ -1,28 +1,51 @@
 package org.musicinn.musicinn.util.dao.database;
 
+import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.ManagerRider;
 import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
 import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class VenueDAODatabase implements VenueDAO {
     @Override
-    public void create(Venue venue, String managerUsername) {
-        String sql = "INSERT INTO venues (name, city, address, type_venue, manager_username) VALUES (?, ?, ?, ?, ?)";
+    public void create(Venue venue, Manager manager) {
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try {
+            conn.setAutoCommit(false);
+
+            // Crea User e Manager (active_venue è NULL per ora)
+            ManagerDAO managerDAO = DAOFactory.getManagerDAO();
+            managerDAO.create(manager);
+
+            // Inserisce Venue e recupera l'ID generato
+            int venueId = insertVenueAndGetId(venue, manager.getUsername());
+
+            // Aggiorna il Manager con l'ID della Venue attiva
+            updateManagerActiveVenue(manager.getUsername(), venueId, conn);
+
+            conn.commit();
+        } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            e.printStackTrace();
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    private int insertVenueAndGetId(Venue venue, String managerUsername) throws SQLException {
+        String sql = "INSERT INTO venues (name, city, address, type_venue, manager_username, is_active) VALUES (?, ?, ?, ?, ?, 1)";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
-        // Non uso transazioni qui perché il commit "grosso"
-        // è già gestito nel ManagerDAO (o viene chiamato subito dopo)
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, venue.getName());
             ps.setString(2, venue.getCity());
             ps.setString(3, venue.getAddress());
@@ -31,11 +54,32 @@ public class VenueDAODatabase implements VenueDAO {
 
             ps.executeUpdate();
             System.out.println("✅ Locale '" + venue.getName() + "' registrato nel DB!");
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Restituisce l'ID generato da MySQL
+                } else {
+                    throw new SQLException("Errore: ID Venue non generato.");
+                }
+            }
         }
     }
 
+private void updateManagerActiveVenue(String username, int venueId, Connection conn) throws SQLException {
+    String sql = "UPDATE managers SET active_venue = ? WHERE username = ?";
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, venueId);
+        ps.setString(2, username);
+
+        int rows = ps.executeUpdate();
+        if (rows == 0) {
+            throw new SQLException("Aggiornamento manager fallito: manager non trovato.");
+        }
+    }
+}
+
+    @Override
     public int getActiveVenueIdByManager(String managerUsername) throws DatabaseException {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
         // Cerchiamo l'ID basandoci sullo username del manager e sullo stato del locale
@@ -49,7 +93,7 @@ public class VenueDAODatabase implements VenueDAO {
                     return rs.getInt("id");
                 } else {
                     // Se un manager non ha una venue attiva, non può avere un rider
-                    throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
+                    throw new DatabaseException("Errore: Il gestore non ha locali attivi.");
                 }
             }
         } catch (SQLException e) {
@@ -87,4 +131,33 @@ public class VenueDAODatabase implements VenueDAO {
 
         return venue;
     }
+
+    public Venue findByApplicationId(int applicationId) throws DatabaseException {
+        Venue venue = null;
+
+        // Query con JOIN per risalire al locale partendo dall'ID dell'annuncio
+        String sql = "SELECT v.id, v.name " +
+                "FROM venues v " +
+                "JOIN announcements a ON v.id = a.venues_id " +
+                "WHERE a.id = ?";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, applicationId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    venue = new Venue();
+                    venue.setName(rs.getString("name"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException("Errore nel recupero del locale tramite annuncio: " + e.getMessage());
+        }
+
+        return venue;
+    }
 }
+//TODO correggere nel modello relazionale del database il fatto che nella relazione tra managers e venues, la chiave esterna è active_venue che coincide con l'id del locale attivo

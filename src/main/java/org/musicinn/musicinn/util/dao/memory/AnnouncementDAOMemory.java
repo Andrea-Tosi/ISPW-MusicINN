@@ -216,4 +216,14 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     public void updateAnnouncementState(Announcement ann) throws DatabaseException {
 
     }
+
+    @Override
+    public List<Announcement> findClosedByIdVenue(int venueId) throws DatabaseException {
+        return List.of();
+    }
+
+    @Override
+    public Announcement findByApplicationId(int id) throws DatabaseException {
+        return null;
+    }
 }

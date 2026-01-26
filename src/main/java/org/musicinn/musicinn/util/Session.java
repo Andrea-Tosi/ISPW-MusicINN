@@ -1,10 +1,13 @@
 package org.musicinn.musicinn.util;
 
+import org.musicinn.musicinn.model.User;
+
 public class Session {
     public enum UserRole{ARTIST, MANAGER}
     private UserRole role;
     private String username;
-
+    User user;
+//TODO cancellare username come attributo e correggere tutto ciò che è ad esso relativo
     public enum PersistenceType { DATABASE, MEMORY, FILE }
     public enum InterfaceType { GUI, CLI }
     private PersistenceType persistenceType = PersistenceType.DATABASE; // Default
@@ -34,6 +37,14 @@ public class Session {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public PersistenceType getPersistenceType() {

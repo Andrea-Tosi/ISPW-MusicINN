@@ -45,4 +45,9 @@ public class DAOFactory {
         if (isDemo()) return new ApplicationDAOMemory();
         return new ApplicationDAODatabase();
     }
+
+    public static PaymentDAO getPaymentDAO() {
+        if (isDemo()) return new PaymentDAOMemory();
+        return new PaymentDAODatabase();
+    }
 }

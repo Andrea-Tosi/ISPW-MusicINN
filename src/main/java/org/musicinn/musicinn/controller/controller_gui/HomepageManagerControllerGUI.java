@@ -58,5 +58,13 @@ public class HomepageManagerControllerGUI implements Initializable {
         Stage stage = (Stage) currentScene.getWindow();
         NavigationGUI.navigateToPath(stage, nextFxmlPath);
     }
+
+    @FXML
+    public void handleManagePaymentsButton() {
+        String nextFxmlPath = FxmlPathLoader.getPath("fxml.payments.view");
+        Scene currentScene = managePaymentsButton.getScene();
+        Stage stage = (Stage) currentScene.getWindow();
+        NavigationGUI.navigateToPath(stage, nextFxmlPath);
+    }
 }
 //TODO prima di consentire il click su qualsiasi bottone, far compilare all'utente il rider tecnico

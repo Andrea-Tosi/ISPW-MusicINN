@@ -84,4 +84,59 @@ public class ApplicationDAODatabase implements ApplicationDAO {
             throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio");
         }
     }
+
+    @Override
+    public Application findAcceptedByAnnouncement(int announcementId) throws DatabaseException {
+        Application acceptedApp = null;
+
+        // Cerchiamo la candidatura che è stata accettata per quel determinato annuncio
+        String sql = "SELECT * FROM applications WHERE announcements_id = ? AND state = 'ACCEPTED'";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, announcementId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    acceptedApp = new Application();
+                    acceptedApp.setId(rs.getInt("id"));
+                    acceptedApp.setUsernameArtist(rs.getString("artists_username"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero della candidatura accettata: " + e.getMessage());
+        }
+
+        return acceptedApp;
+    }
+
+    public List<Application> findAcceptedByArtist(String artistUsername) throws DatabaseException {
+        List<Application> acceptedApplications = new ArrayList<>();
+
+        // Query per recuperare le candidature accettate di uno specifico artista
+        String sql = "SELECT * FROM applications WHERE artists_username = ? AND state = 'ACCEPTED'";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, artistUsername);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Application app = new Application();
+
+                    app.setId(rs.getInt("id"));
+                    app.setState(ApplicationState.valueOf(rs.getString("state")));
+                    // Se hai altri campi come la data di sottomissione, caricali qui
+
+                    acceptedApplications.add(app);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero delle candidature accettate dell'artista: " + e.getMessage());
+        }
+
+        return acceptedApplications;
+    }
 }

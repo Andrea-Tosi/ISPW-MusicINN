@@ -20,33 +20,52 @@ public class ArtistDAODatabase implements ArtistDAO {
     @Override
     public void create(Artist artist) {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+        System.out.println("DEBUG: Inizio procedura DAO per " + artist.getUsername());
         try {
             conn.setAutoCommit(false);
+            System.out.println("DEBUG: AutoCommit impostato a false");
 
             // 1. Delega la creazione dell'utente base
             UserDAO userDAO = DAOFactory.getUserDAO();
+            System.out.println("DEBUG: Tentativo inserimento BaseUser con ID Stripe: " + artist.getPaymentServiceAccountId());
             userDAO.insertBaseUser(artist, conn);
+            System.out.println("DEBUG: BaseUser inserito");
 
             // 2. Esegue l'inserimento specifico dell'artista
-            String sqlArtist = "INSERT INTO artists (username, stage_name, city, address, does_unreleased, type_artist) VALUES (?, ?, ?, ?, ?, ?)";
+            String sqlArtist = "INSERT INTO artists (username, stage_name, city, address, does_unreleased) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sqlArtist)) {
                 ps.setString(1, artist.getUsername());
                 ps.setString(2, artist.getStageName());
                 ps.setString(3, artist.getCity());
                 ps.setString(4, artist.getAddress());
                 ps.setBoolean(5, artist.getDoesUnreleased());
-                ps.setString(6, artist.getTypeArtist().toString());
-                ps.executeUpdate();
+                int affectedRows = ps.executeUpdate();
+                System.out.println("DEBUG: Eseguito update su artists. Righe colpite: " + affectedRows);
             }
 
             // 3. Inserimento generi (Responsabilità specifica)
             insertGenres(artist, conn);
 
+            insertType(artist, conn);
+
             conn.commit();
+            System.out.println("DEBUG: COMMIT EFFETTUATO!");
         } catch (SQLException e) {
-            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            System.err.println("!!! ECCEZIONE RILEVATA NEL DAO !!!");
+            e.printStackTrace();
+            try {
+                conn.rollback();
+                System.err.println("DEBUG: Rollback eseguito dopo errore");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         } finally {
-            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+            try {
+                conn.setAutoCommit(true);
+                System.out.println("DEBUG: AutoCommit resettato a true");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -58,6 +77,15 @@ public class ArtistDAODatabase implements ArtistDAO {
                 ps.setString(2, genre.toString());
                 ps.executeUpdate();
             }
+        }
+    }
+
+    private void insertType(Artist artist, Connection conn) throws SQLException {
+        String sql = "INSERT INTO artists_has_artist_types (artists_username, artist_types_type) VALUES (?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, artist.getUsername());
+            ps.setString(2, artist.getTypeArtist().toString());
+            ps.executeUpdate();
         }
     }
 

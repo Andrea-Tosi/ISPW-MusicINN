@@ -14,6 +14,7 @@ public class Manager extends User{
 
     public Manager(String username, String email, String password) {
         super(username, email, password);
+        venueList = new ArrayList<>();
     }
 
     public Venue getActiveVenue() {

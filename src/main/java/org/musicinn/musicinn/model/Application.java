@@ -11,6 +11,8 @@ public class Application implements Observer {
     private LocalDateTime soundcheckTime;
     private ApplicationState state; //TODO da applicare pattern observer
     private Double score;
+    private Payment payment;
+    private String usernameArtist;
 
     @Override
     public int getId() {
@@ -50,5 +52,21 @@ public class Application implements Observer {
         if (announcementState.equals(AnnouncementState.CLOSED) && state.equals(ApplicationState.PENDING)) {
             state = ApplicationState.REJECTED;
         }
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public String getUsernameArtist() {
+        return usernameArtist;
+    }
+
+    public void setUsernameArtist(String usernameArtist) {
+        this.usernameArtist = usernameArtist;
     }
 }

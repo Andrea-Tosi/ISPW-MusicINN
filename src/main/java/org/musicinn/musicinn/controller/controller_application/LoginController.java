@@ -54,6 +54,7 @@ public class LoginController {
                     Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);
                 }
                 Session.getSingletonInstance().setUsername(credentialsBean.getUsername());
+                Session.getSingletonInstance().setUser(user);
                 return user;
             } else {
                 System.out.println("password relativa a " + user.getUsername() + " errata");
@@ -102,6 +103,7 @@ public class LoginController {
         artistDAO.create(artist);
 
         Session.getSingletonInstance().setUsername(cb.getUsername());
+        Session.getSingletonInstance().setUser(artist);
         Session.getSingletonInstance().setRole(Session.UserRole.ARTIST);
     }
 
@@ -114,12 +116,12 @@ public class LoginController {
         PaymentService ps = new StripeService();
         manager.setPaymentServiceAccountId(ps.createPaymentAccount(manager.getEmail())); //TODO da correggere altrimenti il controller avrebbe collegamento forte con l'adapter (implementazione concreta dell'interfaccia PaymentService)
 
-        ManagerDAO managerDAO = DAOFactory.getManagerDAO();
-        managerDAO.create(manager);
+        // salva sia i dati del locale, sia quelli del manager
         VenueDAO venueDAO = DAOFactory.getVenueDAO();
-        venueDAO.create(venue, manager.getUsername());
+        venueDAO.create(venue, manager);
 
         Session.getSingletonInstance().setUsername(cb.getUsername());
+        Session.getSingletonInstance().setUser(manager);
         Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);
     }
 }

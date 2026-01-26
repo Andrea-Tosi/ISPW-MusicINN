@@ -419,4 +419,71 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio");
         }
     }
+
+    @Override
+    public List<Announcement> findClosedByIdVenue(int venueId) throws DatabaseException {
+        List<Announcement> announcements = new ArrayList<>();
+
+        // Query per selezionare gli annunci chiusi di una specifica venue
+        String sql = "SELECT * FROM announcements WHERE venues_id = ? AND state = 'CLOSED'";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, venueId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Announcement ann = new Announcement();
+
+                    // Mappatura dei campi della tabella announcements
+                    ann.setId(rs.getInt("id"));
+                    ann.setCachet(rs.getDouble("cachet"));
+                    ann.setDeposit(rs.getDouble("deposit"));
+
+                    // Conversione date e orari SQL -> Java Time
+                    ann.setStartEventDay(rs.getDate("start_day").toLocalDate());
+                    ann.setStartEventTime(rs.getTime("start_time").toLocalTime());
+
+                    announcements.add(ann);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero degli annunci chiusi: " + e.getMessage());
+        }
+
+        return announcements;
+    }
+
+    @Override
+    public Announcement findByApplicationId(int id) throws DatabaseException {
+        Announcement announcement = null;
+
+        // Partiamo dall'ID dell'applicazione per trovare l'annuncio corrispondente
+        String sql = "SELECT a.* FROM announcements a " +
+                "JOIN applications app ON a.id = app.announcements_id " +
+                "WHERE app.id = ?";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    announcement = new Announcement();
+                    announcement.setId(rs.getInt("id"));
+                    announcement.setCachet(rs.getDouble("cachet"));
+                    announcement.setDeposit(rs.getDouble("deposit"));
+                    announcement.setStartEventDay(rs.getDate("start_day").toLocalDate());
+                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
+                    announcement.setState(AnnouncementState.valueOf(rs.getString("state")));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero dell'annuncio tramite applicazione: " + e.getMessage());
+        }
+
+        return announcement;
+    }
 }

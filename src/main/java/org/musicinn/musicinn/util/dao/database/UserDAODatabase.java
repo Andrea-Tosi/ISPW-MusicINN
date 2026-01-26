@@ -64,6 +64,9 @@ public class UserDAODatabase implements UserDAO {
             ps.setString(3, user.getHashedPassword());
             ps.setString(4, user.getPaymentServiceAccountId());
             ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 }

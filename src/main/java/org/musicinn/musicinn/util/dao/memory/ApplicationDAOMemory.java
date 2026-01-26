@@ -22,4 +22,14 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     public void updateApplicationState(Application app) throws DatabaseException {
 
     }
+
+    @Override
+    public Application findAcceptedByAnnouncement(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Application> findAcceptedByArtist(String artistUsername) throws DatabaseException {
+        return List.of();
+    }
 }

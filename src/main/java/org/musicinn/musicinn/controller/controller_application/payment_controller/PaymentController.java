@@ -1,0 +1,223 @@
+package org.musicinn.musicinn.controller.controller_application.payment_controller;
+
+import org.musicinn.musicinn.model.*;
+import org.musicinn.musicinn.util.PaymentService;
+import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.bean.ApplicationBean;
+import org.musicinn.musicinn.util.bean.PaymentBean;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.dao.interfaces.PaymentDAO;
+import org.musicinn.musicinn.util.enumerations.EscrowState;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PaymentController {
+    private final PaymentService paymentService;
+    private static final int DAYS_OF_DEADLINE = 5;
+
+    // Il costruttore è protected perché può essere chiamato solamente da PaymentServiceFactory
+    protected PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
+    public int createPayment(ApplicationBean applicationBean) throws DatabaseException {
+        try {
+            PaymentDAO paymentDAO = DAOFactory.getPaymentDAO();
+            paymentDAO.save(applicationBean.getId(), DAYS_OF_DEADLINE);
+        } catch (DatabaseException e) {
+            throw e;
+        }
+        return DAYS_OF_DEADLINE;
+    }
+
+    public List<PaymentBean> getPayments() throws DatabaseException {
+        String username = Session.getSingletonInstance().getUsername();
+
+        if (Session.UserRole.MANAGER.equals(Session.getSingletonInstance().getRole())) {
+            return getPaymentsForManager(username);
+        } else {
+            return getPaymentsForArtist(username);
+        }
+    }
+
+    private List<PaymentBean> getPaymentsForManager(String username) throws DatabaseException {
+        List<PaymentBean> beans = new ArrayList<>();
+
+        // 1. Recupero la Venue gestita dal manager
+        int idVenue = DAOFactory.getVenueDAO().getActiveVenueIdByManager(username);
+
+        // 2. Recupero tutti gli annunci chiusi per quella venue
+        List<Announcement> closedAnnouncements = DAOFactory.getAnnouncementDAO().findClosedByIdVenue(idVenue);
+
+        for (Announcement ann : closedAnnouncements) {
+            // 3. Per ogni annuncio, cerco la candidatura che è stata accettata
+            Application acceptedApp = DAOFactory.getApplicationDAO().findAcceptedByAnnouncement(ann.getId());
+
+            // Se esiste una candidatura accettata, procedo con il recupero dei dati di pagamento
+            if (acceptedApp != null) {
+                // 4. Recupero il record di pagamento legato alla candidatura
+                Payment payment = DAOFactory.getPaymentDAO().findByApplicationId(acceptedApp.getId());
+
+                // 5. Recupero lo stage name dell'artista (necessario per la card del manager)
+                Artist artist = DAOFactory.getArtistDAO().read(acceptedApp.getUsernameArtist());
+
+                // 6. Assemblo il Bean per la GUI
+                if (payment.getPaymentDeadline().isAfter(LocalDateTime.now())) {
+                    beans.add(createPaymentBean(payment, ann, artist, acceptedApp.getId()));
+                } else if (!payment.getState().equals(EscrowState.REFUNDED)) {
+                    List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(acceptedApp.getId());
+
+                    for (String intentId : peopleToRefund) {
+                        try {
+                            paymentService.issueRefund(intentId);
+                        } catch (Exception e) {
+                            System.err.println("Fallito rimborso automatico on-access per: " + intentId);
+                        }
+                    }
+                }
+            }
+        }
+        return beans;
+    }
+
+    private PaymentBean createPaymentBean(Payment p, Announcement ann, Artist artist, int appId) {
+        PaymentBean bean = new PaymentBean();
+
+        bean.setArtistStageName(artist.getStageName());
+        bean.setId(appId);
+        bean.setCachet(ann.getCachet());
+        bean.setDeposit(ann.getDeposit());
+        bean.setStartingDate(ann.getStartEventDay());
+        bean.setStartingTime(ann.getStartEventTime());
+        bean.setPaymentDeadline(p.getPaymentDeadline());
+        bean.setPaymentDeadlineString(formatRemainingTime(p.getPaymentDeadline()));
+        bean.setCachetPaid(p.getManagerPaymentIntentId() != null);
+        bean.setDepositPaid(p.getArtistPaymentIntentId() != null);
+
+        return bean;
+    }
+
+    private List<PaymentBean> getPaymentsForArtist(String username) throws DatabaseException {
+        List<PaymentBean> beans = new ArrayList<>();
+
+        // 1. Chiedo le mie candidature accettate
+        List<Application> applications = DAOFactory.getApplicationDAO().findAcceptedByArtist(username);
+
+        for (Application app : applications) {
+            // 2. Chiedo il record di pagamento
+            Payment payment = DAOFactory.getPaymentDAO().findByApplicationId(app.getId());
+
+            // 3. Chiedo i dettagli dell'annuncio
+            Announcement announcement = DAOFactory.getAnnouncementDAO().findByApplicationId(app.getId());
+
+            // 4. Chiedo i dettagli del locale (il passo aggiuntivo che hai citato)
+            Venue venue = DAOFactory.getVenueDAO().findByApplicationId(announcement.getId());
+
+            // 5. Impacchetto tutto nel Bean per la GUI
+            if (payment.getPaymentDeadline().isAfter(LocalDateTime.now())) {
+                beans.add(createArtistPaymentBean(payment, announcement, venue, app.getId()));
+            } else if (!payment.getState().equals(EscrowState.REFUNDED)) {
+                List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(app.getId());
+
+                for (String intentId : peopleToRefund) {
+                    try {
+                        paymentService.issueRefund(intentId);
+                    } catch (Exception e) {
+                        System.err.println("Fallito rimborso automatico on-access per: " + intentId);
+                    }
+                }
+            }
+        }
+        return beans;
+    }
+
+    private PaymentBean createArtistPaymentBean(Payment p, Announcement ann, Venue venue, int appId) {
+        PaymentBean bean = new PaymentBean();
+
+        bean.setVenueName(venue.getName());
+        bean.setId(appId);
+        bean.setCachet(ann.getCachet());
+        bean.setDeposit(ann.getDeposit());
+        bean.setPaymentDeadline(p.getPaymentDeadline());
+        bean.setPaymentDeadlineString(formatRemainingTime(p.getPaymentDeadline()));
+        bean.setStartingDate(ann.getStartEventDay());
+        bean.setStartingTime(ann.getStartEventTime());
+        bean.setCachetPaid(p.getManagerPaymentIntentId() != null);
+        bean.setDepositPaid(p.getArtistPaymentIntentId() != null);
+
+        return bean;
+    }
+
+    private String formatRemainingTime(LocalDateTime deadline) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Se la deadline è già passata
+        if (now.isAfter(deadline)) {
+            return "Tempo scaduto";
+        }
+
+        Duration duration = Duration.between(now, deadline);
+
+        long days = duration.toDays();
+        if (days > 0) {
+            return days + (days == 1 ? " giorno" : " giorni");
+        }
+
+        long hours = duration.toHours();
+        if (hours > 0) {
+            return hours + (hours == 1 ? " ora" : " ore");
+        }
+
+        long minutes = duration.toMinutes();
+        if (minutes > 0) {
+            return minutes + (minutes == 1 ? " minuto" : " minuti");
+        }
+
+        return "Pochi secondi";
+    }
+
+    public String getPaymentUrl(PaymentBean bean) throws Exception {
+        return paymentService.getCheckoutSessionUrl(bean);
+    }
+
+    public void finalizePayment(int applicationId, String transactionId) {
+        try {
+            DAOFactory.getPaymentDAO().updatePaymentState(applicationId, Session.getSingletonInstance().getRole(), transactionId);
+
+            System.out.println("DB aggiornato con successo per l'applicazione: " + applicationId);
+        } catch (DatabaseException e) {
+            System.err.println("ERRORE CRITICO: Pagamento Stripe OK, ma DB non aggiornato: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Verifica se il pagamento è ancora processabile.
+     * Se scaduto, aggiorna lo stato sul DB prima di ritornare il risultato.
+     */
+    public boolean isPaymentStillValid(PaymentBean bean) throws DatabaseException {
+        if (bean.getPaymentDeadline().isBefore(LocalDateTime.now())) {
+            // 1. Aggiorna il DB e prendi gli ID delle transazioni da rimborsare
+            List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
+            // Logica di "Auto-pulizia": se è scaduto, lo marchiamo nel DB
+            // 2. Esegui il rimborso reale su Stripe per ogni transazione trovata
+            for (String id : peopleToRefund) {
+                try {
+                    paymentService.issueRefund(id);
+                } catch (Exception e) {
+                    // Logga l'errore: il DB è REFUNDED ma Stripe ha fallito (rari casi)
+                    throw new DatabaseException("Rimborso Stripe fallito per: " + id);
+                }
+            }
+            return false; // Scaduto
+        }
+        return true; // Ancora valido
+    }
+
+    public String getTransactionId(String session) throws Exception {
+        return paymentService.getPaymentIntentFromSession(session);
+    }
+}

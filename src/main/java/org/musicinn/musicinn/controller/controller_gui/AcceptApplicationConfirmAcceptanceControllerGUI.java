@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.musicinn.musicinn.controller.controller_application.AcceptApplicationController;
+import org.musicinn.musicinn.controller.controller_application.payment_controller.PaymentController;
+import org.musicinn.musicinn.controller.controller_application.payment_controller.PaymentServiceFactory;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
@@ -37,10 +39,11 @@ public class AcceptApplicationConfirmAcceptanceControllerGUI {
     @FXML
     private void handleConfirmButton() {
         try {
-            AcceptApplicationController controller = AcceptApplicationController.getSingletonInstance();
-            controller.chooseApplication(announcementBean, applicationBean);
+            AcceptApplicationController acceptApplicationController = AcceptApplicationController.getSingletonInstance();
+            acceptApplicationController.chooseApplication(announcementBean, applicationBean);
 
-            int daysOfDeadline = 5;
+            PaymentController paymentController = PaymentServiceFactory.getPaymentController();
+            int daysOfDeadline = paymentController.createPayment(applicationBean);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Hai " + daysOfDeadline + " giorni di tempo\nper versare il cachet al conto di escrow.\nSarai reindirizzato alla homepage,\nper gestire i pagamenti vai alla sezione apposita.");
             alert.showAndWait();

@@ -24,7 +24,7 @@
                </font>
             </Button>
             <Region VBox.vgrow="ALWAYS" />
-            <Button fx:id="managePaymentsButton" layoutX="66.0" layoutY="117.0" mnemonicParsing="false" prefWidth="250.0" style="-fx-background-radius: 50; -fx-border-radius: 50;" text="Gestisci Pagamenti" VBox.vgrow="NEVER">
+            <Button fx:id="managePaymentsButton" onAction="#handleManagePaymentsButton" layoutX="66.0" layoutY="117.0" mnemonicParsing="false" prefWidth="250.0" style="-fx-background-radius: 50; -fx-border-radius: 50;" text="Gestisci Pagamenti" VBox.vgrow="NEVER">
                <font>
                   <Font size="24.0" />
                </font>
