@@ -10,4 +10,5 @@ public interface ArtistDAO {
     public void create(Artist artist);
     Artist read(String username) throws DatabaseException;
     List<MusicalGenre> loadArtistGenres(String username) throws DatabaseException;
+    String findStageNameByAnnouncementId(int announcementId) throws DatabaseException;
 }

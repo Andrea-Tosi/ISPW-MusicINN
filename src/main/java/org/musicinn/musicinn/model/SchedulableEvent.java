@@ -5,11 +5,20 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public abstract class SchedulableEvent {
+    private int id;
     private LocalDate startEventDay;
     private LocalDate endEventDay;
     private LocalTime startEventTime;
     private LocalTime endEventTime;
     private Duration duration;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public LocalDate getStartEventDay() {
         return startEventDay;

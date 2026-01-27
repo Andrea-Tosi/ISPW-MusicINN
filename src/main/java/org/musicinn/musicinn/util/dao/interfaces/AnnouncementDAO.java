@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface AnnouncementDAO {
     List<SchedulableEvent> getEventsByDate(LocalDate startingDate) throws DatabaseException;
+    List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) throws DatabaseException;
     void save(Announcement announcement) throws DatabaseException;
     List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) throws DatabaseException;
     void updateAnnouncementState(Announcement ann) throws DatabaseException;

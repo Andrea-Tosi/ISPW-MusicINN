@@ -2,19 +2,26 @@ package org.musicinn.musicinn.controller.controller_gui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.musicinn.musicinn.controller.controller_application.CalendarController;
+import org.musicinn.musicinn.util.FxmlPathLoader;
+import org.musicinn.musicinn.util.bean.SchedulableEventBean;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -34,11 +41,14 @@ public class CalendarControllerGUI implements Initializable {
     @FXML
     private GridPane calendarGrid;
 
+    private final List<CalendarCellControllerGUI> cellControllersGUI = new ArrayList<>();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        drawCalendar(LocalDate.now().getYear(),  LocalDate.now().getMonth().getValue());
         setupMonthComboBox();
         setupYearComboBox();
+        setupCalendarStructure();
+        drawCalendar(LocalDate.now().getYear(),  LocalDate.now().getMonth().getValue());
     }
 
     private void updateButtonsState() {
@@ -107,6 +117,26 @@ public class CalendarControllerGUI implements Initializable {
         });
     }
 
+    private void setupCalendarStructure() {
+        for (int currentCell = 0; currentCell < 42; currentCell++) {
+            try {
+                String fxmlPath = FxmlPathLoader.getPath("fxml.calendar.cell");
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                VBox cellNode = loader.load();
+                CalendarCellControllerGUI cellControllerGUI = loader.getController();
+
+                cellControllersGUI.add(cellControllerGUI);
+                calendarGrid.add(cellNode, currentCell % 7, currentCell / 7);
+
+                // Impostiamo constraints per il ridimensionamento
+                GridPane.setHgrow(cellNode, Priority.ALWAYS);
+                GridPane.setVgrow(cellNode, Priority.ALWAYS);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @FXML
     void handleNextMonth(ActionEvent event) {
         Month currentMonth = monthComboBox.getValue();
@@ -145,64 +175,40 @@ public class CalendarControllerGUI implements Initializable {
     private void drawCalendar(int year, int month) {
         LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
         int daysInMonth = firstDayOfMonth.lengthOfMonth();
-
         int dayOfWeekOffset = firstDayOfMonth.getDayOfWeek().getValue() - 1;
 
-        int currentDay = 1;
+        for (int currentCell = 0; currentCell < 42; currentCell++) { // 6 righe * 7 colonne
+            CalendarCellControllerGUI cellControllerGUI = cellControllersGUI.get(currentCell);
+            cellControllerGUI.resetCell();
 
-        setupRows(dayOfWeekOffset, daysInMonth);
+            int dayToDisplay = currentCell - dayOfWeekOffset + 1;
 
-        // Popolamento delle celle
-        // Partiamo dalla riga 1 e proseguiamo finché ci sono giorni
-        for (Node node : calendarGrid.getChildren()) {
-            Integer rowIndex = GridPane.getRowIndex(node);
-            Integer colIndex = GridPane.getColumnIndex(node);
+            if (dayToDisplay > 0 && dayToDisplay <= daysInMonth) {
+                LocalDate currentDate = LocalDate.of(year, month, dayToDisplay);
+                cellControllerGUI.setDay(dayToDisplay);
 
-            int row = (rowIndex == null) ? 0 : rowIndex;
-            int col = (colIndex == null) ? 0 : colIndex;
-
-            // Gestiamo solo i nodi dalla riga 1 in poi (i giorni)
-            if (node instanceof VBox cellContainer) {
-                if(row == 0 && col < dayOfWeekOffset) {
-                    node.setVisible(false); // Basta disabilitare la visibilità per eliminare eventuali interazioni (click, etc.) con node
-                } else if (currentDay > daysInMonth) {
-                    node.setVisible(false);
-                    node.setManaged(false);
-                } else {
-                    node.setVisible(true);
-                    node.setManaged(true);
-
-                    fillCell(cellContainer, currentDay);
-
-                    currentDay++;
+                fillCell(cellControllerGUI, currentDate);
+                // Logica per evidenziare oggi
+                if (LocalDate.now().equals(currentDate)) {
+                    cellControllerGUI.setAsToday();
                 }
             }
         }
         updateButtonsState();
     }
 
-    public void setupRows(int dayOfWeekOffset, int daysInMonth) {
-        // Somma l'offset del primo giorno ai giorni totali e dividiamo per 7 (colonne)
-        int totalSlotsOccupied = dayOfWeekOffset + daysInMonth;
-        int rowsNeeded = (int) Math.ceil(totalSlotsOccupied / 7.0);
+    private void fillCell(CalendarCellControllerGUI cellControllerGUI, LocalDate date) {
+        try {
+            CalendarController controller = new CalendarController();
+            // Recupera gli eventi per questa specifica data
+            List<SchedulableEventBean> events = controller.getEventsForDate(date);
 
-        for (int i = 0; i <= 5; i++) {
-            if (i <= rowsNeeded - 1) {
-                // Imposta la percentuale equa per le righe attive
-                calendarGrid.getRowConstraints().get(i).setPercentHeight(100.0 / rowsNeeded);
-            } else {
-                // Azzera la percentuale per le righe extra, facendole sparire
-                calendarGrid.getRowConstraints().get(i).setPercentHeight(0);
+            for (SchedulableEventBean event : events) {
+                cellControllerGUI.addEvent(event);
             }
+        } catch (DatabaseException e) {
+            System.err.println("Errore nell'interazione con il database per prelevare gli eventi");
         }
-    }
-
-    private void fillCell(VBox cellContainer, int currentDay) {
-        Label dayLabel = (Label) cellContainer.lookup("#dayLabel");
-        if (dayLabel != null) {
-            dayLabel.setText(String.valueOf(currentDay));
-        }
-        //TODO popolamento eventVBox
     }
 }
 //TODO stile CSS per dayLabel che indica giorno corrente

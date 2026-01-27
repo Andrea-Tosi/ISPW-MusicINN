@@ -25,4 +25,9 @@ public class VenueDAOMemory implements VenueDAO {
     public Venue findByApplicationId(int applicationId) throws DatabaseException {
         return null;
     }
+
+    @Override
+    public String findVenueNameByAnnouncementId(int announcementId) throws DatabaseException {
+        return "";
+    }
 }

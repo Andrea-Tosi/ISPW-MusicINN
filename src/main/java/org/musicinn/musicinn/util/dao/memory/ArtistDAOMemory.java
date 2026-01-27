@@ -22,4 +22,9 @@ public class ArtistDAOMemory implements ArtistDAO {
     public List<MusicalGenre> loadArtistGenres(String username) throws DatabaseException {
         return List.of();
     }
+
+    @Override
+    public String findStageNameByAnnouncementId(int announcementId) throws DatabaseException {
+        return "";
+    }
 }

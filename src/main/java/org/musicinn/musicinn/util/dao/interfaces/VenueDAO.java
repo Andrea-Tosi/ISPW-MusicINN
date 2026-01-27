@@ -12,4 +12,6 @@ public interface VenueDAO {
     Venue read(String usernameManager) throws DatabaseException;
 
     Venue findByApplicationId(int applicationId) throws DatabaseException;
+
+    String findVenueNameByAnnouncementId(int announcementId) throws DatabaseException;
 }

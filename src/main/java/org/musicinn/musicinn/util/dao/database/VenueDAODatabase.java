@@ -159,5 +159,31 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
 
         return venue;
     }
+
+    @Override
+    public String findVenueNameByAnnouncementId(int announcementId) throws DatabaseException {
+        String sql = "SELECT v.name FROM venues v " +
+                "JOIN announcements a ON v.id = a.id_venue " +
+                "WHERE a.id = ?";
+
+        String venueName = null;
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, announcementId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    venueName = rs.getString("name");
+                } else {
+                    // Opzionale: gestire il caso in cui l'annuncio non esista
+                    throw new DatabaseException("Nessun locale trovato per l'annuncio: " + announcementId);
+                }
+            }
+            return venueName;
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero del nome del locale: " + e.getMessage());
+        }
+    }
 }
 //TODO correggere nel modello relazionale del database il fatto che nella relazione tra managers e venues, la chiave esterna è active_venue che coincide con l'id del locale attivo

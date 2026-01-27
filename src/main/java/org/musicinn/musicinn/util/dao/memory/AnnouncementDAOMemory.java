@@ -46,6 +46,11 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
         return mockEvents;
     }
+
+    @Override
+    public List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) throws DatabaseException {
+        return List.of();
+    }
 //    public boolean save(Announcement a) throws SQLException {
 //        String sql = "INSERT INTO Announcements (event_date, start_time, duration, cachet) VALUES (?, ?, ?, ?)";
 //

@@ -1,0 +1,8 @@
+/* Stile per la Label del giorno attuale */
+.today-label {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-width: 20px;
+    -fx-alignment: center;
+}

@@ -173,25 +173,7 @@
                                           <Font name="System Bold" size="14.0" />
                                        </font>
                                     </Label>
-                                    <FlowPane fx:id="containerGenres" hgap="10.0" stylesheets="@style.css" vgap="10.0" VBox.vgrow="ALWAYS">
-<!--                                       <children>-->
-<!--                                          <ToggleButton fx:id="rockToggle" mnemonicParsing="false" text="Rock" />-->
-<!--                                          <ToggleButton fx:id="popToggle" mnemonicParsing="false" text="Pop" />-->
-<!--                                          <ToggleButton fx:id="jazzToggle" mnemonicParsing="false" text="Jazz" />-->
-<!--                                          <ToggleButton fx:id="rapToggle" mnemonicParsing="false" text="Rap" />-->
-<!--                                          <ToggleButton fx:id="trapToggle" mnemonicParsing="false" text="Trap" />-->
-<!--                                          <ToggleButton fx:id="reggaeToggle" mnemonicParsing="false" text="Reggae" />-->
-<!--                                          <ToggleButton fx:id="classicaToggle" mnemonicParsing="false" text="Classica" />-->
-<!--                                          <ToggleButton fx:id="metalToggle" mnemonicParsing="false" text="Metal" />-->
-<!--                                          <ToggleButton fx:id="indieToggle" mnemonicParsing="false" text="Indie" />-->
-<!--                                          <ToggleButton fx:id="soulToggle" mnemonicParsing="false" text="Soul" />-->
-<!--                                          <ToggleButton fx:id="ReBToggle" mnemonicParsing="false" text="R&amp;B" />-->
-<!--                                          <ToggleButton fx:id="funkToggle" mnemonicParsing="false" text="Funk" />-->
-<!--                                          <ToggleButton fx:id="discoToggle" mnemonicParsing="false" text="Disco" />-->
-<!--                                          <ToggleButton fx:id="technoToggle" mnemonicParsing="false" text="Techno" />-->
-<!--                                          <ToggleButton fx:id="elettronicaToggle" mnemonicParsing="false" text="Elettronica" />-->
-<!--                                          <ToggleButton fx:id="ambienteToggle" mnemonicParsing="false" text="Ambiente" />-->
-<!--                                       </children>-->
+                                    <FlowPane fx:id="containerGenres" hgap="10.0" stylesheets="@toggle-group-style.css" vgap="10.0" VBox.vgrow="ALWAYS">
                                        <opaqueInsets>
                                           <Insets />
                                        </opaqueInsets>
@@ -212,13 +194,7 @@
                                           <Font name="System Bold" size="14.0" />
                                        </font>
                                     </Label>
-                                    <FlowPane fx:id="containerTypeArtist" hgap="10.0" prefHeight="70.0" prefWidth="0.0" stylesheets="@style.css" vgap="10.0">
-<!--                                       <children>-->
-<!--                                          <ToggleButton fx:id="solistaToggle" mnemonicParsing="false" text="Solista" />-->
-<!--                                          <ToggleButton fx:id="bandToggle" mnemonicParsing="false" text="Band" />-->
-<!--                                          <ToggleButton fx:id="gruppoToggle" mnemonicParsing="false" text="Gruppo" />-->
-<!--                                          <ToggleButton fx:id="DJToggle" mnemonicParsing="false" text="DJ" />-->
-<!--                                       </children>-->
+                                    <FlowPane fx:id="containerTypeArtist" hgap="10.0" prefHeight="70.0" prefWidth="0.0" stylesheets="@toggle-group-style.css" vgap="10.0">
                                        <opaqueInsets>
                                           <Insets />
                                        </opaqueInsets>

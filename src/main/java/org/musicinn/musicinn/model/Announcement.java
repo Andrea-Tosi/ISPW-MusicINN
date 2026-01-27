@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Announcement extends SchedulableEvent implements Subject {
-    private int id;
     private Double cachet;
     private Double deposit;
     private LocalDateTime soundcheckTime;
@@ -28,14 +27,6 @@ public class Announcement extends SchedulableEvent implements Subject {
         this.requestedGenres = new ArrayList<>();
         this.requestedTypesArtist = new ArrayList<>();
         this.applicationList = new ArrayList<>();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Double getCachet() {

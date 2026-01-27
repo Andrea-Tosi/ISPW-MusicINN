@@ -140,4 +140,29 @@ public class ArtistDAODatabase implements ArtistDAO {
         }
         return genres;
     }
+
+    @Override
+    public String findStageNameByAnnouncementId(int announcementId) throws DatabaseException {
+        String sql = "SELECT a.stage_name FROM artists a " +
+                "JOIN applications app ON a.username = app.username_artist " +
+                "WHERE app.id_announcement = ? AND app.state = 'ACCEPTED'";
+
+        String stageName = null;
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, announcementId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    stageName = rs.getString("stage_name");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero dello stage name: " + e.getMessage());
+        }
+
+        return stageName;
+    }
 }

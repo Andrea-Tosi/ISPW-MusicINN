@@ -53,6 +53,84 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     @Override
+    public List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) throws DatabaseException {
+        if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) {
+            return getConfirmedEventsByDateForArtist(startingDate);
+        } else if (Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER)) {
+            return getConfirmedEventsByDateForManager(startingDate);
+        }
+        return null;
+    }
+
+    public List<SchedulableEvent> getConfirmedEventsByDateForArtist(LocalDate startingDate) throws DatabaseException {
+        List<SchedulableEvent> events = new ArrayList<>();
+        String artistUser = Session.getSingletonInstance().getUsername();
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        String query = "SELECT a.id, a.start_time, a.duration " +
+                "FROM announcements a " +
+                "JOIN applications app ON a.id = app.id " +
+                "WHERE a.start_day = ? " +
+                "AND app.artists_username = ? " +
+                "AND app.state = 'ACCEPTED'";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setDate(1, java.sql.Date.valueOf(startingDate));
+            pstmt.setString(2, artistUser);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Announcement announcement = new Announcement();
+                    announcement.setId(rs.getInt("id"));
+                    announcement.setStartEventDay(startingDate);
+                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
+                    announcement.setDuration(Duration.ofMinutes(rs.getLong("duration")));
+
+                    events.add(announcement);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException("Errore nel recupero degli eventi confermati per l'artista: " + e.getMessage());
+        }
+        return events;
+    }
+
+    public List<SchedulableEvent> getConfirmedEventsByDateForManager(LocalDate startingDate) throws DatabaseException {
+        List<SchedulableEvent> events = new ArrayList<>();
+        String managerUser = Session.getSingletonInstance().getUsername();
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        String query = "SELECT id, start_time, duration FROM announcements WHERE start_day = ? AND venues_id = ? AND state = 'CLOSED'";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            VenueDAO venueDAO = DAOFactory.getVenueDAO();
+            int venueId = ((VenueDAODatabase) venueDAO).getActiveVenueIdByManager(managerUser);
+
+            pstmt.setDate(1, java.sql.Date.valueOf(startingDate));
+            pstmt.setInt(2, venueId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Announcement announcement = new Announcement();
+                    announcement.setStartEventDay(startingDate);
+                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
+                    announcement.setDuration(Duration.ofMinutes(rs.getLong("duration")));
+
+                    // SchedulableEvent è l'interfaccia o classe base per Calendar
+                    events.add(announcement);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
+        }
+        return events;
+    }
+
+    @Override
     public void save(Announcement announcement) throws DatabaseException {
         String managerUser = Session.getSingletonInstance().getUsername();
 
