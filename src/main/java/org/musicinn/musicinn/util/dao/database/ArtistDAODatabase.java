@@ -144,8 +144,8 @@ public class ArtistDAODatabase implements ArtistDAO {
     @Override
     public String findStageNameByAnnouncementId(int announcementId) throws DatabaseException {
         String sql = "SELECT a.stage_name FROM artists a " +
-                "JOIN applications app ON a.username = app.username_artist " +
-                "WHERE app.id_announcement = ? AND app.state = 'ACCEPTED'";
+                "JOIN applications app ON a.username = app.artists_username " +
+                "WHERE app.announcements_id = ? AND app.state = 'ACCEPTED'";
 
         String stageName = null;
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
@@ -160,6 +160,7 @@ public class ArtistDAODatabase implements ArtistDAO {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseException("Errore nel recupero dello stage name: " + e.getMessage());
         }
 

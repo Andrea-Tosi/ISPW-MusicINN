@@ -25,7 +25,7 @@ public class CalendarController {
             if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) {
                 bean.setVenueName(DAOFactory.getVenueDAO().findVenueNameByAnnouncementId(event.getId()));
             } else if (Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER)) {
-                bean.setVenueName(DAOFactory.getArtistDAO().findStageNameByAnnouncementId(event.getId()));
+                bean.setArtistStageName(DAOFactory.getArtistDAO().findStageNameByAnnouncementId(event.getId()));
             }
             beans.add(bean);
         }

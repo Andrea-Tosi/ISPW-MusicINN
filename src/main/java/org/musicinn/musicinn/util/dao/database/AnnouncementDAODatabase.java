@@ -64,13 +64,13 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
     public List<SchedulableEvent> getConfirmedEventsByDateForArtist(LocalDate startingDate) throws DatabaseException {
         List<SchedulableEvent> events = new ArrayList<>();
-        String artistUser = Session.getSingletonInstance().getUsername();
+        String username = Session.getSingletonInstance().getUsername();
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
         String query = "SELECT a.id, a.start_time, a.duration " +
                 "FROM announcements a " +
-                "JOIN applications app ON a.id = app.id " +
+                "JOIN applications app ON a.id = app.announcements_id " +
                 "WHERE a.start_day = ? " +
                 "AND app.artists_username = ? " +
                 "AND app.state = 'ACCEPTED'";
@@ -78,7 +78,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setDate(1, java.sql.Date.valueOf(startingDate));
-            pstmt.setString(2, artistUser);
+            pstmt.setString(2, username);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -116,6 +116,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Announcement announcement = new Announcement();
+                    announcement.setId(rs.getInt("id"));
                     announcement.setStartEventDay(startingDate);
                     announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
                     announcement.setDuration(Duration.ofMinutes(rs.getLong("duration")));

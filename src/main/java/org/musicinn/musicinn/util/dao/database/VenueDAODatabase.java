@@ -163,7 +163,7 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
     @Override
     public String findVenueNameByAnnouncementId(int announcementId) throws DatabaseException {
         String sql = "SELECT v.name FROM venues v " +
-                "JOIN announcements a ON v.id = a.id_venue " +
+                "JOIN announcements a ON v.id = a.venues_id " +
                 "WHERE a.id = ?";
 
         String venueName = null;

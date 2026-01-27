@@ -1,8 +1,10 @@
 package org.musicinn.musicinn.controller.controller_gui;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.SchedulableEventBean;
 
@@ -46,6 +48,8 @@ public class CalendarCellControllerGUI {
         String timeRange = startTime + " - " + endTime;
         String nameToDisplay = Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST) ? event.getVenueName() : event.getArtistStageName();
         Label eventLabel = new Label(timeRange + "\n" + nameToDisplay);
+        eventLabel.setTextAlignment(TextAlignment.CENTER);
+        eventLabel.setAlignment(Pos.CENTER);
         eventLabel.setWrapText(true);
         eventLabel.setMaxWidth(Double.MAX_VALUE); // Fa sì che la label occupi tutta la larghezza della cella
         eventVBox.getChildren().add(eventLabel);
