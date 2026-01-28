@@ -6,7 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.musicinn.musicinn.util.enumerations.CableFunction;
+import org.musicinn.musicinn.util.enumerations.CablePurpose;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.CableSetBean;
 
 import java.net.URL;
@@ -17,7 +17,7 @@ public class CableSetPopupControllerGUI implements Initializable {
     private Spinner<Integer> quantityField;
 
     @FXML
-    private ComboBox<CableFunction> functionComboBox;
+    private ComboBox<CablePurpose> functionComboBox;
 
     @FXML
     private Button addButton;
@@ -27,7 +27,7 @@ public class CableSetPopupControllerGUI implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Aggiunge tutti i valori dell'enum CableFunction alla ComboBox
-        functionComboBox.getItems().addAll(CableFunction.values());
+        functionComboBox.getItems().addAll(CablePurpose.values());
 
         // Crea la fabbrica (minimo 0, massimo 100, valore iniziale 1)
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);

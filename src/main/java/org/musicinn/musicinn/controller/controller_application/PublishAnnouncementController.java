@@ -6,7 +6,6 @@ import org.musicinn.musicinn.model.SchedulableEvent;
 import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.VenueBean;
-import org.musicinn.musicinn.util.bean.technical_rider_bean.TechnicalRiderBean;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
 import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
@@ -72,9 +71,6 @@ public class PublishAnnouncementController {
         bean.setTypeVenue(venue.getTypeVenue());
 
         ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
-        TechnicalRiderBean trBean = new TechnicalRiderBean();
-        controller.loadRiderData(trBean);
-
-        bean.setRider(trBean);
+        bean.setRider(controller.loadRiderData());
     }
 }

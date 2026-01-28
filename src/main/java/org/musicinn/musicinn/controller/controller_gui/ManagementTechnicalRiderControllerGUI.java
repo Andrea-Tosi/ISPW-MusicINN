@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -21,10 +20,8 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
-import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 
@@ -95,8 +92,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void loadExistingData() {
         try {
             ManagementTechnicalRiderController appController = new ManagementTechnicalRiderController();
-            TechnicalRiderBean trBean = new TechnicalRiderBean();
-            appController.loadRiderData(trBean);
+            TechnicalRiderBean trBean = appController.loadRiderData();
 
             // Per il caricamento iniziale non serve il check duplicati perché il DB è già aggregato
             if (trBean.getMixers() != null) trBean.getMixers().forEach(this::displayMixer);
@@ -164,7 +160,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void displayCable(CableSetBean newBean) {
         for (Node node : otherEquipmentsVBox.getChildren()) {
             if (node.getUserData() instanceof CableSetBean existing &&
-                    existing.getFunction().equals(newBean.getFunction())) {
+                    existing.getPurpose().equals(newBean.getPurpose())) {
                 existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
                 updateRowLabel(node, formatCable(existing));
                 return;
@@ -212,7 +208,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private String formatDI(DIBoxSetBean b) { return String.format("DI Box:%s (qt: %d)", formatStatus(b.getActive(), "Attiva", "Passiva"), b.getQuantity()); }
     private String formatMonitor(MonitorSetBean b) { return String.format("Monitor:%s (qt: %d)", formatStatus(b.getPowered(), "Attivo", "Passivo"), b.getQuantity()); }
     private String formatStand(MicStandSetBean b) { return String.format("Asta:%s (qt: %d)", formatStatus(b.getTall(), "Alta", "Bassa"), b.getQuantity()); }
-    private String formatCable(CableSetBean b) { return String.format("Cavo: %s (qt: %d)", b.getFunction(), b.getQuantity()); }
+    private String formatCable(CableSetBean b) { return String.format("Cavo: %s (qt: %d)", b.getPurpose(), b.getQuantity()); }
 
     // --- GESTIONE ROW ---
     private void addNewRow(VBox container, Object bean, String desc) { addNewRow(container, bean, desc, false); }
@@ -239,9 +235,9 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @FXML
     private void handleSaveChangesButton(ActionEvent event) {
         try {
-            ManagementTechnicalRiderController appCtrl = new ManagementTechnicalRiderController();
+            ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
             Session.UserRole role = Session.getSingletonInstance().getRole();
-            appCtrl.saveRiderData(
+            controller.saveRiderData(
                     role == Session.UserRole.ARTIST ? combine(fohVBox, stageVBox) : collectTypedBeans(mixersVBox, MixerBean.class),
                     role == Session.UserRole.ARTIST ? collectTypedBeans(sbVBox, StageBoxBean.class) : collectTypedBeans(stageBoxesVBox, StageBoxBean.class),
                     collectTypedBeans(inputEquipmentsVBox, MicrophoneSetBean.class),
@@ -251,14 +247,10 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                     collectTypedBeans(otherEquipmentsVBox, CableSetBean.class)
             );
             statusLabel.setText("Rider salvato con successo!");
-        } catch (Exception e) { statusLabel.setText("Errore: " + e.getMessage()); }
+        } catch (Exception e) { e.printStackTrace(); statusLabel.setText("Errore: " + e.getMessage()); }
     }
 
     // --- UTILS ---
-    private VBox getMixerContainer(MixerBean b) {
-        if (!Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) return mixersVBox;
-        return b.isFOH() ? fohVBox : stageVBox;
-    }
     private List<MixerBean> combine(VBox v1, VBox v2) {
         List<MixerBean> list = new ArrayList<>(collectTypedBeans(v1, MixerBean.class));
         list.addAll(collectTypedBeans(v2, MixerBean.class));

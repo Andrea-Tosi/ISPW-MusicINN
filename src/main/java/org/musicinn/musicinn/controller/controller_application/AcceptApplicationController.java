@@ -7,7 +7,6 @@ import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.ApplicationBean;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import org.musicinn.musicinn.util.dao.DAOFactory;
-import org.musicinn.musicinn.util.dao.database.AnnouncementDAODatabase;
 import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
 import org.musicinn.musicinn.util.dao.interfaces.ApplicationDAO;
 import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
@@ -197,7 +196,7 @@ public class AcceptApplicationController {
         return others.stream()
                 .filter(CableSet.class::isInstance)
                 .map(i -> (CableSet) i)
-                .map(c -> new CableSetBean(c.getQuantity(), c.getFunction()))
+                .map(c -> new CableSetBean(c.getQuantity(), c.getPurpose()))
                 .toList();
     }
 

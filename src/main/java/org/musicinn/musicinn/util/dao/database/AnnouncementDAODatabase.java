@@ -475,7 +475,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
                 if (r != null) {
-                    r.getOthers().add(new CableSet(rs.getInt("quantity"), CableFunction.valueOf(rs.getString("function"))));
+                    r.getOthers().add(new CableSet(rs.getInt("quantity"), CablePurpose.valueOf(rs.getString("function"))));
                 }
             }
         }

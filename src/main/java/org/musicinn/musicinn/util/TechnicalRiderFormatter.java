@@ -112,7 +112,7 @@ public class TechnicalRiderFormatter {
     private static void appendCables(TechnicalRiderBean trBean, StringBuilder sb) {
         if (trBean.getCables() == null) return;
         for (CableSetBean cs : trBean.getCables()) {
-            sb.append("Cavo: ").append(cs.getFunction()).append(" (x").append(cs.getQuantity()).append(")\n");
+            sb.append("Cavo: ").append(cs.getPurpose()).append(" (x").append(cs.getQuantity()).append(")\n");
         }
     }
 }

@@ -1,14 +1,14 @@
 package org.musicinn.musicinn.util.bean.technical_rider_bean;
 
-import org.musicinn.musicinn.util.enumerations.CableFunction;
+import org.musicinn.musicinn.util.enumerations.CablePurpose;
 
 public class CableSetBean {
-    private CableFunction function;
+    private CablePurpose purpose;
     private int quantity;
 
-    public CableSetBean(int quantity, CableFunction function) {
+    public CableSetBean(int quantity, CablePurpose purpose) {
         this.quantity = quantity;
-        this.function = function;
+        this.purpose = purpose;
     }
 
     public int getQuantity() {
@@ -19,11 +19,11 @@ public class CableSetBean {
         this.quantity = quantity;
     }
 
-    public CableFunction getFunction() {
-        return function;
+    public CablePurpose getPurpose() {
+        return purpose;
     }
 
-    public void setFunction(CableFunction function) {
-        this.function = function;
+    public void setPurpose(CablePurpose purpose) {
+        this.purpose = purpose;
     }
 }

@@ -5,7 +5,7 @@ import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
-import org.musicinn.musicinn.util.enumerations.CableFunction;
+import org.musicinn.musicinn.util.enumerations.CablePurpose;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.sql.*;
@@ -55,6 +55,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
 
             conn.commit();
         } catch (SQLException e) {
+            e.printStackTrace();
             try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         } finally {
@@ -182,11 +183,11 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveCables(Connection conn, List<OtherEquipment> others, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO cable_sets (function, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO cable_sets (purpose, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OtherEquipment ot : others) {
             if (ot instanceof CableSet cs) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setString(1, cs.getFunction().toString());
+                    ps.setString(1, cs.getPurpose().toString());
                     ps.setInt(2, cs.getQuantity());
                     setOwner(ps, 3, artistUser, venueId);
                     ps.executeUpdate();
@@ -381,8 +382,8 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     // Recuperiamo la stringa dell'ENUM dal DB e la convertiamo nell'oggetto Java
-                    String functionStr = rs.getString("function");
-                    CableFunction func = CableFunction.valueOf(functionStr);
+                    String purposeStr = rs.getString("purpose");
+                    CablePurpose func = CablePurpose.valueOf(purposeStr);
 
                     others.add(new CableSet(rs.getInt("quantity"), func));
                 }

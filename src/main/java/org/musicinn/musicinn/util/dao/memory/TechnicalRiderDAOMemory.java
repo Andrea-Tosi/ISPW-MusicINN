@@ -3,7 +3,7 @@ package org.musicinn.musicinn.util.dao.memory;
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
-import org.musicinn.musicinn.util.enumerations.CableFunction;
+import org.musicinn.musicinn.util.enumerations.CablePurpose;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
 
         List<OtherEquipment> others = new ArrayList<>();
         others.add(new MicStandSet(5, true));    // 5 Aste alte
-        others.add(new CableSet(10, CableFunction.XLR_XLR));
+        others.add(new CableSet(10, CablePurpose.XLR_XLR));
         mockRider.setOthers(others);
 
         return mockRider;

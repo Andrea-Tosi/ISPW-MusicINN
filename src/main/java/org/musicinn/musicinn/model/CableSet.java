@@ -1,23 +1,23 @@
 package org.musicinn.musicinn.model;
 
-import org.musicinn.musicinn.util.enumerations.CableFunction;
+import org.musicinn.musicinn.util.enumerations.CablePurpose;
 
 public class CableSet extends OtherEquipment {
-    private CableFunction function;
+    private CablePurpose purpose;
     private int quantity;
 
-    public CableSet(int quantity, CableFunction function) {
+    public CableSet(int quantity, CablePurpose purpose) {
         super();
         this.quantity = quantity;
-        this.function = function;
+        this.purpose = purpose;
     }
 
-    public CableFunction getFunction() {
-        return function;
+    public CablePurpose getPurpose() {
+        return purpose;
     }
 
-    public void setFunction(CableFunction function) {
-        this.function = function;
+    public void setPurpose(CablePurpose purpose) {
+        this.purpose = purpose;
     }
 
     public int getQuantity() {
@@ -32,10 +32,10 @@ public class CableSet extends OtherEquipment {
     public boolean satisfiesQuality(Equipment other) {
         if (!(other instanceof CableSet requested)) return false;
 
-        return isFunctionOk(requested);
+        return isPurposeOk(requested);
     }
 
-    private boolean isFunctionOk(CableSet requested) {
-        return getFunction() == requested.getFunction();
+    private boolean isPurposeOk(CableSet requested) {
+        return getPurpose() == requested.getPurpose();
     }
 }

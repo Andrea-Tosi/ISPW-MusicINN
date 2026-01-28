@@ -61,17 +61,15 @@ public class ApplyViewTechnicalRiderRevisionControllerGUI implements Initializab
         if (ROLE.equals(Session.UserRole.ARTIST)) riderHeaderLabel.setText("Attrezzatura richiesta");
         else if (ROLE.equals(Session.UserRole.MANAGER)) riderHeaderLabel.setText("Attrezzatura a disposizione");
         try {
-            controller.getEquipmentBeans(trBean);
+            trBean = controller.getEquipmentBeans();
         } catch (DatabaseException e) {
             statusLabel.setText("Errore del database: Nessun rider precedente trovato.");
         }
-        setupStageDimensionsLabel(trBean);
+        setupStageDimensionsLabel(trBean.getMinLengthStage(), trBean.getMinWidthStage());
         riderLabel.setText(TechnicalRiderFormatter.format(trBean, ROLE));
     }
 
-    private void setupStageDimensionsLabel(TechnicalRiderBean trBean) {
-        int length = trBean.getMinLengthStage();
-        int width = trBean.getMinWidthStage();
+    private void setupStageDimensionsLabel(int length, int width) {
         String stageDimensions = String.format("%dm x %dm", length, width);
         stageDimensionsLabel.setText(stageDimensions);
     }

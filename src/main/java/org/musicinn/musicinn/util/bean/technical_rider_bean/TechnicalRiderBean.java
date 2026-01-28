@@ -1,5 +1,6 @@
 package org.musicinn.musicinn.util.bean.technical_rider_bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TechnicalRiderBean {
@@ -12,6 +13,16 @@ public class TechnicalRiderBean {
     private List<MonitorSetBean> monitors;
     private List<MicStandSetBean> micStands;
     private List<CableSetBean> cables;
+
+    public TechnicalRiderBean() {
+        this.mixers = new ArrayList<>();
+        this.stageBoxes = new ArrayList<>();
+        this.mics = new ArrayList<>();
+        this.diBoxes = new ArrayList<>();
+        this.monitors = new ArrayList<>();
+        this.micStands = new ArrayList<>();
+        this.cables = new ArrayList<>();
+    }
 
     public int getMinLengthStage() {
         return minLengthStage;
