@@ -1,5 +1,6 @@
 package org.musicinn.musicinn.controller.controller_application.payment_controller;
 
+import com.stripe.exception.StripeException;
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.PaymentService;
 import org.musicinn.musicinn.util.Session;
@@ -184,16 +185,6 @@ public class PaymentController {
         return paymentService.getCheckoutSessionUrl(bean);
     }
 
-    public void finalizePayment(int applicationId, String transactionId) {
-        try {
-            DAOFactory.getPaymentDAO().updatePaymentState(applicationId, Session.getSingletonInstance().getRole(), transactionId);
-
-            System.out.println("DB aggiornato con successo per l'applicazione: " + applicationId);
-        } catch (DatabaseException e) {
-            System.err.println("ERRORE CRITICO: Pagamento Stripe OK, ma DB non aggiornato: " + e.getMessage());
-        }
-    }
-
     /**
      * Verifica se il pagamento è ancora processabile.
      * Se scaduto, aggiorna lo stato sul DB prima di ritornare il risultato.
@@ -217,7 +208,21 @@ public class PaymentController {
         return true; // Ancora valido
     }
 
-    public String getTransactionId(String session) throws Exception {
-        return paymentService.getPaymentIntentFromSession(session);
+    public String createPaymentAccount(String email) throws StripeException {
+        return paymentService.createPaymentAccount(email);
+    }
+
+    public void completePaymentWorkflow(PaymentBean paymentBean, String stripeSessionId) throws Exception {
+        if (!isPaymentStillValid(paymentBean)) {
+            throw new Exception("Il pagamento è scaduto durante l'operazione.");
+        }
+
+        String transactionId = paymentService.getPaymentIntentFromSession(stripeSessionId);
+
+        DAOFactory.getPaymentDAO().updatePaymentState(
+                paymentBean.getId(),
+                Session.getSingletonInstance().getRole(),
+                transactionId
+        );
     }
 }

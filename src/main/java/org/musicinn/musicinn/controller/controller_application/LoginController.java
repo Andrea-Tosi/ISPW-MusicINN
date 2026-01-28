@@ -1,17 +1,16 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import com.stripe.exception.StripeException;
+import org.musicinn.musicinn.controller.controller_application.payment_controller.PaymentController;
+import org.musicinn.musicinn.controller.controller_application.payment_controller.PaymentServiceFactory;
 import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.model.Venue;
 import org.musicinn.musicinn.util.EmailVerifier;
-import org.musicinn.musicinn.util.PaymentService;
 import org.musicinn.musicinn.util.Session;
-import org.musicinn.musicinn.util.StripeService;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
-import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
 import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
 import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
 import org.musicinn.musicinn.util.bean.login_bean.ArtistRegistrationBean;
@@ -96,8 +95,8 @@ public class LoginController {
         Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword(), arb.getStageName(), arb.getTypeArtist(), arb.getDoesUnreleased(), arb.getCity(), arb.getAddress());
         artist.setGenresList(arb.getGenresList());
 
-        PaymentService ps = new StripeService();
-        artist.setPaymentServiceAccountId(ps.createPaymentAccount(artist.getEmail())); //TODO da correggere altrimenti il controller avrebbe collegamento forte con l'adapter (implementazione concreta dell'interfaccia PaymentService)
+        PaymentController pc = PaymentServiceFactory.getPaymentController();
+        artist.setPaymentServiceAccountId(pc.createPaymentAccount(artist.getEmail()));
 
         ArtistDAO artistDAO = DAOFactory.getArtistDAO();
         artistDAO.create(artist);
@@ -113,8 +112,8 @@ public class LoginController {
         manager.getVenueList().add(venue);
         manager.setActiveVenue(venue);
 
-        PaymentService ps = new StripeService();
-        manager.setPaymentServiceAccountId(ps.createPaymentAccount(manager.getEmail())); //TODO da correggere altrimenti il controller avrebbe collegamento forte con l'adapter (implementazione concreta dell'interfaccia PaymentService)
+        PaymentController pc = PaymentServiceFactory.getPaymentController();
+        manager.setPaymentServiceAccountId(pc.createPaymentAccount(manager.getEmail()));
 
         // salva sia i dati del locale, sia quelli del manager
         VenueDAO venueDAO = DAOFactory.getVenueDAO();

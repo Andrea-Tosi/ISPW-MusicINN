@@ -41,7 +41,7 @@ public class AcceptApplicationController {
         AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
 
         // 3. Chiamiamo il metodo del DAO (quello con la query che abbiamo appena spiegato)
-        List<Announcement> announcements = ((AnnouncementDAODatabase) announcementDAO).findByManager(currentManager);
+        List<Announcement> announcements = announcementDAO.findByManager(currentManager);
         this.announcements = announcements;
 
         // 4. Trasformiamo la lista di Entity in una lista di Bean

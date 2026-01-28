@@ -79,40 +79,33 @@ public class PaymentCardControllerGUI {
     public void handleManagePayment() {
         try {
             PaymentController controller = PaymentServiceFactory.getPaymentController();
-            if (controller.isPaymentStillValid(paymentBean)) {
-                String checkoutUrl = controller.getPaymentUrl(this.paymentBean);
 
-                String fxmlPath = FxmlPathLoader.getPath("fxml.payment_window.modal");
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-                Parent root = loader.load();
-                PaymentWindowControllerGUI guiController = loader.getController();
-                guiController.loadUrl(checkoutUrl, "musicinn.org/success");
+            String checkoutUrl = controller.getPaymentUrl(this.paymentBean);
 
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.setScene(new Scene(root));
-                stage.showAndWait();
+            String fxmlPath = FxmlPathLoader.getPath("fxml.payment_window.modal");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            PaymentWindowControllerGUI controllerGUI = loader.getController();
+            controllerGUI.loadUrl(checkoutUrl, "musicinn.org/success");
 
-                if (guiController.isSuccess()) {
-                    String transactionId = controller.getTransactionId(guiController.getStripeSessionId());
-                    controller.finalizePayment(paymentBean.getId(), transactionId);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
 
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Pagamento completato con successo!");
-                    alert.show();
+            if (controllerGUI.isSuccess()) {
+                controller.completePaymentWorkflow(this.paymentBean, controllerGUI.getStripeSessionId());
 
-                    updateUI();
-                } else {
-                    throw new Exception();
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Tempo scaduto!");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Pagamento completato con successo!");
                 alert.show();
 
-                hideCard();
+                updateUI();
             }
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Errore nel pagamento. Riprovare");
             alert.show();
+
+            hideCard();
         }
     }
 

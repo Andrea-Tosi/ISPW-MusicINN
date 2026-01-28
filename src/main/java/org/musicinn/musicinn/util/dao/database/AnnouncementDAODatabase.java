@@ -273,6 +273,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         return announcements;
     }
 
+    @Override
     public List<Announcement> findByManager(String managerUsername) throws DatabaseException {
         List<Announcement> announcements = new ArrayList<>();
         Map<Integer, Announcement> announcementMap = new HashMap<>();

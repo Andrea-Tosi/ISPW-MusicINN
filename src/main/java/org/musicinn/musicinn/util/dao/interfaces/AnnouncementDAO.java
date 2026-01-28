@@ -13,6 +13,7 @@ public interface AnnouncementDAO {
     List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) throws DatabaseException;
     void save(Announcement announcement) throws DatabaseException;
     List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) throws DatabaseException;
+    List<Announcement> findByManager(String managerUsername) throws DatabaseException;
     void updateAnnouncementState(Announcement ann) throws DatabaseException;
     List<Announcement> findClosedByIdVenue(int venueId) throws DatabaseException;
     Announcement findByApplicationId(int id) throws DatabaseException;
