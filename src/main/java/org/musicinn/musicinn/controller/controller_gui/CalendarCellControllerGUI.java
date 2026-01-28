@@ -9,7 +9,6 @@ import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.SchedulableEventBean;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 public class CalendarCellControllerGUI {
     @FXML
@@ -19,6 +18,7 @@ public class CalendarCellControllerGUI {
     private VBox eventVBox;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final String TODAY_LABEL_STYLE = "today-label";
 
     /**
      * Imposta il numero del giorno (es. "15")
@@ -36,7 +36,7 @@ public class CalendarCellControllerGUI {
         eventVBox.getChildren().clear();
 
         // Rimuove classi CSS specifiche
-        dayLabel.getStyleClass().remove("today-label");
+        dayLabel.getStyleClass().remove(TODAY_LABEL_STYLE);
     }
 
     /**
@@ -59,8 +59,8 @@ public class CalendarCellControllerGUI {
      * Applica uno stile visivo differente per il giorno corrente.
      */
     public void setAsToday() {
-        if (!dayLabel.getStyleClass().contains("today-label")) {
-            dayLabel.getStyleClass().add("today-label");
+        if (!dayLabel.getStyleClass().contains(TODAY_LABEL_STYLE)) {
+            dayLabel.getStyleClass().add(TODAY_LABEL_STYLE);
         }
     }
 }

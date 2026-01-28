@@ -6,6 +6,8 @@ import org.musicinn.musicinn.util.dao.interfaces.*;
 import org.musicinn.musicinn.util.dao.memory.*;
 
 public class DAOFactory {
+    private DAOFactory() {}
+
     // Metodo privato per capire se siamo in modalità Demo
     private static boolean isDemo() {
         return Session.getSingletonInstance().getPersistenceType().equals(Session.PersistenceType.MEMORY);

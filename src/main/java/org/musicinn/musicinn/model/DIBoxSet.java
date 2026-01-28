@@ -2,7 +2,7 @@ package org.musicinn.musicinn.model;
 
 public class DIBoxSet extends InputEquipment {
     private int quantity;
-    private Boolean isActive; // true = richiede Phantom, false = non richiede Phantom Power, null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
+    private Boolean isActive; // true = richiede Phantom, false = non richiede Phantom Power, null = indifferente
 
     public DIBoxSet(int quantity, Boolean active) {
         super();

@@ -34,18 +34,18 @@ public class AcceptApplicationController {
 
     public List<AnnouncementBean> getAllManagerAnnouncements() throws DatabaseException {
         // 1. Recuperiamo l'utente corrente dalla sessione (deve essere un MANAGER)
-        String currentManager = Session.getSingletonInstance().getUsername();
+        String currentManager = Session.getSingletonInstance().getUser().getUsername();
 
         // 2. Otteniamo l'istanza del DAO tramite la Factory
         AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
 
         // 3. Chiamiamo il metodo del DAO (quello con la query che abbiamo appena spiegato)
-        List<Announcement> announcements = announcementDAO.findByManager(currentManager);
-        this.announcements = announcements;
+        List<Announcement> announcementList = announcementDAO.findByManager(currentManager);
+        announcements = announcementList;
 
         // 4. Trasformiamo la lista di Entity in una lista di Bean
         List<AnnouncementBean> beans = new ArrayList<>();
-        for (Announcement ann : announcements) {
+        for (Announcement ann : announcementList) {
             beans.add(convertEntityToBean(ann));
         }
 

@@ -26,17 +26,14 @@ public class PaymentController {
     }
 
     public int createPayment(ApplicationBean applicationBean) throws DatabaseException {
-        try {
-            PaymentDAO paymentDAO = DAOFactory.getPaymentDAO();
-            paymentDAO.save(applicationBean.getId(), DAYS_OF_DEADLINE);
-        } catch (DatabaseException e) {
-            throw e;
-        }
+        PaymentDAO paymentDAO = DAOFactory.getPaymentDAO();
+        paymentDAO.save(applicationBean.getId(), DAYS_OF_DEADLINE);
+
         return DAYS_OF_DEADLINE;
     }
 
     public List<PaymentBean> getPayments() throws DatabaseException {
-        String username = Session.getSingletonInstance().getUsername();
+        String username = Session.getSingletonInstance().getUser().getUsername();
 
         if (Session.UserRole.MANAGER.equals(Session.getSingletonInstance().getRole())) {
             return getPaymentsForManager(username);
@@ -47,42 +44,32 @@ public class PaymentController {
 
     private List<PaymentBean> getPaymentsForManager(String username) throws DatabaseException {
         List<PaymentBean> beans = new ArrayList<>();
-
-        // 1. Recupero la Venue gestita dal manager
         int idVenue = DAOFactory.getVenueDAO().getActiveVenueIdByManager(username);
-
-        // 2. Recupero tutti gli annunci chiusi per quella venue
         List<Announcement> closedAnnouncements = DAOFactory.getAnnouncementDAO().findClosedByIdVenue(idVenue);
 
         for (Announcement ann : closedAnnouncements) {
-            // 3. Per ogni annuncio, cerco la candidatura che è stata accettata
             Application acceptedApp = DAOFactory.getApplicationDAO().findAcceptedByAnnouncement(ann.getId());
-
-            // Se esiste una candidatura accettata, procedo con il recupero dei dati di pagamento
-            if (acceptedApp != null) {
-                // 4. Recupero il record di pagamento legato alla candidatura
-                Payment payment = DAOFactory.getPaymentDAO().findByApplicationId(acceptedApp.getId());
-
-                // 5. Recupero lo stage name dell'artista (necessario per la card del manager)
-                Artist artist = DAOFactory.getArtistDAO().read(acceptedApp.getUsernameArtist());
-
-                // 6. Assemblo il Bean per la GUI
-                if (payment.getPaymentDeadline().isAfter(LocalDateTime.now())) {
-                    beans.add(createPaymentBean(payment, ann, artist, acceptedApp.getId()));
-                } else if (!payment.getState().equals(EscrowState.REFUNDED)) {
-                    List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(acceptedApp.getId());
-
-                    for (String intentId : peopleToRefund) {
-                        try {
-                            paymentService.issueRefund(intentId);
-                        } catch (Exception e) {
-                            System.err.println("Fallito rimborso automatico on-access per: " + intentId);
-                        }
-                    }
-                }
-            }
+            if (acceptedApp == null) continue;
+            processPaymentForApplication(acceptedApp, ann, beans);
         }
         return beans;
+    }
+
+    private void processPaymentForApplication(Application app, Announcement ann, List<PaymentBean> beans)
+            throws DatabaseException {
+
+        Payment payment = DAOFactory.getPaymentDAO().findByApplicationId(app.getId());
+
+        if (isPaymentActive(payment)) {
+            Artist artist = DAOFactory.getArtistDAO().read(app.getUsernameArtist());
+            beans.add(createPaymentBean(payment, ann, artist, app.getId()));
+        } else {
+            handleExpiredPayment(payment, app.getId());
+        }
+    }
+
+    private boolean isPaymentActive(Payment payment) {
+        return payment.getPaymentDeadline().isAfter(LocalDateTime.now());
     }
 
     private PaymentBean createPaymentBean(Payment p, Announcement ann, Artist artist, int appId) {
@@ -100,6 +87,24 @@ public class PaymentController {
         bean.setDepositPaid(p.getArtistPaymentIntentId() != null);
 
         return bean;
+    }
+
+    private void handleExpiredPayment(Payment payment, int appId) throws DatabaseException {
+        if (payment.getState().equals(EscrowState.REFUNDED)) return;
+
+        // Logica di rimborso delegata al service (DIP)
+        List<String> refundIntents = DAOFactory.getPaymentDAO().markAsRefunded(appId);
+        for (String intentId : refundIntents) {
+            executeSafeRefund(intentId);
+        }
+    }
+
+    private void executeSafeRefund(String intentId) {
+        try {
+            paymentService.issueRefund(intentId);
+        } catch (Exception e) {
+            System.err.println("Fallito rimborso automatico on-access per: " + intentId);
+        }
     }
 
     private List<PaymentBean> getPaymentsForArtist(String username) throws DatabaseException {

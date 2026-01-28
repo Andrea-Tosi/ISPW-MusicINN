@@ -2,7 +2,7 @@ package org.musicinn.musicinn.model;
 
 public class MicrophoneSet extends InputEquipment {
     private int quantity;
-    private Boolean needsPhantomPower; // true = richiede Phantom, false = non richiede Phantom Power, null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
+    private Boolean needsPhantomPower; // true = richiede Phantom, false = non richiede Phantom Power, null = indifferente
 
     public MicrophoneSet(int quantity, Boolean needsPhantomPower) {
         super();

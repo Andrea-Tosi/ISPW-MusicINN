@@ -39,10 +39,6 @@ public class PublishAnnouncementController {
 
         // 4. Persistenza
         announcementDAO.save(announcement);
-
-        // 5. Post-operazioni (Opzionale)
-        // Qui potresti triggerare l'invio di notifiche o log di sistema
-        System.out.println("Annuncio pubblicato correttamente per la data: " + ab.getStartingDate());
     }
 
     private static Announcement getAnnouncement(AnnouncementBean ab) {
@@ -63,7 +59,7 @@ public class PublishAnnouncementController {
 
     public void getVenueData(VenueBean bean) throws DatabaseException {
         VenueDAO venueDAO = DAOFactory.getVenueDAO();
-        Venue venue = venueDAO.read(Session.getSingletonInstance().getUsername());
+        Venue venue = venueDAO.read(Session.getSingletonInstance().getUser().getUsername());
 
         bean.setName(venue.getName());
         bean.setCity(venue.getCity());

@@ -11,7 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.musicinn.musicinn.controller.controller_application.LoginController;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.TechnicalRiderFormatter;
@@ -108,7 +107,7 @@ public class ApplicationCardControllerGUI {
         topPopularityLabel.setVisible(false);
         topReviews.setVisible(false);
 
-        topMatchGenresLabel.setVisible(bean.getMatchGenresPercentage() > 75);
+        topMatchGenresLabel.setVisible(bean.getMatchGenresPercentage() > 90);
 
         // Dati numerici nella parte destra
         totalScoreLabel.setText("Match: " + Math.round(bean.getTotalScore()) + "%");
@@ -170,36 +169,5 @@ public class ApplicationCardControllerGUI {
             e.printStackTrace();
         }
     }
-
-//    public void setupCard(ApplicationBean bean) {
-//        artistNameLabel.setText(bean.getArtistStageName());
-//        typeArtistLabel.setText(bean.getArtistType().toString());
-//        reviewsLabel.setText(bean.getAverageStars() + " (" + bean.getNumReviews() + " recensioni)");
-//        followersLabel.setText(bean.getFollowersCount() + " followers");
-//        soundcheckDateLabel.setText("Data soundcheck richiesta: " + bean.getRequestedSoundcheck().toString());
-//
-//        // Punteggi
-//        totalScoreLabel.setText("Score: " + Math.round(bean.getTotalScore()) + "/100");
-//        matchGenresPercentage.setText("Match Generi: " + Math.round(bean.getMatchGenresPercentage()) + "%");
-//
-//        // Badge condizionali (Esempio: mostra se > 90%)
-//        topMatchLabel.setVisible(bean.getTotalScore() > 90);
-//        topMatchGenresLabel.setVisible(bean.getMatchGenresPercentage() > 95);
-//
-//        // Popola Generi
-//        genresList.getChildren().clear();
-//        for (MusicalGenre g : bean.getArtistGenres()) {
-//            genresList.getChildren().add(new Label(g.toString())); // Aggiungi stile come negli altri controller
-//        }
-//
-//        // Rider Tecnico (semplificato)
-//        riderBox.getChildren().clear();
-//        riderBox.getChildren().add(new Label("Rider Tecnico: " + bean.getRiderSummary()));
-//    }
-//
-//    @FXML
-//    private void handleAcceptApplication() {
-//        // Qui andrà la logica per confermare la data e inviare la notifica all'artista
-//    }
 }
 //TODO se c'è già un accordo con un artista, disabilita i bottoni per accettare le candidature (acceptApplicationButton)

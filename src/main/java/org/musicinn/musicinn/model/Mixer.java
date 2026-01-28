@@ -4,8 +4,8 @@ public class Mixer implements Equipment {
     private boolean isFOH; // true = FOH (gestisce audio per pubblico), false = Stage (gestisce audio per musicisti)
     private int inputChannels;
     private int auxSends;
-    private Boolean digital; // true = Digitale, false = Analogico, null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
-    private Boolean hasPhantomPower; // null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
+    private Boolean digital; // true = Digitale, false = Analogico, null = indifferente
+    private Boolean hasPhantomPower; // null = indifferente
 
     public boolean isFOH() {
         return isFOH;

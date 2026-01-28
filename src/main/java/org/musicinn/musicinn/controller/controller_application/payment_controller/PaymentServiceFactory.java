@@ -7,6 +7,8 @@ public class PaymentServiceFactory {
     // Istanza creata una volta (simile a singleton, ma gestito esternamente)
     private static PaymentController paymentController;
 
+    private PaymentServiceFactory() {}
+
     public static PaymentController getPaymentController() {
         if (paymentController == null) {
             // Crea l'adapter concreto

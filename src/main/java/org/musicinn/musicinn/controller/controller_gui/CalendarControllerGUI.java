@@ -211,5 +211,3 @@ public class CalendarControllerGUI implements Initializable {
         }
     }
 }
-//TODO stile CSS per dayLabel che indica giorno corrente
-//TODO passaggio da mese n a mese n+1 quando si supera la mezzanotte con l'applicazione in esecuzione: in realtà la vista continua ad essere la stessa, cambia lo stile CSS sulla dayLabel che indica il giorno corrente

@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 
 public class HomepageManagerControllerGUI implements Initializable {
     @FXML
-    private ImageView iconUser; //TODO verifica URL Spoti e Insta, modifica rider tecnico, logout, forse modifica profilo
+    private ImageView iconUser;
 
     @FXML
     private Button publishAnnouncementButton;
@@ -40,7 +40,7 @@ public class HomepageManagerControllerGUI implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
-        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUser().getUsername());
     }
 
     @FXML

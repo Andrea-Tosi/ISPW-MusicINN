@@ -2,7 +2,7 @@ package org.musicinn.musicinn.model;
 
 public class StageBox implements Equipment {
     private int inputChannels;
-    private Boolean isDigital; // true = Digitale, false = Analogico, null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
+    private Boolean isDigital; // true = Digitale, false = Analogico, null = indifferente
 
     public int getInputChannels() {
         return inputChannels;

@@ -1,7 +1,6 @@
 package org.musicinn.musicinn.util;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import org.musicinn.musicinn.controller.controller_application.LoginController;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

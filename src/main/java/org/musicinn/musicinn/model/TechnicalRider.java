@@ -10,7 +10,7 @@ public abstract class TechnicalRider {
     protected List<OutputEquipment> outputs;
     protected List<OtherEquipment> others;
 
-    public TechnicalRider() {
+    protected TechnicalRider() {
         this.inputs = new ArrayList<>();
         this.outputs = new ArrayList<>();
         this.others = new ArrayList<>();

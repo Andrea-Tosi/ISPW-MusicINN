@@ -72,6 +72,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private Button saveChangesButton;
 
     private static final String DESCRIPTION_PAGE = "Gestisci Rider Tecnico";
+    private static final String PADDING = "-fx-padding: 0 0 0 5;";
 
     @FXML
     private HeaderControllerGUI headerController;
@@ -84,7 +85,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
-        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUser().getUsername());
         if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) setupArtistView();
         loadExistingData();
     }
@@ -112,7 +113,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void displayMicrophone(MicrophoneSetBean newBean) {
         for (Node node : inputEquipmentsVBox.getChildren()) {
             if (node.getUserData() instanceof MicrophoneSetBean existing &&
-                    existing.getNeedsPhantomPower() == newBean.getNeedsPhantomPower()) {
+                    existing.getNeedsPhantomPower().equals(newBean.getNeedsPhantomPower())) {
                 existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
                 updateRowLabel(node, formatMic(existing));
                 return;
@@ -148,7 +149,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void displayMicStand(MicStandSetBean newBean) {
         for (Node node : otherEquipmentsVBox.getChildren()) {
             if (node.getUserData() instanceof MicStandSetBean existing &&
-                    existing.getTall() == newBean.getTall()) {
+                    existing.getTall().equals(newBean.getTall())) {
                 existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
                 updateRowLabel(node, formatStand(existing));
                 return;
@@ -198,7 +199,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     }
 
     private void displayStageBox(StageBoxBean bean) {
-        String desc = bean.getInputChannels() + " in, " + (bean.getDigital() ? "Digitale" : "Analogica");
+        String desc = bean.getInputChannels() + " in, " + (bean.getDigital().equals(Boolean.TRUE) ? "Digitale" : "Analogica");
         VBox target = Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST) ? sbVBox : stageBoxesVBox;
         addNewRow(target, bean, desc);
     }
@@ -276,7 +277,10 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         HBox row = new HBox(15); row.setAlignment(Pos.CENTER_LEFT);
         Button removeButton = new Button("Rimuovi");
         if (isFOH) fohRemoveButton = removeButton;
-        removeButton.setOnAction(e -> { if (removeButton == fohRemoveButton) fohRemoveButton = null; container.getChildren().remove(row); });
+        removeButton.setOnAction(e -> {
+            if (removeButton == fohRemoveButton) fohRemoveButton = null;
+            container.getChildren().remove(row);
+        });
         row.getChildren().addAll(new Label(description), removeButton);
         return row;
     }
@@ -293,9 +297,9 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         sbRow.setAlignment(Pos.CENTER_LEFT);
 
         // Applichiamo un po' di spaziatura interna per staccarli dal bordo sinistro
-        fohRow.setStyle("-fx-padding: 0 0 0 5;");
-        stageRow.setStyle("-fx-padding: 0 0 0 5;");
-        sbRow.setStyle("-fx-padding: 0 0 0 5;");
+        fohRow.setStyle(PADDING);
+        stageRow.setStyle(PADDING);
+        sbRow.setStyle(PADDING);
 
         mixersVBox.getChildren().addAll(fohRow, stageRow);
         stageBoxesVBox.getChildren().add(sbRow);
@@ -311,9 +315,15 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private <C> void handlePopupLogic(String fxml, String title, java.util.function.Consumer<C> handler) {
         try {
             FXMLLoader l = new FXMLLoader(getClass().getResource(FxmlPathLoader.getPath(fxml)));
-            Stage s = new Stage(); s.setScene(new Scene(l.load())); s.initModality(Modality.APPLICATION_MODAL); s.showAndWait();
+            Stage s = new Stage();
+            s.setTitle(title);
+            s.setScene(new Scene(l.load()));
+            s.initModality(Modality.APPLICATION_MODAL);
+            s.showAndWait();
             handler.accept(l.getController());
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML private void handleBackButton(ActionEvent e) { NavigationGUI.navigateToPath((Stage)backButton.getScene().getWindow(), FxmlPathLoader.getPath(Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER) ? "fxml.manager.home" : "fxml.artist.home")); }

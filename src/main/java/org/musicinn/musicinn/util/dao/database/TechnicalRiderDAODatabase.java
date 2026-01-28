@@ -16,7 +16,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     @Override
     public void create(TechnicalRider rider) throws DatabaseException {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
-        String username = Session.getSingletonInstance().getUsername();
+        String username = Session.getSingletonInstance().getUser().getUsername();
 
         try {
             conn.setAutoCommit(false);

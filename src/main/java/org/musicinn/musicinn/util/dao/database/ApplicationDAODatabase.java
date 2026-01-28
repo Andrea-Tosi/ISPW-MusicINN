@@ -23,7 +23,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setObject(1, announcement.getSoundcheckTime());
-            pstmt.setString(2, Session.getSingletonInstance().getUsername());
+            pstmt.setString(2, Session.getSingletonInstance().getUser().getUsername());
             pstmt.setInt(3, announcement.getId());
             pstmt.setDouble(4, application.getScore());
 

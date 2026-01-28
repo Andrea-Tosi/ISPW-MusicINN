@@ -19,14 +19,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AnnouncementDAODatabase implements AnnouncementDAO {
+    private static final String START_TIME_COLUMN = "start_time";
+    private static final String DURATION_COLUMN = "duration";
     @Override
     public List<SchedulableEvent> getEventsByDate(LocalDate startingDate) throws DatabaseException {
         List<SchedulableEvent> events = new ArrayList<>();
-        String managerUser = Session.getSingletonInstance().getUsername();
+        String managerUser = Session.getSingletonInstance().getUser().getUsername();
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
-        String query = "SELECT start_time, duration FROM announcements WHERE start_day = ? AND venues_id = ?";
+        String query = "SELECT " + START_TIME_COLUMN + ", " + DURATION_COLUMN + " FROM announcements WHERE start_day = ? AND venues_id = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             VenueDAO venueDAO = DAOFactory.getVenueDAO();
@@ -39,8 +41,8 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 while (rs.next()) {
                     Announcement announcement = new Announcement();
                     announcement.setStartEventDay(startingDate);
-                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
-                    announcement.setDuration(Duration.ofMinutes(rs.getLong("duration")));
+                    announcement.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
+                    announcement.setDuration(Duration.ofMinutes(rs.getLong(DURATION_COLUMN)));
 
                     // SchedulableEvent è l'interfaccia o classe base per Calendar
                     events.add(announcement);
@@ -59,17 +61,17 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         } else if (Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER)) {
             return getConfirmedEventsByDateForManager(startingDate);
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public List<SchedulableEvent> getConfirmedEventsByDateForArtist(LocalDate startingDate) throws DatabaseException {
         List<SchedulableEvent> events = new ArrayList<>();
-        String username = Session.getSingletonInstance().getUsername();
+        String username = Session.getSingletonInstance().getUser().getUsername();
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
-        String query = "SELECT a.id, a.start_time, a.duration " +
-                "FROM announcements a " +
+        String query = "SELECT a.id, a." + START_TIME_COLUMN +", a." + DURATION_COLUMN +
+                " FROM announcements a " +
                 "JOIN applications app ON a.id = app.announcements_id " +
                 "WHERE a.start_day = ? " +
                 "AND app.artists_username = ? " +
@@ -85,8 +87,8 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     Announcement announcement = new Announcement();
                     announcement.setId(rs.getInt("id"));
                     announcement.setStartEventDay(startingDate);
-                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
-                    announcement.setDuration(Duration.ofMinutes(rs.getLong("duration")));
+                    announcement.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
+                    announcement.setDuration(Duration.ofMinutes(rs.getLong(DURATION_COLUMN)));
 
                     events.add(announcement);
                 }
@@ -100,15 +102,15 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
     public List<SchedulableEvent> getConfirmedEventsByDateForManager(LocalDate startingDate) throws DatabaseException {
         List<SchedulableEvent> events = new ArrayList<>();
-        String managerUser = Session.getSingletonInstance().getUsername();
+        String managerUser = Session.getSingletonInstance().getUser().getUsername();
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
-        String query = "SELECT id, start_time, duration FROM announcements WHERE start_day = ? AND venues_id = ? AND state = 'CLOSED'";
+        String query = "SELECT id, " + START_TIME_COLUMN + ", " + DURATION_COLUMN + " FROM announcements WHERE start_day = ? AND venues_id = ? AND state = 'CLOSED'";
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             VenueDAO venueDAO = DAOFactory.getVenueDAO();
-            int venueId = ((VenueDAODatabase) venueDAO).getActiveVenueIdByManager(managerUser);
+            int venueId = venueDAO.getActiveVenueIdByManager(managerUser);
 
             pstmt.setDate(1, java.sql.Date.valueOf(startingDate));
             pstmt.setInt(2, venueId);
@@ -118,8 +120,8 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     Announcement announcement = new Announcement();
                     announcement.setId(rs.getInt("id"));
                     announcement.setStartEventDay(startingDate);
-                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
-                    announcement.setDuration(Duration.ofMinutes(rs.getLong("duration")));
+                    announcement.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
+                    announcement.setDuration(Duration.ofMinutes(rs.getLong(DURATION_COLUMN)));
 
                     // SchedulableEvent è l'interfaccia o classe base per Calendar
                     events.add(announcement);
@@ -133,16 +135,16 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
     @Override
     public void save(Announcement announcement) throws DatabaseException {
-        String managerUser = Session.getSingletonInstance().getUsername();
+        String managerUser = Session.getSingletonInstance().getUser().getUsername();
 
-        String insertAnnouncement = "INSERT INTO announcements (start_day, start_time, duration, cachet, deposit, does_unreleased, description, state, venues_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertAnnouncement = "INSERT INTO announcements (start_day, " + START_TIME_COLUMN + ", " + DURATION_COLUMN + ", cachet, deposit, does_unreleased, description, state, venues_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
         try {
             conn.setAutoCommit(false); // Inizio Transazione
 
             VenueDAO venueDAO = DAOFactory.getVenueDAO();
-            int venueId = ((VenueDAODatabase) venueDAO).getActiveVenueIdByManager(managerUser);
+            int venueId = venueDAO.getActiveVenueIdByManager(managerUser);
 
             try (PreparedStatement pstmt = conn.prepareStatement(insertAnnouncement, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setDate(1, java.sql.Date.valueOf(announcement.getStartEventDay()));
@@ -323,8 +325,8 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     private void mapAnnouncement(Announcement ann, ResultSet rs) throws SQLException {
         ann.setId(rs.getInt("ann_id"));
         ann.setStartEventDay(rs.getDate("start_day").toLocalDate());
-        ann.setStartEventTime(rs.getTime("start_time").toLocalTime());
-        ann.setDuration(Duration.ofMinutes(rs.getLong("duration")));
+        ann.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
+        ann.setDuration(Duration.ofMinutes(rs.getLong(DURATION_COLUMN)));
         ann.setCachet(rs.getDouble("cachet"));
         ann.setDeposit(rs.getDouble("deposit"));
         ann.setDescription(rs.getString("description"));
@@ -523,7 +525,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
                     // Conversione date e orari SQL -> Java Time
                     ann.setStartEventDay(rs.getDate("start_day").toLocalDate());
-                    ann.setStartEventTime(rs.getTime("start_time").toLocalTime());
+                    ann.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
 
                     announcements.add(ann);
                 }
@@ -556,7 +558,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     announcement.setCachet(rs.getDouble("cachet"));
                     announcement.setDeposit(rs.getDouble("deposit"));
                     announcement.setStartEventDay(rs.getDate("start_day").toLocalDate());
-                    announcement.setStartEventTime(rs.getTime("start_time").toLocalTime());
+                    announcement.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
                     announcement.setState(AnnouncementState.valueOf(rs.getString("state")));
                 }
             }

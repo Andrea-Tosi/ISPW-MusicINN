@@ -94,7 +94,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
         Venue venue = new Venue("The Rock Club", "Roma", "Via del Corso 10", TypeVenue.CLUB);
         TechnicalRiderDAOMemory dao = new TechnicalRiderDAOMemory();
-        ManagerRider rider = (ManagerRider) dao.read(Session.getSingletonInstance().getUsername(), Session.UserRole.MANAGER);
+        ManagerRider rider = (ManagerRider) dao.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.MANAGER);
         venue.setRider(rider);
 
         // Esempio Annuncio 1: Compatibile

@@ -5,9 +5,7 @@ import org.musicinn.musicinn.model.User;
 public class Session {
     public enum UserRole{ARTIST, MANAGER}
     private UserRole role;
-    private String username;
-    User user;
-//TODO cancellare username come attributo e correggere tutto ciò che è ad esso relativo
+    private User user;
     public enum PersistenceType { DATABASE, MEMORY, FILE }
     public enum InterfaceType { GUI, CLI }
     private PersistenceType persistenceType = PersistenceType.DATABASE; // Default
@@ -29,14 +27,6 @@ public class Session {
 
     public void setRole(UserRole role) {
         this.role = role;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public User getUser() {

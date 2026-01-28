@@ -39,7 +39,7 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
-        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUser().getUsername());
 
         loadAllAnnouncements();
     }

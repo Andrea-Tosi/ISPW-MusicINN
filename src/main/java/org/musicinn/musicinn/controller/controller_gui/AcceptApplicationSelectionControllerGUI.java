@@ -48,7 +48,7 @@ public class AcceptApplicationSelectionControllerGUI {
 
     private void initData() {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
-        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUser().getUsername());
 
         eventDateLabel.setText("Evento del " + selectedAnnouncement.getStartingDate() + " " + selectedAnnouncement.getStartingTime());
 

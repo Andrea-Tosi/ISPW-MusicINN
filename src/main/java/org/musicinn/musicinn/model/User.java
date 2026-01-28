@@ -13,10 +13,10 @@ public abstract class User {
         this.paymentServiceAccountId = paymentServiceAccountId;
     }
 
-    public User() {
+    protected User() {
     }
 
-    public User(String username, String email, String password) {
+    protected User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.hashedPassword = password;

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Application implements Observer {
     private int id;
     private LocalDateTime soundcheckTime;
-    private ApplicationState state; //TODO da applicare pattern observer
+    private ApplicationState state;
     private Double score;
     private Payment payment;
     private String usernameArtist;

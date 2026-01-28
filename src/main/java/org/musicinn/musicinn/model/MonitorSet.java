@@ -1,7 +1,7 @@
 package org.musicinn.musicinn.model;
 
 public class MonitorSet extends OutputEquipment {
-    private Boolean isPowered; // true = Attiva, false = Passiva (richiede amplificatore esterno), null = indifferente TODO null selezionabile solo da Artisti, non da Gestori
+    private Boolean isPowered; // true = Attiva, false = Passiva (richiede amplificatore esterno), null = indifferente
     private int quantity;
 
     public MonitorSet(int quantity, Boolean powered) {
@@ -41,4 +41,3 @@ public class MonitorSet extends OutputEquipment {
         }
     }
 }
-//TODO eccezioni in caso di cross-checks non andati a buon fine da notificare all'utente

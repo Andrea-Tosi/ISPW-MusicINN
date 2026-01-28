@@ -1,7 +1,6 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.*;
-import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.TechnicalRiderMapper;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
@@ -10,22 +9,17 @@ import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.database.ArtistDAODatabase;
 import org.musicinn.musicinn.util.dao.interfaces.*;
-import org.musicinn.musicinn.util.dao.memory.AnnouncementDAOMemory;
-import org.musicinn.musicinn.util.dao.memory.ApplicationDAOMemory;
-import org.musicinn.musicinn.util.dao.memory.TechnicalRiderDAOMemory;
-import org.musicinn.musicinn.util.dao.memory.UserDAOMemory;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ApplyController {
     public TechnicalRiderBean getEquipmentBeans() throws DatabaseException {
         TechnicalRiderDAO technicalRiderDAO = DAOFactory.getTechnicalRiderDAO();
-        TechnicalRider rider = technicalRiderDAO.read(Session.getSingletonInstance().getUsername(), Session.UserRole.ARTIST);
+        TechnicalRider rider = technicalRiderDAO.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.ARTIST);
         return TechnicalRiderMapper.toBean(rider);
     }
 
@@ -36,17 +30,17 @@ public class ApplyController {
 
     public List<EventBean> getCompatibleEvents(int page) throws DatabaseException {
         // 1. Recupero Artista e il suo Rider dalla Sessione
-        String currentUserId = Session.getSingletonInstance().getUsername();
+        String currentUserId = Session.getSingletonInstance().getUser().getUsername();
         UserDAO userDAO = DAOFactory.getUserDAO();
         Artist currentUser = (Artist) userDAO.findByIdentifier(currentUserId);
         // Carichiamo l'Entity completa del rider dell'artista per fare i confronti
-        ArtistRider artistRider = (ArtistRider) riderDAO.read(Session.getSingletonInstance().getUsername(), Session.UserRole.ARTIST);
+        ArtistRider artistRider = (ArtistRider) riderDAO.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.ARTIST);
 
         // 2. FILTRO SQL (Strategia A): Annunci OPEN + Generi compatibili
         // Il DAO restituisce Announcement che hanno già al loro interno l'oggetto Venue
         if (Session.getSingletonInstance().getPersistenceType().equals(Session.PersistenceType.DATABASE)) {
             ArtistDAODatabase artistDAO = new ArtistDAODatabase();
-            currentUser.setGenresList(artistDAO.loadArtistGenres(Session.getSingletonInstance().getUsername()));
+            currentUser.setGenresList(artistDAO.loadArtistGenres(Session.getSingletonInstance().getUser().getUsername()));
         }
         List<Announcement> announcements = announcementDAO.findActiveByGenres(
                 currentUser.getGenresList(),
@@ -108,11 +102,11 @@ public class ApplyController {
         List<MusicalGenre> requestedGenres = eventBean.getAnnouncementBean().getRequestedGenres();
 
         ArtistDAO artistDAO = DAOFactory.getArtistDAO();
-        List<MusicalGenre> artistGenres = artistDAO.loadArtistGenres(Session.getSingletonInstance().getUsername());
+        List<MusicalGenre> artistGenres = artistDAO.loadArtistGenres(Session.getSingletonInstance().getUser().getUsername());
 
         long inCommon = requestedGenres.stream().filter(artistGenres::contains).count();
-        double genres_score = requestedGenres.isEmpty() ? 0.0 : (inCommon * 100.0) / requestedGenres.size();
-        application.setScore(genres_score);
+        double genresScore = requestedGenres.isEmpty() ? 0.0 : (inCommon * 100.0) / requestedGenres.size();
+        application.setScore(genresScore);
 
         Venue venue = new Venue();
         venue.setName(eventBean.getVenueName());

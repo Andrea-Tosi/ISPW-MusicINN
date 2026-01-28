@@ -111,4 +111,3 @@ public class ArtistRider extends TechnicalRider {
         }
     }
 }
-//TODO modellare eccezioni da lanciare in caso di mancata validazione del rider

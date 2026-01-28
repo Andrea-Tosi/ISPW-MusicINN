@@ -1,11 +1,14 @@
 package org.musicinn.musicinn.controller.controller_gui;
 
+import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class PaymentWindowControllerGUI {
-    public WebView webView;
+    @FXML
+    private WebView webView;
+
     private boolean success = false;
     private String stripeSessionId;
 

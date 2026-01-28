@@ -46,7 +46,7 @@ public class ApplyViewChooseEventControllerGUI {
     @FXML
     public void initialize() {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
-        headerController.setUsernameLabelText(Session.getSingletonInstance().getUsername());
+        headerController.setUsernameLabelText(Session.getSingletonInstance().getUser().getUsername());
 
         // 1. Caricamento iniziale dei primi 10
         loadEvents();
