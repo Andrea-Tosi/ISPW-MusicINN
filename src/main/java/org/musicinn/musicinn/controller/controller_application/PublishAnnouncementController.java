@@ -14,11 +14,12 @@ import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import org.musicinn.musicinn.util.exceptions.CalendarException;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.List;
 
 public class PublishAnnouncementController {
-    public void publish(AnnouncementBean ab) throws DatabaseException, CalendarException {
+    public void publish(AnnouncementBean ab) throws PersistenceException, CalendarException {
         // Controlla Disponibilità Temporale
         AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
 
@@ -57,7 +58,7 @@ public class PublishAnnouncementController {
         return announcement;
     }
 
-    public void getVenueData(VenueBean bean) throws DatabaseException {
+    public void getVenueData(VenueBean bean) throws PersistenceException {
         VenueDAO venueDAO = DAOFactory.getVenueDAO();
         Venue venue = venueDAO.read(Session.getSingletonInstance().getUser().getUsername());
 

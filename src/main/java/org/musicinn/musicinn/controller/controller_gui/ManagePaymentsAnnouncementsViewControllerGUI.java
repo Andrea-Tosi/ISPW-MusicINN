@@ -15,6 +15,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.PaymentBean;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -63,9 +64,7 @@ public class ManagePaymentsAnnouncementsViewControllerGUI implements Initializab
                 // 4. Aggiungi la cardRoot al contenitore (es. paymentContainer è una VBox nel tuo FXML)
                 paymentsContainer.getChildren().add(cardRoot);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DatabaseException e) {
+        } catch (PersistenceException | IOException e) {
             statusLabel.setText(e.getMessage());
         }
     }

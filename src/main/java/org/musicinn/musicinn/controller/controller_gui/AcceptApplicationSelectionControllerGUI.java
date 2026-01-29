@@ -13,7 +13,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.ApplicationBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,7 +60,7 @@ public class AcceptApplicationSelectionControllerGUI {
             for (ApplicationBean app : apps) {
                 addApplicationCard(app);
             }
-        } catch (DatabaseException e) {
+        } catch (PersistenceException e) {
             statusLabel.setText("Errore nel caricamento delle candidature.");
         }
     }

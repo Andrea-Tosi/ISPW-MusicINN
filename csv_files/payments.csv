@@ -1,0 +1,4 @@
+application_id;escrow_state;payment_deadline;venue_payment_intent_id;artist_payment_intent_id
+8;WAITING_BOTH;2026-02-19T21:00:00;null;null
+10;WAITING_BOTH;2026-02-16T16:04:00;null;null
+59;WAITING_BOTH;2026-02-15T21:00:00;null;null

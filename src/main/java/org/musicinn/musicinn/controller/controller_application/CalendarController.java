@@ -6,13 +6,14 @@ import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.SchedulableEventBean;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CalendarController {
-    public List<SchedulableEventBean> getEventsForDate(LocalDate date) throws DatabaseException {
+    public List<SchedulableEventBean> getEventsForDate(LocalDate date) throws PersistenceException {
         Calendar calendar = new Calendar();
         calendar.setEvents(DAOFactory.getAnnouncementDAO().getConfirmedEventsByDate(date));
 

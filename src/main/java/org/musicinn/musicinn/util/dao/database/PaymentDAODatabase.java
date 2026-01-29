@@ -6,6 +6,7 @@ import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.interfaces.PaymentDAO;
 import org.musicinn.musicinn.util.enumerations.EscrowState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -105,7 +106,7 @@ public class PaymentDAODatabase implements PaymentDAO {
         }
     }
 
-    public List<String> markAsRefunded(int applicationId) throws DatabaseException {
+    public List<String> markAsRefunded(int applicationId) throws PersistenceException {
         List<String> peopleToRefund = new ArrayList<>();
 
         // 1. Recuperiamo gli ID transazione prima di resettare o cambiare stato

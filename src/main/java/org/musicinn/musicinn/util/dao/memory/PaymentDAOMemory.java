@@ -4,6 +4,7 @@ import org.musicinn.musicinn.model.Payment;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.interfaces.PaymentDAO;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class PaymentDAOMemory implements PaymentDAO {
     }
 
     @Override
-    public List<String> markAsRefunded(int applicationId) throws DatabaseException {
+    public List<String> markAsRefunded(int applicationId) throws PersistenceException {
         return null;
     }
 }

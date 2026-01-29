@@ -18,7 +18,7 @@ import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.exceptions.CalendarException;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.net.URL;
 import java.time.Duration;
@@ -187,8 +187,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
             positionVenueLabel.setText(bean.getAddress() + ", " + bean.getCity());
             riderVenueLabel.setText(TechnicalRiderFormatter.format(bean.getRider(), Session.UserRole.MANAGER));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (PersistenceException e) {
             statusLabel.setText("Si è verificata un errore nel database.");
         }
     }
@@ -272,7 +271,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
             statusLabel.setTextFill(Color.BLACK);
             statusLabel.setText("Annuncio pubblicato con successo!");
             statusLabel.setTextFill(Color.RED);
-        } catch (DatabaseException | CalendarException e) {
+        } catch (PersistenceException | CalendarException e) {
             statusLabel.setText("Errore durante la pubblicazione: " + e.getMessage());
         }
     }

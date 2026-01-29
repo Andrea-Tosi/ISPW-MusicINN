@@ -7,6 +7,7 @@ import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class ManagementTechnicalRiderController {
     public void saveRiderData(List<MixerBean> mixers, List<StageBoxBean> stageBoxes,
                               List<MicrophoneSetBean> mics, List<DIBoxSetBean> diBoxes,
                               List<MonitorSetBean> monitors, List<MicStandSetBean> stands,
-                              List<CableSetBean> cables) throws DatabaseException, NotConsistentRiderException {
+                              List<CableSetBean> cables) throws PersistenceException, NotConsistentRiderException {
         // 1. Mapping dell'equipaggiamento comune
         List<InputEquipment> inputs = TechnicalRiderMapper.mapInputsToEntity(mics, diBoxes);
         List<OutputEquipment> outputs = TechnicalRiderMapper.mapOutputsToEntity(monitors);
@@ -85,7 +86,7 @@ public class ManagementTechnicalRiderController {
         return sb;
     }
 
-    public TechnicalRiderBean loadRiderData() throws DatabaseException {
+    public TechnicalRiderBean loadRiderData() throws PersistenceException {
         Session.UserRole role = Session.getSingletonInstance().getRole();
         TechnicalRider rider = DAOFactory.getTechnicalRiderDAO().read(Session.getSingletonInstance().getUser().getUsername(), role);
 

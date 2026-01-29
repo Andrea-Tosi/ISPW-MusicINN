@@ -15,7 +15,7 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.EventBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,9 +80,8 @@ public class ApplyViewChooseEventControllerGUI {
             }
 
             isLoading = false;
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-            statusLabel.setText("Errore nel database.");
+        } catch (PersistenceException e) {
+            statusLabel.setText("Errore nel caricamento degli eventi.");
         }
     }
 
@@ -102,7 +101,7 @@ public class ApplyViewChooseEventControllerGUI {
             // 4. Aggiungiamo la carta al FlowPane principale
             eventCardsContainer.getChildren().add(cardRoot);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 

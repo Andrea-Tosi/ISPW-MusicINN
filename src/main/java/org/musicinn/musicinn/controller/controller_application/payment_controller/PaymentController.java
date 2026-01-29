@@ -10,6 +10,7 @@ import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.PaymentDAO;
 import org.musicinn.musicinn.util.enumerations.EscrowState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,14 +26,14 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    public int createPayment(ApplicationBean applicationBean) throws DatabaseException {
+    public int createPayment(ApplicationBean applicationBean) throws PersistenceException {
         PaymentDAO paymentDAO = DAOFactory.getPaymentDAO();
         paymentDAO.save(applicationBean.getId(), DAYS_OF_DEADLINE);
 
         return DAYS_OF_DEADLINE;
     }
 
-    public List<PaymentBean> getPayments() throws DatabaseException {
+    public List<PaymentBean> getPayments() throws PersistenceException {
         String username = Session.getSingletonInstance().getUser().getUsername();
 
         if (Session.UserRole.MANAGER.equals(Session.getSingletonInstance().getRole())) {
@@ -42,7 +43,7 @@ public class PaymentController {
         }
     }
 
-    private List<PaymentBean> getPaymentsForManager(String username) throws DatabaseException {
+    private List<PaymentBean> getPaymentsForManager(String username) throws PersistenceException {
         List<PaymentBean> beans = new ArrayList<>();
         int idVenue = DAOFactory.getVenueDAO().getActiveVenueIdByManager(username);
         List<Announcement> closedAnnouncements = DAOFactory.getAnnouncementDAO().findClosedByIdVenue(idVenue);
@@ -56,7 +57,7 @@ public class PaymentController {
     }
 
     private void processPaymentForApplication(Application app, Announcement ann, List<PaymentBean> beans)
-            throws DatabaseException {
+            throws PersistenceException {
 
         Payment payment = DAOFactory.getPaymentDAO().findByApplicationId(app.getId());
 
@@ -93,7 +94,12 @@ public class PaymentController {
         if (payment.getState().equals(EscrowState.REFUNDED)) return;
 
         // Logica di rimborso delegata al service (DIP)
-        List<String> refundIntents = DAOFactory.getPaymentDAO().markAsRefunded(appId);
+        List<String> refundIntents = null;
+        try {
+            refundIntents = DAOFactory.getPaymentDAO().markAsRefunded(appId);
+        } catch (org.musicinn.musicinn.util.exceptions.PersistenceException e) {
+            throw new RuntimeException(e);
+        }
         for (String intentId : refundIntents) {
             executeSafeRefund(intentId);
         }
@@ -107,7 +113,7 @@ public class PaymentController {
         }
     }
 
-    private List<PaymentBean> getPaymentsForArtist(String username) throws DatabaseException {
+    private List<PaymentBean> getPaymentsForArtist(String username) throws PersistenceException {
         List<PaymentBean> beans = new ArrayList<>();
 
         // 1. Chiedo le mie candidature accettate
@@ -127,7 +133,12 @@ public class PaymentController {
             if (payment.getPaymentDeadline().isAfter(LocalDateTime.now())) {
                 beans.add(createArtistPaymentBean(payment, announcement, venue, app.getId()));
             } else if (!payment.getState().equals(EscrowState.REFUNDED)) {
-                List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(app.getId());
+                List<String> peopleToRefund = null;
+                try {
+                    peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(app.getId());
+                } catch (org.musicinn.musicinn.util.exceptions.PersistenceException e) {
+                    throw new RuntimeException(e);
+                }
 
                 for (String intentId : peopleToRefund) {
                     try {
@@ -197,7 +208,12 @@ public class PaymentController {
     public boolean isPaymentStillValid(PaymentBean bean) throws DatabaseException {
         if (bean.getPaymentDeadline().isBefore(LocalDateTime.now())) {
             // 1. Aggiorna il DB e prendi gli ID delle transazioni da rimborsare
-            List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
+            List<String> peopleToRefund = null;
+            try {
+                peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
+            } catch (org.musicinn.musicinn.util.exceptions.PersistenceException e) {
+                throw new RuntimeException(e);
+            }
             // Logica di "Auto-pulizia": se è scaduto, lo marchiamo nel DB
             // 2. Esegui il rimborso reale su Stripe per ogni transazione trovata
             for (String id : peopleToRefund) {

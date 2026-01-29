@@ -2,8 +2,10 @@ package org.musicinn.musicinn.util.dao;
 
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.database.*;
+import org.musicinn.musicinn.util.dao.filesystem.PaymentDAOCSV;
 import org.musicinn.musicinn.util.dao.interfaces.*;
 import org.musicinn.musicinn.util.dao.memory.*;
+import org.musicinn.musicinn.util.exceptions.CSVException;
 
 public class DAOFactory {
     private DAOFactory() {}
@@ -11,6 +13,10 @@ public class DAOFactory {
     // Metodo privato per capire se siamo in modalità Demo
     private static boolean isDemo() {
         return Session.getSingletonInstance().getPersistenceType().equals(Session.PersistenceType.MEMORY);
+    }
+
+    private static boolean isDatabase() {
+        return Session.getSingletonInstance().getPersistenceType().equals(Session.PersistenceType.DATABASE);
     }
 
     public static UserDAO getUserDAO() {
@@ -50,6 +56,12 @@ public class DAOFactory {
 
     public static PaymentDAO getPaymentDAO() {
         if (isDemo()) return new PaymentDAOMemory();
-        return new PaymentDAODatabase();
+        if (isDatabase()) return new PaymentDAODatabase();
+        try {
+            return new PaymentDAOCSV();
+        } catch (CSVException e) {
+            System.err.println("Errore nell'apertura del file dei pagamenti.");
+        }
+        return null;
     }
 }

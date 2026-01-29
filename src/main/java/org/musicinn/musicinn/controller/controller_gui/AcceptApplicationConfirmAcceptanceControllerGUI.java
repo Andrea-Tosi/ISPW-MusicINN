@@ -14,6 +14,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.ApplicationBean;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 public class AcceptApplicationConfirmAcceptanceControllerGUI {
     @FXML
@@ -53,7 +54,7 @@ public class AcceptApplicationConfirmAcceptanceControllerGUI {
             NavigationGUI.navigateToPath((Stage) window, FxmlPathLoader.getPath("fxml.manager.home"));
 
             stage.close();
-        } catch (DatabaseException e) {
+        } catch (PersistenceException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
             alert.showAndWait();

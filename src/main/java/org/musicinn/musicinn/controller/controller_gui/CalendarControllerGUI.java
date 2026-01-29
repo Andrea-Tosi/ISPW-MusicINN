@@ -14,6 +14,7 @@ import org.musicinn.musicinn.controller.controller_application.CalendarControlle
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.bean.SchedulableEventBean;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -206,7 +207,7 @@ public class CalendarControllerGUI implements Initializable {
             for (SchedulableEventBean event : events) {
                 cellControllerGUI.addEvent(event);
             }
-        } catch (DatabaseException e) {
+        } catch (PersistenceException e) {
             System.err.println("Errore nell'interazione con il database per prelevare gli eventi");
         }
     }

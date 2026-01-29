@@ -13,8 +13,8 @@ import org.musicinn.musicinn.util.EmailValidator;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.EmailAlreadyUsedException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 import org.musicinn.musicinn.util.exceptions.UsernameAlreadyUsedException;
 
 import java.io.IOException;
@@ -145,7 +145,7 @@ public class UserRegistrationControllerGUI implements Initializable {
 
             //crea una finestra modale dove l'utente deve inserire il codice a 6 cifre mandato all'email per verificarla
             showVerificationModalStage(email);
-        } catch (UsernameAlreadyUsedException | EmailAlreadyUsedException | DatabaseException e) {
+        } catch (UsernameAlreadyUsedException | EmailAlreadyUsedException | PersistenceException e) {
             statusLabel.setText(e.getMessage());
         }
     }

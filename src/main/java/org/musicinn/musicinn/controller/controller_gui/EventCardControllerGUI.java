@@ -15,7 +15,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.EventBean;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.util.List;
@@ -138,12 +138,11 @@ public class EventCardControllerGUI {
                 Stage stage = (Stage) currentScene.getWindow();
                 NavigationGUI.navigateToPath(stage, fxmlPath);
             }
-        } catch (DatabaseException e){
+        } catch (PersistenceException e){
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Errore nel salvataggio della candidatura nel database. Riprovare.");
             alert.show();
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());;
         }
     }
 }

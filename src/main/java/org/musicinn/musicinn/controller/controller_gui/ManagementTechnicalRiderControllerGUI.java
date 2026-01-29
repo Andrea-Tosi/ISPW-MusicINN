@@ -19,7 +19,8 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -103,7 +104,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
             if (trBean.getMonitors() != null) trBean.getMonitors().forEach(this::displayMonitor);
             if (trBean.getMicStands() != null) trBean.getMicStands().forEach(this::displayMicStand);
             if (trBean.getCables() != null) trBean.getCables().forEach(this::displayCable);
-        } catch (DatabaseException e) {
+        } catch (PersistenceException e) {
             statusLabel.setText("Errore del database: Nessun rider precedente trovato.");
         }
     }
@@ -248,7 +249,9 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
                     collectTypedBeans(otherEquipmentsVBox, CableSetBean.class)
             );
             statusLabel.setText("Rider salvato con successo!");
-        } catch (Exception e) { e.printStackTrace(); statusLabel.setText("Errore: " + e.getMessage()); }
+        } catch (PersistenceException | NotConsistentRiderException e) {
+            statusLabel.setText("Errore: " + e.getMessage());
+        }
     }
 
     // --- UTILS ---

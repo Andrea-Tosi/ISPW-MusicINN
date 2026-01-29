@@ -15,6 +15,7 @@ import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -64,9 +65,8 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
 
             statusLabel.setText("Hai pubblicato " + announcements.size() + " annunci.");
 
-        } catch (DatabaseException e) {
+        } catch (PersistenceException e) {
             statusLabel.setText("Errore critico nel recupero degli annunci.");
-            e.printStackTrace();
         }
     }
 

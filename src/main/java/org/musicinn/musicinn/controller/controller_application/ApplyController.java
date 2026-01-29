@@ -11,13 +11,13 @@ import org.musicinn.musicinn.util.dao.database.ArtistDAODatabase;
 import org.musicinn.musicinn.util.dao.interfaces.*;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ApplyController {
-    public TechnicalRiderBean getEquipmentBeans() throws DatabaseException {
+    public TechnicalRiderBean getEquipmentBeans() throws PersistenceException {
         TechnicalRiderDAO technicalRiderDAO = DAOFactory.getTechnicalRiderDAO();
         TechnicalRider rider = technicalRiderDAO.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.ARTIST);
         return TechnicalRiderMapper.toBean(rider);
@@ -28,7 +28,7 @@ public class ApplyController {
     // Supponiamo di avere un servizio per la distanza
 //    private final DistanceService distanceService = new DistanceService();
 
-    public List<EventBean> getCompatibleEvents(int page) throws DatabaseException {
+    public List<EventBean> getCompatibleEvents(int page) throws PersistenceException {
         // 1. Recupero Artista e il suo Rider dalla Sessione
         String currentUserId = Session.getSingletonInstance().getUser().getUsername();
         UserDAO userDAO = DAOFactory.getUserDAO();
@@ -95,7 +95,7 @@ public class ApplyController {
         return bean;
     }
 
-    public void createApplication(EventBean eventBean) throws DatabaseException {
+    public void createApplication(EventBean eventBean) throws PersistenceException {
         Application application = new Application();
         application.setState(ApplicationState.PENDING);
         application.setSoundcheckTime(eventBean.getAnnouncementBean().getSoundcheckTime());

@@ -13,7 +13,7 @@ import org.musicinn.musicinn.util.dao.interfaces.ArtistDAO;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class AcceptApplicationController {
         return AcceptApplicationController.SingletonContainer.singletonInstance;
     }
 
-    public List<AnnouncementBean> getAllManagerAnnouncements() throws DatabaseException {
+    public List<AnnouncementBean> getAllManagerAnnouncements() throws PersistenceException {
         // 1. Recuperiamo l'utente corrente dalla sessione (deve essere un MANAGER)
         String currentManager = Session.getSingletonInstance().getUser().getUsername();
 
@@ -74,7 +74,7 @@ public class AcceptApplicationController {
         return bean;
     }
 
-    public List<ApplicationBean> getApplicationsForAnnouncement(AnnouncementBean annBean) throws DatabaseException {
+    public List<ApplicationBean> getApplicationsForAnnouncement(AnnouncementBean annBean) throws PersistenceException {
         ApplicationDAO appDAO = DAOFactory.getApplicationDAO();
         ArtistDAO artistDAO = DAOFactory.getArtistDAO();
         TechnicalRiderDAO riderDAO = DAOFactory.getTechnicalRiderDAO();
@@ -200,7 +200,7 @@ public class AcceptApplicationController {
                 .toList();
     }
 
-    public void chooseApplication(AnnouncementBean announcementBean, ApplicationBean applicationBean) throws DatabaseException {
+    public void chooseApplication(AnnouncementBean announcementBean, ApplicationBean applicationBean) throws PersistenceException {
         Announcement ann = findAnnouncementById(announcementBean.getId());
         Application app = (Application) findApplicationById(ann.getApplicationList(), applicationBean.getId());
 
