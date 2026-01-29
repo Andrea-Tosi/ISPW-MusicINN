@@ -23,7 +23,7 @@ public class ManagerDAODatabase implements ManagerDAO {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 }

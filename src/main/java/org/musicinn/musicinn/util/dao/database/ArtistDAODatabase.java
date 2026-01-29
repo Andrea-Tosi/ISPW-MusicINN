@@ -20,16 +20,13 @@ public class ArtistDAODatabase implements ArtistDAO {
     @Override
     public void create(Artist artist) {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
-        System.out.println("DEBUG: Inizio procedura DAO per " + artist.getUsername());
+
         try {
             conn.setAutoCommit(false);
-            System.out.println("DEBUG: AutoCommit impostato a false");
 
             // 1. Delega la creazione dell'utente base
             UserDAO userDAO = DAOFactory.getUserDAO();
-            System.out.println("DEBUG: Tentativo inserimento BaseUser con ID Stripe: " + artist.getPaymentServiceAccountId());
             userDAO.insertBaseUser(artist, conn);
-            System.out.println("DEBUG: BaseUser inserito");
 
             // 2. Esegue l'inserimento specifico dell'artista
             String sqlArtist = "INSERT INTO artists (username, stage_name, city, address, does_unreleased) VALUES (?, ?, ?, ?, ?)";
@@ -39,8 +36,7 @@ public class ArtistDAODatabase implements ArtistDAO {
                 ps.setString(3, artist.getCity());
                 ps.setString(4, artist.getAddress());
                 ps.setBoolean(5, artist.getDoesUnreleased());
-                int affectedRows = ps.executeUpdate();
-                System.out.println("DEBUG: Eseguito update su artists. Righe colpite: " + affectedRows);
+                ps.executeUpdate();
             }
 
             // 3. Inserimento generi (Responsabilità specifica)
@@ -49,22 +45,17 @@ public class ArtistDAODatabase implements ArtistDAO {
             insertType(artist, conn);
 
             conn.commit();
-            System.out.println("DEBUG: COMMIT EFFETTUATO!");
         } catch (SQLException e) {
-            System.err.println("!!! ECCEZIONE RILEVATA NEL DAO !!!");
-            e.printStackTrace();
             try {
                 conn.rollback();
-                System.err.println("DEBUG: Rollback eseguito dopo errore");
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                System.err.println(ex.getMessage());
             }
         } finally {
             try {
                 conn.setAutoCommit(true);
-                System.out.println("DEBUG: AutoCommit resettato a true");
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -160,8 +151,7 @@ public class ArtistDAODatabase implements ArtistDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException("Errore nel recupero dello stage name: " + e.getMessage());
+            throw new DatabaseException("Errore nella ricerca del nome d'arte dell'artista.");
         }
 
         return stageName;

@@ -32,7 +32,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             VenueDAO venueDAO = DAOFactory.getVenueDAO();
-            int venueId = ((VenueDAODatabase) venueDAO).getActiveVenueIdByManager(managerUser);
+            int venueId = venueDAO.getActiveVenueIdByManager(managerUser);
 
             pstmt.setDate(1, java.sql.Date.valueOf(startingDate));
             pstmt.setInt(2, venueId);
@@ -94,8 +94,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException("Errore nel recupero degli eventi confermati per l'artista: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero degli eventi confermati per l'artista.");
         }
         return events;
     }
@@ -531,7 +530,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Errore nel recupero degli annunci chiusi: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero degli annunci chiusi.");
         }
 
         return announcements;
@@ -563,7 +562,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Errore nel recupero dell'annuncio tramite applicazione: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero dell'annuncio.");
         }
 
         return announcement;

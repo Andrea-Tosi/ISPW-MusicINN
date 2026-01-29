@@ -55,11 +55,18 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
 
             conn.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
-            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                System.err.println(ex.getMessage());
+            }
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         } finally {
-            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -277,7 +284,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     private void loadMixers(Connection conn, TechnicalRider rider, String artistUser, Integer venueId) throws SQLException {
         String sql = "SELECT * FROM mixers WHERE " + getOwnerColumn(artistUser) + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Mixer m = new Mixer();
@@ -299,7 +306,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     private void loadStageBox(Connection conn, TechnicalRider rider, String artistUser, Integer venueId) throws SQLException {
         String sql = "SELECT * FROM stage_boxes WHERE " + getOwnerColumn(artistUser) + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             try (ResultSet rs = ps.executeQuery()) {
                 // Usiamo while perché il Manager potrebbe averne più di una
                 while (rs.next()) {
@@ -324,7 +331,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         // Query Microfoni
         String sqlMic = "SELECT * FROM mic_sets WHERE " + ownerCol + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlMic)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 inputs.add(new MicrophoneSet(rs.getInt("quantity"), rs.getBoolean("phantom")));
@@ -334,7 +341,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         // Query DI Boxes
         String sqlDi = "SELECT * FROM di_box_sets WHERE " + ownerCol + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlDi)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 inputs.add(new DIBoxSet(rs.getInt("quantity"), rs.getBoolean("active")));
@@ -349,7 +356,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
 
         String sql = "SELECT * FROM monitor_sets WHERE " + ownerCol + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     // powered nel DB, quantity nel DB -> MonitorSet(quantity, powered)
@@ -367,7 +374,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         // 1. Caricamento Aste Microfoniche (mic_stand_sets)
         String sqlStands = "SELECT * FROM mic_stand_sets WHERE " + ownerCol + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlStands)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     others.add(new MicStandSet(rs.getInt("quantity"), rs.getBoolean("tall")));
@@ -378,7 +385,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         // 2. Caricamento Set di Cavi (cable_sets)
         String sqlCables = "SELECT * FROM cable_sets WHERE " + ownerCol + " = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlCables)) {
-            setOwnerParam(ps, 1, artistUser, venueId);
+            setOwnerParam(ps, artistUser, venueId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     // Recuperiamo la stringa dell'ENUM dal DB e la convertiamo nell'oggetto Java
@@ -396,8 +403,8 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         return (artistUser != null) ? "artist_username" : "manager_riders_venues_id";
     }
 
-    private void setOwnerParam(PreparedStatement ps, int index, String artistUser, Integer venueId) throws SQLException {
-        if (artistUser != null) ps.setString(index, artistUser);
-        else ps.setInt(index, venueId);
+    private void setOwnerParam(PreparedStatement ps, String artistUser, Integer venueId) throws SQLException {
+        if (artistUser != null) ps.setString(1, artistUser);
+        else ps.setInt(1, venueId);
     }
 }

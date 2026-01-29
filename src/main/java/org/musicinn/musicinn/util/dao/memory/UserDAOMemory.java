@@ -44,7 +44,7 @@ public class UserDAOMemory implements UserDAO {
     }
 
     @Override
-    public User findByIdentifier(String identifier){
+    public User findByIdentifier(String identifier) {
         // Prova a cercare per username (chiave della mappa)
         User user = utentiRegistrati.get(identifier);
 

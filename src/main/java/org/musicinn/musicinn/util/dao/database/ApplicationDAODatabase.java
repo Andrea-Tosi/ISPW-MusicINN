@@ -29,11 +29,10 @@ public class ApplicationDAODatabase implements ApplicationDAO {
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
             if (e.getErrorCode() == 1062) {
                 throw new DatabaseException("Ti sei già candidato a questo annuncio!");
             }
-            throw new DatabaseException("Errore nel salvataggio: " + e.getMessage());
+            throw new DatabaseException("Errore nel salvataggio della candidatura.");
         }
     }
 
@@ -59,7 +58,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
             }
         } catch (SQLException e) {
 
-            throw new DatabaseException("");
+            throw new DatabaseException("Errore nella ricerca dell'annuncio.");
         }
         return results;
     }
@@ -80,8 +79,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                 throw new DatabaseException("Impossibile accettare la candidatura: ID non trovato o già accettato/rifiutato.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio");
+            throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio.");
         }
     }
 
@@ -105,7 +103,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Errore nel recupero della candidatura accettata: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero della candidatura accettata.");
         }
 
         return acceptedApp;
@@ -134,7 +132,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Errore nel recupero delle candidature accettate dell'artista: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero delle candidature accettate dell'artista.");
         }
 
         return acceptedApplications;

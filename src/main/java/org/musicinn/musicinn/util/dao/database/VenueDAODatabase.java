@@ -33,10 +33,18 @@ public class VenueDAODatabase implements VenueDAO {
 
             conn.commit();
         } catch (SQLException e) {
-            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
-            e.printStackTrace();
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                System.err.println(ex.getMessage());
+            }
+            System.err.println(e.getMessage());
         } finally {
-            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -153,8 +161,7 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException("Errore nel recupero del locale tramite annuncio: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero del locale.");
         }
 
         return venue;
@@ -177,12 +184,12 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
                     venueName = rs.getString("name");
                 } else {
                     // Opzionale: gestire il caso in cui l'annuncio non esista
-                    throw new DatabaseException("Nessun locale trovato per l'annuncio: " + announcementId);
+                    throw new DatabaseException("Nessun locale trovato per l'annuncio.");
                 }
             }
             return venueName;
         } catch (SQLException e) {
-            throw new DatabaseException("Errore nel recupero del nome del locale: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero del nome del locale.");
         }
     }
 }

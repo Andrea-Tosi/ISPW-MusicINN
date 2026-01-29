@@ -39,7 +39,7 @@ public class PaymentDAODatabase implements PaymentDAO {
             System.out.println("[DAO] Record di pagamento creato per l'applicazione: " + applicationId);
 
         } catch (SQLException e) {
-            throw new DatabaseException("Errore durante il salvataggio del pagamento: " + e.getMessage());
+            throw new DatabaseException("Errore durante il salvataggio del pagamento.");
         }
     }
 
@@ -63,7 +63,7 @@ public class PaymentDAODatabase implements PaymentDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Errore nel recupero del record di pagamento: " + e.getMessage());
+            throw new DatabaseException("Errore nel recupero del record di pagamento.");
         }
         return payment;
     }
@@ -104,7 +104,7 @@ public class PaymentDAODatabase implements PaymentDAO {
             conn.commit();
         } catch (SQLException e) {
             try { conn.rollback(); } catch (SQLException ex) { /* log */ }
-            throw new DatabaseException("Errore nel salvataggio del pagamento: " + e.getMessage());
+            throw new DatabaseException("Errore nel salvataggio del pagamento.");
         }
     }
 
@@ -146,14 +146,14 @@ public class PaymentDAODatabase implements PaymentDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                throw new DatabaseException("");
+                System.out.println(ex.getMessage());
             }
-            throw new DatabaseException("Errore durante il markAsRefunded: " + e.getMessage());
+            throw new DatabaseException("Errore durante l'aggiornamento dello stato del pagamento.");
         } finally {
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException e){
-                System.out.println("Errore: " + e.getMessage());;
+                System.out.println(e.getMessage());;
             }
         }
     }

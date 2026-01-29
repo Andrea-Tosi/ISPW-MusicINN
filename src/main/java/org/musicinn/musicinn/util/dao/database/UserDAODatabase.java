@@ -5,6 +5,7 @@ import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.util.DBConnectionManager;
 import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +14,7 @@ import java.sql.SQLException;
 
 public class UserDAODatabase implements UserDAO {
     @Override
-    public User findByIdentifier(String identifier) {
+    public User findByIdentifier(String identifier) throws DatabaseException {
         // La query controlla la presenza dell'utente sia in 'artists' che in 'managers'
         String query = "SELECT u.*, a.username AS artist_check, m.username AS manager_check " +
                 "FROM users u " +
@@ -47,7 +48,7 @@ public class UserDAODatabase implements UserDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Errore: impossibile trovare utente.");
         }
         return null;
     }
@@ -64,9 +65,6 @@ public class UserDAODatabase implements UserDAO {
             ps.setString(3, user.getHashedPassword());
             ps.setString(4, user.getPaymentServiceAccountId());
             ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
     }
 }
