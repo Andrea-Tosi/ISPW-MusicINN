@@ -15,6 +15,7 @@ import org.musicinn.musicinn.model.User;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -110,13 +111,17 @@ public class LoginControllerGUI implements Initializable {
             return;
         }
 
-        CredentialsBean userBean = new CredentialsBean(username, password);
-        User loggedUser = LoginController.getSingletonInstance().login(userBean);
-        if (loggedUser != null) {
-            //controlla il tipo di utente e mostra la schermata adeguata
-            handleSuccessfulLogin(loggedUser);
-        } else {
-            statusLabel.setText("Credenziali non valide.");
+        try {
+            CredentialsBean userBean = new CredentialsBean(username, password);
+            User loggedUser = LoginController.getSingletonInstance().login(userBean);
+            if (loggedUser != null) {
+                //controlla il tipo di utente e mostra la schermata adeguata
+                handleSuccessfulLogin(loggedUser);
+            } else {
+                statusLabel.setText("Credenziali non valide.");
+            }
+        } catch (DatabaseException e) {
+            statusLabel.setText(e.getMessage());
         }
     }
 

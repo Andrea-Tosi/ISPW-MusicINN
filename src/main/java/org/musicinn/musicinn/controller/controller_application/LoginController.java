@@ -16,6 +16,7 @@ import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
 import org.musicinn.musicinn.util.bean.login_bean.ArtistRegistrationBean;
 import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
 import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
+import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.EmailAlreadyUsedException;
 import org.musicinn.musicinn.util.exceptions.UsernameAlreadyUsedException;
 
@@ -34,7 +35,7 @@ public class LoginController {
         return SingletonContainer.singletonInstance;
     }
 
-    public User login(CredentialsBean credentialsBean){
+    public User login(CredentialsBean credentialsBean) throws DatabaseException {
         User user;
 
         if (credentialsBean.getUsername() != null) {
@@ -61,12 +62,12 @@ public class LoginController {
         }
     }
 
-    private User isIdentifierOccupied(String identifier) {
+    private User isIdentifierOccupied(String identifier) throws DatabaseException {
         UserDAO userDAO = DAOFactory.getUserDAO();
         return userDAO.findByIdentifier(identifier);
     }
 
-    public void startSignup(CredentialsBean credentialsBean) throws UsernameAlreadyUsedException, EmailAlreadyUsedException {
+    public void startSignup(CredentialsBean credentialsBean) throws UsernameAlreadyUsedException, EmailAlreadyUsedException, DatabaseException {
         User userUsername = isIdentifierOccupied(credentialsBean.getUsername());
         User userEmail = isIdentifierOccupied(credentialsBean.getEmail());
         if (userUsername != null) {
