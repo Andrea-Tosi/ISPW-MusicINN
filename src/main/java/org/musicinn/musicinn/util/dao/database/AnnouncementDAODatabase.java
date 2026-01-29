@@ -175,7 +175,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 throw e;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
     }

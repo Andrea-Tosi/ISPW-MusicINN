@@ -61,8 +61,6 @@ public class VenueDAODatabase implements VenueDAO {
             ps.setString(5, managerUsername);
 
             ps.executeUpdate();
-            System.out.println("✅ Locale '" + venue.getName() + "' registrato nel DB!");
-
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     return rs.getInt(1); // Restituisce l'ID generato da MySQL

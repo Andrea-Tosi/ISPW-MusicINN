@@ -35,9 +35,6 @@ public class PaymentDAODatabase implements PaymentDAO {
 
             // Esecuzione
             ps.executeUpdate();
-
-            System.out.println("[DAO] Record di pagamento creato per l'applicazione: " + applicationId);
-
         } catch (SQLException e) {
             throw new DatabaseException("Errore durante il salvataggio del pagamento.");
         }
@@ -146,14 +143,14 @@ public class PaymentDAODatabase implements PaymentDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                System.err.println(ex.getMessage());
             }
             throw new DatabaseException("Errore durante l'aggiornamento dello stato del pagamento.");
         } finally {
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException e){
-                System.out.println(e.getMessage());;
+                System.err.println(e.getMessage());;
             }
         }
     }
