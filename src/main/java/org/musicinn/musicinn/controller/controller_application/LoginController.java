@@ -52,7 +52,6 @@ public class LoginController {
                 } else if(user instanceof Manager) {
                     Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);
                 }
-                Session.getSingletonInstance().setUsername(credentialsBean.getUsername());
                 Session.getSingletonInstance().setUser(user);
                 return user;
             } else {
@@ -101,7 +100,6 @@ public class LoginController {
         ArtistDAO artistDAO = DAOFactory.getArtistDAO();
         artistDAO.create(artist);
 
-        Session.getSingletonInstance().setUsername(cb.getUsername());
         Session.getSingletonInstance().setUser(artist);
         Session.getSingletonInstance().setRole(Session.UserRole.ARTIST);
     }
@@ -119,7 +117,6 @@ public class LoginController {
         VenueDAO venueDAO = DAOFactory.getVenueDAO();
         venueDAO.create(venue, manager);
 
-        Session.getSingletonInstance().setUsername(cb.getUsername());
         Session.getSingletonInstance().setUser(manager);
         Session.getSingletonInstance().setRole(Session.UserRole.MANAGER);
     }
