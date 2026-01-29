@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
+    private static final String QUANTITY_COLUMN = "quantity";
+
     @Override
     public void create(TechnicalRider rider) throws DatabaseException {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
@@ -55,18 +57,26 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
 
             conn.commit();
         } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
+            rollback(conn);
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
-            }
+            setAutoCommit(conn);
+        }
+    }
+
+    private void rollback(Connection conn) {
+        try {
+            conn.rollback();
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+
+    private void setAutoCommit(Connection conn) {
+        try {
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
         }
     }
 
@@ -134,7 +144,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveMicrophones(Connection conn, List<InputEquipment> inputs, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO mic_sets (phantom, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO mic_sets (phantom, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (InputEquipment in : inputs) {
             if (in instanceof MicrophoneSet ms) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -148,7 +158,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveDIBoxes(Connection conn, List<InputEquipment> inputs, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO di_box_sets (active, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO di_box_sets (active, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (InputEquipment in : inputs) {
             if (in instanceof DIBoxSet di) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -162,7 +172,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveMonitors(Connection conn, List<OutputEquipment> outputs, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO monitor_sets (powered, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO monitor_sets (powered, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OutputEquipment out : outputs) {
             if (out instanceof MonitorSet ms) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -176,7 +186,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveMicStands(Connection conn, List<OtherEquipment> others, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO mic_stand_sets (tall, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO mic_stand_sets (tall, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OtherEquipment ot : others) {
             if (ot instanceof MicStandSet ss) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -190,7 +200,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveCables(Connection conn, List<OtherEquipment> others, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO cable_sets (purpose, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO cable_sets (purpose, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OtherEquipment ot : others) {
             if (ot instanceof CableSet cs) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -334,7 +344,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             setOwnerParam(ps, artistUser, venueId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                inputs.add(new MicrophoneSet(rs.getInt("quantity"), rs.getBoolean("phantom")));
+                inputs.add(new MicrophoneSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("phantom")));
             }
         }
 
@@ -344,7 +354,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             setOwnerParam(ps, artistUser, venueId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                inputs.add(new DIBoxSet(rs.getInt("quantity"), rs.getBoolean("active")));
+                inputs.add(new DIBoxSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("active")));
             }
         }
         return inputs;
@@ -360,7 +370,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     // powered nel DB, quantity nel DB -> MonitorSet(quantity, powered)
-                    outputs.add(new MonitorSet(rs.getInt("quantity"), rs.getBoolean("powered")));
+                    outputs.add(new MonitorSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("powered")));
                 }
             }
         }
@@ -377,7 +387,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             setOwnerParam(ps, artistUser, venueId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    others.add(new MicStandSet(rs.getInt("quantity"), rs.getBoolean("tall")));
+                    others.add(new MicStandSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("tall")));
                 }
             }
         }
@@ -392,7 +402,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
                     String purposeStr = rs.getString("purpose");
                     CablePurpose func = CablePurpose.valueOf(purposeStr);
 
-                    others.add(new CableSet(rs.getInt("quantity"), func));
+                    others.add(new CableSet(rs.getInt(QUANTITY_COLUMN), func));
                 }
             }
         }

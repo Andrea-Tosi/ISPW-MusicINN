@@ -21,6 +21,12 @@ import java.util.stream.Collectors;
 public class AnnouncementDAODatabase implements AnnouncementDAO {
     private static final String START_TIME_COLUMN = "start_time";
     private static final String DURATION_COLUMN = "duration";
+    private static final String START_DAY_COLUMN = "start_day";
+    private static final String CACHET_COLUMN = "cachet";
+    private static final String DEPOSIT_COLUMN = "deposit";
+    private static final String ID_VENUE_COLUMN = "manager_riders_venues_id";
+    private static final String QUANTITY_COLUMN = "quantity";
+
     @Override
     public List<SchedulableEvent> getEventsByDate(LocalDate startingDate) throws DatabaseException {
         List<SchedulableEvent> events = new ArrayList<>();
@@ -28,7 +34,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
-        String query = "SELECT " + START_TIME_COLUMN + ", " + DURATION_COLUMN + " FROM announcements WHERE start_day = ? AND venues_id = ?";
+        String query = "SELECT " + START_TIME_COLUMN + ", " + DURATION_COLUMN + " FROM announcements WHERE " + START_DAY_COLUMN + " = ? AND venues_id = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             VenueDAO venueDAO = DAOFactory.getVenueDAO();
@@ -73,7 +79,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         String query = "SELECT a.id, a." + START_TIME_COLUMN +", a." + DURATION_COLUMN +
                 " FROM announcements a " +
                 "JOIN applications app ON a.id = app.announcements_id " +
-                "WHERE a.start_day = ? " +
+                "WHERE a." + START_DAY_COLUMN + " = ? " +
                 "AND app.artists_username = ? " +
                 "AND app.state = 'ACCEPTED'";
 
@@ -105,7 +111,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
-        String query = "SELECT id, " + START_TIME_COLUMN + ", " + DURATION_COLUMN + " FROM announcements WHERE start_day = ? AND venues_id = ? AND state = 'CLOSED'";
+        String query = "SELECT id, " + START_TIME_COLUMN + ", " + DURATION_COLUMN + " FROM announcements WHERE " + START_DAY_COLUMN + " = ? AND venues_id = ? AND state = 'CLOSED'";
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             VenueDAO venueDAO = DAOFactory.getVenueDAO();
@@ -136,7 +142,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     public void save(Announcement announcement) throws DatabaseException {
         String managerUser = Session.getSingletonInstance().getUser().getUsername();
 
-        String insertAnnouncement = "INSERT INTO announcements (start_day, " + START_TIME_COLUMN + ", " + DURATION_COLUMN + ", cachet, deposit, does_unreleased, description, state, venues_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertAnnouncement = "INSERT INTO announcements (" + START_DAY_COLUMN + ", " + START_TIME_COLUMN + ", " + DURATION_COLUMN + ", " + CACHET_COLUMN + ", " + DEPOSIT_COLUMN + ", does_unreleased, description, state, venues_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
         try {
@@ -284,7 +290,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 "FROM announcements a " +
                 "JOIN venues v ON a.venues_id = v.id " +
                 "WHERE v.manager_username = ? " +
-                "ORDER BY a.start_day DESC";
+                "ORDER BY a." + START_DAY_COLUMN + " DESC";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
@@ -322,11 +328,11 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
     private void mapAnnouncement(Announcement ann, ResultSet rs) throws SQLException {
         ann.setId(rs.getInt("ann_id"));
-        ann.setStartEventDay(rs.getDate("start_day").toLocalDate());
+        ann.setStartEventDay(rs.getDate(START_DAY_COLUMN).toLocalDate());
         ann.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
         ann.setDuration(Duration.ofMinutes(rs.getLong(DURATION_COLUMN)));
-        ann.setCachet(rs.getDouble("cachet"));
-        ann.setDeposit(rs.getDouble("deposit"));
+        ann.setCachet(rs.getDouble(CACHET_COLUMN));
+        ann.setDeposit(rs.getDouble(DEPOSIT_COLUMN));
         ann.setDescription(rs.getString("description"));
         ann.setState(AnnouncementState.valueOf(rs.getString("state")));
     }
@@ -387,10 +393,10 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadMixers(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM mixers WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM mixers WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
                     Mixer mixer = new Mixer();
                     mixer.setInputChannels(rs.getInt("input_channels"));
@@ -404,13 +410,13 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadStageBoxes(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM Stage_Boxes WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM Stage_Boxes WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
 
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
                     StageBox sb = new StageBox();
                     sb.setInputChannels(rs.getInt("input_channels"));
@@ -422,60 +428,60 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadMics(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM mic_sets WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM mic_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
-                    r.getInputs().add(new MicrophoneSet(rs.getInt("quantity"), rs.getBoolean("phantom")));
+                    r.getInputs().add(new MicrophoneSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("phantom")));
                 }
             }
         }
     }
 
     private void loadDIBoxes(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM di_box_sets WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM di_box_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
-                    r.getInputs().add(new DIBoxSet(rs.getInt("quantity"), rs.getBoolean("active")));
+                    r.getInputs().add(new DIBoxSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("active")));
                 }
             }
         }
     }
 
     private void loadMonitors(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM monitor_sets WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM monitor_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
-                    r.getOutputs().add(new MonitorSet(rs.getInt("quantity"), rs.getBoolean("powered")));
+                    r.getOutputs().add(new MonitorSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("powered")));
                 }
             }
         }
     }
 
     private void loadMicStands(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM mic_stand_sets WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM mic_stand_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
-                    r.getOthers().add(new MicStandSet(rs.getInt("quantity"), rs.getBoolean("tall")));
+                    r.getOthers().add(new MicStandSet(rs.getInt(QUANTITY_COLUMN), rs.getBoolean("tall")));
                 }
             }
         }
     }
 
     private void loadCables(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM cable_sets WHERE manager_riders_venues_id IN (" + ids + ")";
+        String sql = "SELECT * FROM cable_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                ManagerRider r = riderMap.get(rs.getInt("manager_riders_venues_id"));
+                ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
-                    r.getOthers().add(new CableSet(rs.getInt("quantity"), CablePurpose.valueOf(rs.getString("function"))));
+                    r.getOthers().add(new CableSet(rs.getInt(QUANTITY_COLUMN), CablePurpose.valueOf(rs.getString("function"))));
                 }
             }
         }
@@ -518,11 +524,11 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
 
                     // Mappatura dei campi della tabella announcements
                     ann.setId(rs.getInt("id"));
-                    ann.setCachet(rs.getDouble("cachet"));
-                    ann.setDeposit(rs.getDouble("deposit"));
+                    ann.setCachet(rs.getDouble(CACHET_COLUMN));
+                    ann.setDeposit(rs.getDouble(DEPOSIT_COLUMN));
 
                     // Conversione date e orari SQL -> Java Time
-                    ann.setStartEventDay(rs.getDate("start_day").toLocalDate());
+                    ann.setStartEventDay(rs.getDate(START_DAY_COLUMN).toLocalDate());
                     ann.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
 
                     announcements.add(ann);
@@ -553,8 +559,8 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 if (rs.next()) {
                     announcement = new Announcement();
                     announcement.setId(rs.getInt("id"));
-                    announcement.setCachet(rs.getDouble("cachet"));
-                    announcement.setDeposit(rs.getDouble("deposit"));
+                    announcement.setCachet(rs.getDouble(CACHET_COLUMN));
+                    announcement.setDeposit(rs.getDouble(DEPOSIT_COLUMN));
                     announcement.setStartEventDay(rs.getDate("start_day").toLocalDate());
                     announcement.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
                     announcement.setState(AnnouncementState.valueOf(rs.getString("state")));

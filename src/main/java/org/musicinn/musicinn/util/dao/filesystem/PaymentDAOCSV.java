@@ -89,34 +89,34 @@ public class PaymentDAOCSV implements PaymentDAO {
         try {
             Path path = Paths.get(CSV_FILE);
             List<String> lines = Files.readAllLines(path);
-            boolean updated = false;
+            boolean updated = findAndUpdateLine(lines, applicationId, role, transactionId);
 
-            for (int numOfLine = 1; numOfLine < lines.size(); numOfLine++) {
-                String[] parts = lines.get(numOfLine).split(DELIMITER);
-                if (Integer.parseInt(parts[0]) == applicationId) {
-
-                    // Aggiornamento dell'ID transazione specifico
-                    if (role == Session.UserRole.MANAGER) {
-                        parts[3] = transactionId; // venue_payment_intent_id
-                    } else {
-                        parts[4] = transactionId; // artist_payment_intent_id
-                    }
-
-                    // Logica ricalcolo EscrowState (simulata come nel DB)
-                    boolean venuePaid = !parts[3].equals("null");
-                    boolean artistPaid = !parts[4].equals("null");
-
-                    if (venuePaid && artistPaid) {
-                        parts[1] = EscrowState.SECURED.toString();
-                    } else if (venuePaid || artistPaid) {
-                        parts[1] = EscrowState.PARTIAL.toString();
-                    }
-
-                    lines.set(numOfLine, String.join(DELIMITER, parts));
-                    updated = true;
-                    break;
-                }
-            }
+//            for (int numOfLine = 1; numOfLine < lines.size(); numOfLine++) {
+//                String[] parts = lines.get(numOfLine).split(DELIMITER);
+//                if (Integer.parseInt(parts[0]) == applicationId) {
+//
+//                    // Aggiornamento dell'ID transazione specifico
+//                    if (role == Session.UserRole.MANAGER) {
+//                        parts[3] = transactionId; // venue_payment_intent_id
+//                    } else {
+//                        parts[4] = transactionId; // artist_payment_intent_id
+//                    }
+//
+//                    // Logica ricalcolo EscrowState (simulata come nel DB)
+//                    boolean venuePaid = !parts[3].equals("null");
+//                    boolean artistPaid = !parts[4].equals("null");
+//
+//                    if (venuePaid && artistPaid) {
+//                        parts[1] = EscrowState.SECURED.toString();
+//                    } else if (venuePaid || artistPaid) {
+//                        parts[1] = EscrowState.PARTIAL.toString();
+//                    }
+//
+//                    lines.set(numOfLine, String.join(DELIMITER, parts));
+//                    updated = true;
+//                    break;
+//                }
+//            }
 
             if (updated) {
                 Files.write(path, lines);
@@ -124,6 +124,37 @@ public class PaymentDAOCSV implements PaymentDAO {
         } catch (IOException e) {
             throw new CSVException("Errore durante l'aggiornamento dello stato del pagamento: " + e.getMessage());
         }
+    }
+
+    private boolean findAndUpdateLine(List<String> lines, int appId, Session.UserRole role, String txId) {
+        for (int i = 1; i < lines.size(); i++) {
+            String[] parts = lines.get(i).split(DELIMITER);
+
+            if (Integer.parseInt(parts[0]) == appId) {
+                updateParts(parts, role, txId);
+                lines.set(i, String.join(DELIMITER, parts));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateParts(String[] parts, Session.UserRole role, String txId) {
+        // 1. Assegnazione dell'ID transazione (Uso dell'indice basato sul ruolo)
+        int index = (role == Session.UserRole.MANAGER) ? 3 : 4;
+        parts[index] = txId;
+
+        // 2. Ricalcolo Stato (Logica isolata e leggibile)
+        boolean venuePaid = !"null".equals(parts[3]);
+        boolean artistPaid = !"null".equals(parts[4]);
+
+        parts[1] = determineNewState(venuePaid, artistPaid).toString();
+    }
+
+    private EscrowState determineNewState(boolean vPaid, boolean aPaid) {
+        if (vPaid && aPaid) return EscrowState.SECURED;
+        if (vPaid || aPaid) return EscrowState.PARTIAL;
+        return EscrowState.WAITING_BOTH;
     }
 
     @Override
