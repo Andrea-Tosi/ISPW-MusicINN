@@ -91,33 +91,6 @@ public class PaymentDAOCSV implements PaymentDAO {
             List<String> lines = Files.readAllLines(path);
             boolean updated = findAndUpdateLine(lines, applicationId, role, transactionId);
 
-//            for (int numOfLine = 1; numOfLine < lines.size(); numOfLine++) {
-//                String[] parts = lines.get(numOfLine).split(DELIMITER);
-//                if (Integer.parseInt(parts[0]) == applicationId) {
-//
-//                    // Aggiornamento dell'ID transazione specifico
-//                    if (role == Session.UserRole.MANAGER) {
-//                        parts[3] = transactionId; // venue_payment_intent_id
-//                    } else {
-//                        parts[4] = transactionId; // artist_payment_intent_id
-//                    }
-//
-//                    // Logica ricalcolo EscrowState (simulata come nel DB)
-//                    boolean venuePaid = !parts[3].equals("null");
-//                    boolean artistPaid = !parts[4].equals("null");
-//
-//                    if (venuePaid && artistPaid) {
-//                        parts[1] = EscrowState.SECURED.toString();
-//                    } else if (venuePaid || artistPaid) {
-//                        parts[1] = EscrowState.PARTIAL.toString();
-//                    }
-//
-//                    lines.set(numOfLine, String.join(DELIMITER, parts));
-//                    updated = true;
-//                    break;
-//                }
-//            }
-
             if (updated) {
                 Files.write(path, lines);
             }
@@ -159,39 +132,58 @@ public class PaymentDAOCSV implements PaymentDAO {
 
     @Override
     public List<String> markAsRefunded(int applicationId) throws CSVException {
-        List<String> peopleToRefund = new ArrayList<>();
         try {
             Path path = Paths.get(CSV_FILE);
             List<String> lines = Files.readAllLines(path);
-            boolean updated = false;
+            List<String> peopleToRefund = processLinesForRefund(lines, applicationId);;
 
-            for (int numOfLine = 1; numOfLine < lines.size(); numOfLine++) {
-                String[] parts = lines.get(numOfLine).split(DELIMITER);
-                if (Integer.parseInt(parts[0]) == applicationId) {
-
-                    // Verifica deadline prima di rimborsare
-                    LocalDateTime deadline = LocalDateTime.parse(parts[2], formatter);
-                    if (deadline.isBefore(LocalDateTime.now())) {
-
-                        // Raccogliamo gli ID transazione esistenti (se non sono "null")
-                        if (!parts[3].equals("null")) peopleToRefund.add(parts[3]);
-                        if (!parts[4].equals("null")) peopleToRefund.add(parts[4]);
-
-                        // Cambiamo stato in REFUNDED
-                        parts[1] = EscrowState.REFUNDED.toString();
-                        lines.set(numOfLine, String.join(DELIMITER, parts));
-                        updated = true;
-                    }
-                    break;
-                }
-            }
-
-            if (updated) {
+            if (!peopleToRefund.isEmpty()) {
                 Files.write(path, lines);
             }
             return peopleToRefund;
         } catch (IOException e) {
             throw new CSVException("Errore durante la procedura di rimborso: " + e.getMessage());
+        }
+    }
+
+    private List<String> processLinesForRefund(List<String> lines, int applicationId) {
+        List<String> peopleToRefund = new ArrayList<>();
+
+        for (int i = 1; i < lines.size(); i++) {
+            String[] parts = lines.get(i).split(DELIMITER);
+
+            // Clausola di guardia: ignora le righe che non corrispondono all'ID
+            if (Integer.parseInt(parts[0]) != applicationId) {
+                continue;
+            }
+
+            // Trovato l'ID. Ora gestiamo la logica specifica ed usciamo.
+            LocalDateTime deadline = LocalDateTime.parse(parts[2], formatter);
+
+            if (deadline.isBefore(LocalDateTime.now())) {
+                // Se la deadline è superata, procedi
+                collectRefunds(parts, peopleToRefund);
+                markState(parts);
+                lines.set(i, String.join(DELIMITER, parts));
+            }
+            break;
+        }
+        return peopleToRefund;
+    }
+
+    private void collectRefunds(String[] parts, List<String> refundList) {
+        addIfPresent(refundList, parts[3]);
+        addIfPresent(refundList, parts[4]);
+    }
+
+    private void markState(String[] parts) {
+        parts[1] = EscrowState.REFUNDED.toString();
+    }
+
+    private void addIfPresent(List<String> list, String value) {
+        // Helper method: aggiunge solo se la stringa non è "null" o vuota
+        if (value != null && !value.equals("null") && !value.isEmpty()) {
+            list.add(value);
         }
     }
 }

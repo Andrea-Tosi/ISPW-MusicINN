@@ -144,7 +144,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveMicrophones(Connection conn, List<InputEquipment> inputs, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO mic_sets (phantom, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO mic_sets (phantom, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (InputEquipment in : inputs) {
             if (in instanceof MicrophoneSet ms) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -158,7 +158,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveDIBoxes(Connection conn, List<InputEquipment> inputs, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO di_box_sets (active, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO di_box_sets (active, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (InputEquipment in : inputs) {
             if (in instanceof DIBoxSet di) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -172,7 +172,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveMonitors(Connection conn, List<OutputEquipment> outputs, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO monitor_sets (powered, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO monitor_sets (powered, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OutputEquipment out : outputs) {
             if (out instanceof MonitorSet ms) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -186,7 +186,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveMicStands(Connection conn, List<OtherEquipment> others, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO mic_stand_sets (tall, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO mic_stand_sets (tall, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OtherEquipment ot : others) {
             if (ot instanceof MicStandSet ss) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -200,7 +200,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private void saveCables(Connection conn, List<OtherEquipment> others, String artistUser, Integer venueId) throws SQLException {
-        String sql = "INSERT INTO cable_sets (purpose, " + QUANTITY_COLUMN + ", artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO cable_sets (purpose, quantity, artist_username, manager_riders_venues_id) VALUES (?, ?, ?, ?)";
         for (OtherEquipment ot : others) {
             if (ot instanceof CableSet cs) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {

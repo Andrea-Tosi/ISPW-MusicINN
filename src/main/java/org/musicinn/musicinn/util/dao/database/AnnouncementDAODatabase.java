@@ -393,7 +393,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadMixers(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM mixers WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM mixers WHERE manager_riders_venues_id IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
@@ -410,7 +410,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadStageBoxes(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM Stage_Boxes WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM Stage_Boxes WHERE manager_riders_venues_id IN (" + ids + ")";
 
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -428,7 +428,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadMics(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM mic_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM mic_sets WHERE manager_riders_venues_id IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
@@ -440,7 +440,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadDIBoxes(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM di_box_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM di_box_sets WHERE manager_riders_venues_id IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
@@ -452,7 +452,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadMonitors(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM monitor_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM monitor_sets WHERE manager_riders_venues_id IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
@@ -464,7 +464,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadMicStands(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM mic_stand_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM mic_stand_sets WHERE manager_riders_venues_id IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
@@ -476,7 +476,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     private void loadCables(Connection conn, String ids, Map<Integer, ManagerRider> riderMap) throws SQLException {
-        String sql = "SELECT * FROM cable_sets WHERE " + ID_VENUE_COLUMN + " IN (" + ids + ")";
+        String sql = "SELECT * FROM cable_sets WHERE manager_riders_venues_id IN (" + ids + ")";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
@@ -561,7 +561,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     announcement.setId(rs.getInt("id"));
                     announcement.setCachet(rs.getDouble(CACHET_COLUMN));
                     announcement.setDeposit(rs.getDouble(DEPOSIT_COLUMN));
-                    announcement.setStartEventDay(rs.getDate("start_day").toLocalDate());
+                    announcement.setStartEventDay(rs.getDate(START_DAY_COLUMN).toLocalDate());
                     announcement.setStartEventTime(rs.getTime(START_TIME_COLUMN).toLocalTime());
                     announcement.setState(AnnouncementState.valueOf(rs.getString("state")));
                 }
