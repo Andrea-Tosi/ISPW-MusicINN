@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
+    static {
+        da creare
+    }
+
     @Override
     public void create(TechnicalRider rider) {
         System.out.println("rider tecnico " + rider + " creato");

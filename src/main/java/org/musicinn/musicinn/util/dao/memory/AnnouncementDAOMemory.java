@@ -14,84 +14,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AnnouncementDAOMemory implements AnnouncementDAO {
-    @Override
-    public void save(Announcement announcement) {
-        System.out.println("Annuncio" + announcement + "salvato");
-    }
+    private static final List<Announcement> announcements = new ArrayList<>();
+    private static int idCounter = 1;
 
-    public List<SchedulableEvent> getEventsByDate(LocalDate date) {
-        List<SchedulableEvent> mockEvents = new ArrayList<>();
 
-        // Simuliamo che nel database ci siano già 2 eventi per la data richiesta
-        // Nota: Usiamo Announcement perché estende SchedulableEvent
-
-        // Evento 1: dalle 18:00 alle 20:00
-        Announcement event1 = new Announcement();
-        event1.setStartEventDay(date);
-        event1.setStartEventTime(LocalTime.of(18, 0));
-        event1.setDuration(Duration.ofHours(2));
-        mockEvents.add(event1);
-
-        // Evento 2: dalle 21:30 alle 23:00
-        Announcement event2 = new Announcement();
-        event2.setStartEventDay(date);
-        event2.setStartEventTime(LocalTime.of(21, 30));
-        event2.setDuration(Duration.ofHours(1).plusMinutes(30));
-        mockEvents.add(event2);
-
-        System.out.println("[MOCK DAO] Recuperati " + mockEvents.size() + " eventi simulati per la data: " + date);
-
-        return mockEvents;
-    }
-
-    @Override
-    public List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) throws DatabaseException {
-        return List.of();
-    }
-
-    @Override
-    public List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) {
-        List<Announcement> allAnnouncements = generateMockData(); // Simula la tabella DB
-        List<Announcement> filteredResults = new ArrayList<>();
-
-        for (Announcement ann : allAnnouncements) {
-            // 1. Controllo lo stato (Solo quelli OPEN)
-            if (ann.getState() != AnnouncementState.OPEN) {
-                continue;
-            }
-
-            // 2. Controllo l'intersezione dei generi (Strategia A)
-            if (hasCommonGenre(artistGenres, ann.getRequestedGenres())) {
-                filteredResults.add(ann);
-            }
-        }
-
-        // 3. Simulazione Paginazione (Prendiamo solo i 10 richiesti per la pagina)
-        int fromIndex = Math.min(page * pageSize, filteredResults.size());
-        int toIndex = Math.min(fromIndex + pageSize, filteredResults.size());
-
-        return filteredResults.subList(fromIndex, toIndex);
-    }
-
-    @Override
-    public List<Announcement> findByManager(String managerUsername) throws DatabaseException {
-        return List.of();
-    }
-
-    private boolean hasCommonGenre(List<MusicalGenre> artistGenres, List<MusicalGenre> requestedGenres) {
-        // Ritorna true se almeno un genere coincide
-        for (MusicalGenre g : artistGenres) {
-            if (requestedGenres.contains(g)) return true;
-        }
-        return false;
-    }
-
-    private List<Announcement> generateMockData() {
-        List<Announcement> list = new ArrayList<>();
-
+    static {
         Venue venue = new Venue("The Rock Club", "Roma", "Via del Corso 10", TypeVenue.CLUB);
         TechnicalRiderDAOMemory dao = new TechnicalRiderDAOMemory();
         ManagerRider rider = (ManagerRider) dao.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.MANAGER);
@@ -110,7 +41,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         ann1.setVenue(venue);
         ann1.setDoesUnreleased(true);
         ann1.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-        list.add(ann1);
+        announcements.add(ann1);
 
         // Esempio Annuncio 2: Chiuso (Verrà scartato)
         Announcement ann2 = new Announcement();
@@ -125,7 +56,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         ann2.setVenue(venue);
         ann2.setDoesUnreleased(true);
         ann2.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-        list.add(ann2);
+        announcements.add(ann2);
 
         // Esempio Annuncio 3: Genere diverso (Verrà scartato se l'artista non fa JAZZ)
         Announcement ann3 = new Announcement();
@@ -140,7 +71,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         ann3.setVenue(venue);
         ann3.setDoesUnreleased(true);
         ann3.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-        list.add(ann3);
+        announcements.add(ann3);
 
         for (int i = 0; i < 30; i++) {
             Announcement ann = new Announcement();
@@ -155,24 +86,119 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
             ann.setVenue(venue);
             ann.setDoesUnreleased(true);
             ann.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-            list.add(ann);
+            announcements.add(ann);
         }
+
+    }
+
+    public static List<Announcement> getAnnouncements() {
+        return announcements;
+    }
+
+    @Override
+    public void save(Announcement announcement) {
+        announcement.setId(++idCounter);
+        announcements.add(announcement);
+    }
+
+    public List<SchedulableEvent> getEventsByDate(LocalDate date) {
+        return announcements.stream()
+                .filter(a -> a.getStartEventDay().equals(date))
+                .map(a -> (SchedulableEvent) a).toList();
+    }
+
+    @Override
+    public List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) {
+        if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) {
+            return getConfirmedEventsByDateForArtist(startingDate);
+        } else if (Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER)) {
+            return getConfirmedEventsByDateForManager(startingDate);
+        }
+        return null;
+    }
+
+    public List<SchedulableEvent> getConfirmedEventsByDateForArtist(LocalDate startingDate) {
+        return announcements.stream()
+                .filter(ann -> ann.getStartEventDay().equals(startingDate))
+                .filter(ann -> ann.getApplicationList().stream()
+                        .anyMatch(obs -> {
+                            Application app = (Application) obs;
+                            return app.getUsernameArtist().equals(Session.getSingletonInstance().getUser().getUsername())
+                                    && app.getState().toString().equals("ACCEPTED");
+                        }))
+                .map(ann -> (SchedulableEvent) ann)
+                .toList();
+    }
+
+    public List<SchedulableEvent> getConfirmedEventsByDateForManager(LocalDate startingDate) {
+        // Per il manager: scansiono i manager, trovo quello corrente, guardo le sue venue
+        // e prendo gli annunci chiusi per quella data.
+        Manager manager = (Manager) UserDAOMemory.users.stream()
+                .filter(u -> u instanceof Manager && u.getUsername().equals(Session.getSingletonInstance().getUser().getUsername()))
+                .findFirst().orElse(null);
+
+        if (manager == null || manager.getActiveVenue() == null) return new ArrayList<>();
+
+        return announcements.stream()
+                .filter(a -> a.getVenue().getId() == manager.getActiveVenue().getId())
+                .filter(a -> a.getStartEventDay().equals(startingDate))
+                .filter(a -> a.getState() == AnnouncementState.CLOSED)
+                .map(a -> (SchedulableEvent) a)
+                .toList();
+    }
+
+    @Override
+    public List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) {
+        return announcements.stream()
+                .filter(a -> a.getState() == AnnouncementState.OPEN)
+                .filter(a -> !Collections.disjoint(artistGenres, a.getRequestedGenres()))
+                .skip((long) page * pageSize)
+                .limit(pageSize)
+                .toList();
+    }
+
+    @Override
+    public List<Announcement> findByManager(String managerUsername) throws DatabaseException {
+        Manager manager = (Manager) UserDAOMemory.getUsers().stream()
+                .filter(u -> u instanceof Manager && u.getUsername().equals(managerUsername))
+                .findFirst()
+                .orElseThrow(() -> new DatabaseException("Manager non trovato"));
+
+        // Prendo tutti gli annunci che appartengono alle venue di quel manager
+        List<Venue> managerVenues = manager.getVenueList();
+        return announcements.stream()
+                .filter(a -> managerVenues.contains(a.getVenue()))
+                .toList();
+    }
+
+    private List<Announcement> generateMockData() {
+        List<Announcement> list = new ArrayList<>();
+
 
         return list;
     }
 
     @Override
-    public void updateAnnouncementState(Announcement ann) throws DatabaseException {
-
+    public void updateAnnouncementState(Announcement ann) {
+        announcements.stream()
+                .filter(a -> a.getId() == ann.getId())
+                .findFirst()
+                .ifPresent(a -> a.setState(ann.getState()));
     }
 
     @Override
-    public List<Announcement> findClosedByIdVenue(int venueId) throws DatabaseException {
-        return List.of();
+    public List<Announcement> findClosedByIdVenue(int venueId) {
+        return announcements.stream()
+                .filter(a -> a.getVenue().getId() == venueId && a.getState() == AnnouncementState.CLOSED)
+                .toList();
     }
 
     @Override
     public Announcement findByApplicationId(int id) throws DatabaseException {
-        return null;
+        return announcements.stream()
+                .filter(ann -> ann.getApplicationList().stream()
+                        .anyMatch(obs -> obs.getId() == id))
+                .findFirst()
+                .orElseThrow(() -> new DatabaseException("Nessun annuncio collegato a questa candidatura"));
     }
 }

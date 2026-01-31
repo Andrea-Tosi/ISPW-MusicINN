@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Venue {
+    private int id;
     private String name;
     private String city;
     private String address;
@@ -24,6 +25,14 @@ public class Venue {
     }
 
     public Venue() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
