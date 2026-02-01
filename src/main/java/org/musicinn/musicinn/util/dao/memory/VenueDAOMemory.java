@@ -3,8 +3,12 @@ package org.musicinn.musicinn.util.dao.memory;
 import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Manager;
 import org.musicinn.musicinn.model.Venue;
+import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
+import org.musicinn.musicinn.util.enumerations.TypeVenue;
+import org.musicinn.musicinn.util.enumerations.TypeVenue.*;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,36 @@ public class VenueDAOMemory implements VenueDAO {
     private static int idCounter = 1;
 
     static {
-        da creare
+        initVenue("The Rock Club", "Roma", "Via Ostiense 50", TypeVenue.CLUB, "the_rock_club");
+        initVenue("Blue Bar", "Milano", "Via Brera 12", TypeVenue.BAR, "blue_bar_mgr");
+        initVenue("Rock Cave", "Roma", "Via A", TypeVenue.CLUB, "mgr1");
+        initVenue("Jazz House", "Milano", "Via B", TypeVenue.BAR, "mgr2");
+        initVenue("Club 99", "Napoli", "Via C", TypeVenue.CLUB, "mgr3");
+        initVenue("Bar Central", "Torino", "Via D", TypeVenue.BAR, "mgr4");
+        initVenue("Arena Blu", "Roma", "Via E", TypeVenue.PUB, "mgr5");
+        initVenue("Underground", "Bologna", "Via F", TypeVenue.CLUB, "mgr6");
+        initVenue("Teatro Verdi", "Firenze", "Via G", TypeVenue.PUB, "mgr7");
+        initVenue("Pub 12", "Palermo", "Via H", TypeVenue.BAR, "mgr8");
+        initVenue("Disco Lux", "Milano", "Via I", TypeVenue.CLUB, "mgr9");
+        initVenue("Roof Garden", "Napoli", "Via L", TypeVenue.PUB, "mgr10");
+    }
+
+    private static void initVenue(String name, String city, String addr, TypeVenue type, String mgrUsername) {
+        try {
+            Venue venue = new Venue(name, city, addr, type);
+            venue.setId(++idCounter);
+            venues.add(venue);
+
+            // Colleghiamo al manager (Piano di sopra)
+            Manager manager = (Manager) DAOFactory.getUserDAO().findByIdentifier(mgrUsername);
+
+            if (manager != null) {
+                manager.getVenueList().add(venue);
+                manager.setActiveVenue(venue);
+            }
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     @Override

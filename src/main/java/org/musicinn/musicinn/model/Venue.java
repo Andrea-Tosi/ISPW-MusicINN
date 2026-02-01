@@ -22,9 +22,11 @@ public class Venue {
         this.address = address;
         this.typeVenue = typeVenue;
         this.isActive = true;
+        this.announcements = new ArrayList<>();
     }
 
     public Venue() {
+        this.announcements = new ArrayList<>();
     }
 
     public int getId() {

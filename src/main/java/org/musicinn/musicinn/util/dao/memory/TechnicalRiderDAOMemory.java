@@ -2,104 +2,143 @@ package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.DAOFactory;
+import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
 import org.musicinn.musicinn.util.enumerations.CablePurpose;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
     static {
-        da creare
+        try {
+            Artist artist = (Artist) DAOFactory.getUserDAO().findByIdentifier("mario88");
+
+            ArtistRider artistRider = new ArtistRider();
+            artistRider.setMinLengthStage(8);
+            artistRider.setMinWidthStage(10);
+
+            Mixer foh = new Mixer();
+            foh.setFOH(true);
+            foh.setHasPhantomPower(null);
+            foh.setDigital(true);
+            foh.setAuxSends(6);
+            foh.setInputChannels(10);
+            artistRider.setFohMixer(foh);
+
+            Mixer stage = new Mixer();
+            stage.setFOH(false);
+            stage.setHasPhantomPower(null);
+            stage.setDigital(true);
+            stage.setAuxSends(5);
+            stage.setInputChannels(8);
+            artistRider.setStageMixer(stage);
+
+            StageBox sb = new StageBox();
+            sb.setInputChannels(6);
+            sb.setDigital(true);
+            artistRider.setStageBox(sb);
+
+            List<InputEquipment> inputs = new ArrayList<>();
+            inputs.add(new MicrophoneSet(4, null));
+            inputs.add(new DIBoxSet(2, false));
+            artistRider.setInputs(inputs);
+
+            List<OutputEquipment> outputs = new ArrayList<>();
+            outputs.add(new MonitorSet(3, false));
+            outputs.add(new MonitorSet(1, null));
+            artistRider.setOutputs(outputs);
+
+            List<OtherEquipment> others = new ArrayList<>();
+            others.add(new MicStandSet(2, true));
+            others.add(new MicStandSet(3, false));
+            others.add(new CableSet(6, CablePurpose.XLR_XLR));
+            artistRider.setOthers(others);
+
+            artist.setRider(artistRider);
+
+            Manager manager = (Manager) DAOFactory.getUserDAO().findByIdentifier("the_rock_club");
+
+            ManagerRider managerRider = new ManagerRider();
+            managerRider.setMinWidthStage(12);
+            managerRider.setMinLengthStage(15);
+
+            List<Mixer> mixers = new ArrayList<>();
+            Mixer mixer1 = new Mixer();
+            mixer1.setInputChannels(24);
+            mixer1.setAuxSends(12);
+            mixer1.setDigital(true);
+            mixer1.setHasPhantomPower(true);
+            mixers.add(mixer1);
+            Mixer mixer2 = new Mixer();
+            mixer2.setInputChannels(24);
+            mixer2.setAuxSends(12);
+            mixer2.setDigital(true);
+            mixer2.setHasPhantomPower(true);
+            mixers.add(mixer2);
+            Mixer mixer3 = new Mixer();
+            mixer3.setInputChannels(24);
+            mixer3.setAuxSends(16);
+            mixer3.setDigital(true);
+            mixer3.setHasPhantomPower(true);
+            mixers.add(mixer3);
+            managerRider.setMixers(mixers);
+
+            List<StageBox> stageBoxes = new ArrayList<>();
+            StageBox stageBox1 = new StageBox();
+            stageBox1.setInputChannels(24);
+            stageBox1.setDigital(true);
+            stageBoxes.add(stageBox1);
+            StageBox stageBox2 = new StageBox();
+            stageBox2.setInputChannels(24);
+            stageBox2.setDigital(false);
+            stageBoxes.add(stageBox2);
+            managerRider.setStageBoxes(stageBoxes);
+
+            List<InputEquipment> inputEquipments = new ArrayList<>();
+            inputEquipments.add(new MicrophoneSet(11, false));
+            inputEquipments.add(new MicrophoneSet(10, false));
+            inputEquipments.add(new DIBoxSet(12, true));
+            inputEquipments.add(new DIBoxSet(8, false));
+            managerRider.setInputs(inputEquipments);
+
+            List<OutputEquipment> outputEquipments = new ArrayList<>();
+            outputEquipments.add(new MonitorSet(8, true));
+            outputEquipments.add(new MonitorSet(6, false));
+            managerRider.setOutputs(outputEquipments);
+
+            List<OtherEquipment> otherEquipments = new ArrayList<>();
+            otherEquipments.add(new MicStandSet(8, true));
+            otherEquipments.add(new MicStandSet(7, false));
+            otherEquipments.add(new CableSet(9, CablePurpose.XLR_XLR));
+            managerRider.setOthers(otherEquipments);
+
+            manager.getActiveVenue().setRider(managerRider);
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     @Override
     public void create(TechnicalRider rider) {
-        System.out.println("rider tecnico " + rider + " creato");
+        User currentUser = Session.getSingletonInstance().getUser();
+        if (currentUser instanceof Artist artist) {
+            artist.setRider((ArtistRider) rider);
+        } else if (currentUser instanceof Manager manager) {
+            manager.getActiveVenue().setRider((ManagerRider) rider);
+        }
     }
 
     @Override
-    public TechnicalRider read(String username, Session.UserRole role) {
-        // 1. Creazione Mixer (FOH e Stage)
-        TechnicalRider mockRider = role.equals(Session.UserRole.ARTIST) ? getArtistRider() : getManagerRider();
-
-        // 4. Popolamento equipaggiamento comune
-        List<InputEquipment> inputs = new ArrayList<>();
-        inputs.add(new MicrophoneSet(5, true));  // 5 Mic con Phantom
-        inputs.add(new DIBoxSet(2, false));      // 2 DI Passive
-        mockRider.setInputs(inputs);
-
-        List<OutputEquipment> outputs = new ArrayList<>();
-        outputs.add(new MonitorSet(4, true));    // 4 Monitor attivi
-        mockRider.setOutputs(outputs);
-
-        List<OtherEquipment> others = new ArrayList<>();
-        others.add(new MicStandSet(5, true));    // 5 Aste alte
-        others.add(new CableSet(10, CablePurpose.XLR_XLR));
-        mockRider.setOthers(others);
-
-        return mockRider;
-    }
-
-    private static ArtistRider getArtistRider() {
-        Mixer fohMixer = new Mixer();
-        fohMixer.setInputChannels(32);
-        fohMixer.setAuxSends(8);
-        fohMixer.setDigital(true);
-        fohMixer.setFOH(true);
-        fohMixer.setHasPhantomPower(true);
-
-        Mixer stageMixer = new Mixer();
-        stageMixer.setInputChannels(24);
-        stageMixer.setAuxSends(12);
-        stageMixer.setDigital(false);
-        stageMixer.setFOH(false);
-        stageMixer.setHasPhantomPower(true);
-
-        // 2. Creazione Stage Box
-        StageBox sb = new StageBox();
-        sb.setInputChannels(16);
-        sb.setDigital(null);
-
-        // 3. Istanza del Rider (ArtistRider)
-        return new ArtistRider(fohMixer, stageMixer, sb);
-    }
-
-    private static ManagerRider getManagerRider() {
-        // 1. Creazione Lista Mixer (il Manager può averne N)
-        List<Mixer> mixerList = new ArrayList<>();
-
-        Mixer mainMixer = new Mixer();
-        mainMixer.setInputChannels(48); // Configurazione più grande tipica da Manager/Service
-        mainMixer.setAuxSends(16);
-        mainMixer.setDigital(true);
-        mainMixer.setFOH(true);
-        mainMixer.setHasPhantomPower(true);
-        mixerList.add(mainMixer);
-
-        Mixer smallMixer = new Mixer();
-        smallMixer.setInputChannels(12);
-        smallMixer.setAuxSends(2);
-        smallMixer.setDigital(false);
-        smallMixer.setFOH(false);
-        smallMixer.setHasPhantomPower(true);
-        mixerList.add(smallMixer);
-
-        // 2. Creazione Lista Stage Box (il Manager può gestirne più di una)
-        List<StageBox> sbList = new ArrayList<>();
-
-        StageBox sb1 = new StageBox();
-        sb1.setInputChannels(32);
-        sb1.setDigital(true);
-        sbList.add(sb1);
-
-        StageBox sb2 = new StageBox();
-        sb2.setInputChannels(16);
-        sb2.setDigital(false); // Magari una stage box analogica di espansione
-        sbList.add(sb2);
-
-        // 3. Istanza del Rider (ManagerRider)
-        // Passiamo le liste create al costruttore del ManagerRider
-        return new ManagerRider(mixerList, sbList);
+    public TechnicalRider read(String username, Session.UserRole role) throws PersistenceException {
+        User currentUser = DAOFactory.getUserDAO().findByIdentifier(username);
+        if (role.equals(Session.UserRole.ARTIST)) {
+            return ((Artist) currentUser).getRider();
+        } else if (role.equals(Session.UserRole.MANAGER)) {
+            return ((Manager) currentUser).getActiveVenue().getRider();
+        }
+        return null;
     }
 }

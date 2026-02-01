@@ -1,7 +1,9 @@
 package org.musicinn.musicinn.util.dao.memory;
 
+import org.musicinn.musicinn.model.Application;
 import org.musicinn.musicinn.model.Payment;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.PaymentDAO;
 import org.musicinn.musicinn.util.enumerations.EscrowState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
@@ -17,7 +19,22 @@ public class PaymentDAOMemory implements PaymentDAO {
     private static final Map<Integer, Payment> payments = new HashMap<>();
 
     static {
-        da creare
+        try {
+            int announcementId = 2;
+            Application app = DAOFactory.getApplicationDAO().findAcceptedByAnnouncement(announcementId);
+
+            initPayment(app, announcementId);
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private static void initPayment(Application app, int announcementId) {
+        Payment payment = new Payment();
+        payment.setState(EscrowState.WAITING_BOTH);
+        payment.setPaymentDeadline(LocalDateTime.now().plusDays(5));
+        app.setPayment(payment);
+        payments.put(announcementId, payment);
     }
 
     @Override

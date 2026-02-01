@@ -2,12 +2,18 @@ package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Application;
+import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.observer_pattern.Observer;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ApplicationDAO;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,7 +24,33 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     private static int idCounter = 1;
 
     static {
-        da creare
+        try {
+            Announcement ann = DAOFactory.getAnnouncementDAO().findByApplicationId(1);
+
+            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88");
+            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art1");
+            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art5");
+            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art6");
+            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art7");
+
+            ann = DAOFactory.getAnnouncementDAO().findByApplicationId(2);
+
+            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88");
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private static void initApplication(Announcement ann, LocalDate date, LocalTime time, String usernameArtist) {
+        Application app = new Application();
+        app.setId(++idCounter);
+        app.setSoundcheckTime(LocalDateTime.of(date, time.minusMinutes(40)));
+        app.setState(ApplicationState.PENDING);
+        app.setScore(84.8);
+        app.setUsernameArtist(usernameArtist);
+        applications.add(app);
+        ann.getApplicationList().add(app);
+//TODO        ((Artist) DAOFactory.getUserDAO().findByIdentifier(usernameArtist)).getApplications().add(app);
     }
 
     public static List<Application> getApplications() {

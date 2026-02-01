@@ -13,6 +13,7 @@ public class Application implements Observer {
     private Double score;
     private Payment payment;
     private String usernameArtist;
+    //TODO private List<Application> applications;
 
     @Override
     public int getId() {

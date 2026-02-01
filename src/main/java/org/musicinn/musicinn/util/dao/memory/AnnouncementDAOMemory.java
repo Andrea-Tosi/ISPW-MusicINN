@@ -2,16 +2,19 @@ package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,74 +24,86 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     private static final List<Announcement> announcements = new ArrayList<>();
     private static int idCounter = 1;
 
-
     static {
-        Venue venue = new Venue("The Rock Club", "Roma", "Via del Corso 10", TypeVenue.CLUB);
-        TechnicalRiderDAOMemory dao = new TechnicalRiderDAOMemory();
-        ManagerRider rider = (ManagerRider) dao.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.MANAGER);
-        venue.setRider(rider);
+        try {
+            Venue venue = DAOFactory.getVenueDAO().read("the_rock_club");
 
-        // Esempio Annuncio 1: Compatibile
-        Announcement ann1 = new Announcement();
-        ann1.setState(AnnouncementState.OPEN);
-        ann1.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.R_B));
-        ann1.setStartEventDay(LocalDate.now().plusDays(7));
-        ann1.setStartEventTime(LocalTime.of(21, 30));
-        ann1.setDuration(Duration.ofMinutes(100));
-        ann1.setCachet(200.0);
-        ann1.setDeposit(100.0);
-        ann1.setDescription(".");
-        ann1.setVenue(venue);
-        ann1.setDoesUnreleased(true);
-        ann1.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-        announcements.add(ann1);
-
-        // Esempio Annuncio 2: Chiuso (Verrà scartato)
-        Announcement ann2 = new Announcement();
-        ann2.setState(AnnouncementState.CLOSED);
-        ann2.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.R_B));
-        ann2.setStartEventDay(LocalDate.now().plusDays(8));
-        ann2.setStartEventTime(LocalTime.of(21, 30));
-        ann2.setDuration(Duration.ofMinutes(100));
-        ann2.setCachet(200.0);
-        ann2.setDeposit(100.0);
-        ann2.setDescription(".");
-        ann2.setVenue(venue);
-        ann2.setDoesUnreleased(true);
-        ann2.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-        announcements.add(ann2);
-
-        // Esempio Annuncio 3: Genere diverso (Verrà scartato se l'artista non fa JAZZ)
-        Announcement ann3 = new Announcement();
-        ann3.setState(AnnouncementState.OPEN);
-        ann3.setRequestedGenres(List.of(MusicalGenre.JAZZ));
-        ann3.setStartEventDay(LocalDate.now().plusDays(9));
-        ann3.setStartEventTime(LocalTime.of(21, 30));
-        ann3.setDuration(Duration.ofMinutes(100));
-        ann3.setCachet(200.0);
-        ann3.setDeposit(100.0);
-        ann3.setDescription(".");
-        ann3.setVenue(venue);
-        ann3.setDoesUnreleased(true);
-        ann3.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
-        announcements.add(ann3);
-
-        for (int i = 0; i < 30; i++) {
             Announcement ann = new Announcement();
+            ann.setId(++idCounter);
             ann.setState(AnnouncementState.OPEN);
-            ann.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.R_B));
-            ann.setStartEventDay(LocalDate.now().plusDays(10));
+            ann.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.METAL));
+            ann.setStartEventDay(LocalDate.of(2026, Month.MARCH, 20));
             ann.setStartEventTime(LocalTime.of(21, 30));
-            ann.setDuration(Duration.ofMinutes(100));
+            ann.setDuration(Duration.ofMinutes(120));
+            ann.setCachet(300.0);
+            ann.setDeposit(50.0);
+            ann.setDescription("Cerchiamo band Rock per serata energica!");
+            ann.setVenue(venue);
+            ann.setRequestedTypesArtist(List.of(TypeArtist.BAND));
+            announcements.add(ann);
+
+            ann = new Announcement();
+            ann.setId(++idCounter);
+            ann.setState(AnnouncementState.CLOSED);
+            ann.setRequestedGenres(List.of(MusicalGenre.ROCK));
+            ann.setStartEventDay(LocalDate.of(2026, Month.MAY, 1));
+            ann.setStartEventTime(LocalTime.of(21, 0));
+            ann.setDuration(Duration.ofMinutes(120));
             ann.setCachet(200.0);
             ann.setDeposit(100.0);
-            ann.setDescription(".");
+            ann.setDescription("Rock Night");
             ann.setVenue(venue);
-            ann.setDoesUnreleased(true);
-            ann.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
+            ann.setRequestedTypesArtist(List.of(TypeArtist.BAND));
             announcements.add(ann);
-        }
 
+            ann = new Announcement();
+            ann.setId(++idCounter);
+            ann.setState(AnnouncementState.OPEN);
+            ann.setRequestedGenres(List.of(MusicalGenre.ROCK));
+            ann.setStartEventDay(LocalDate.of(2026, Month.MAY, 15));
+            ann.setStartEventTime(LocalTime.of(22, 0));
+            ann.setDuration(Duration.ofMinutes(180));
+            ann.setCachet(300.0);
+            ann.setDeposit(120.0);
+            ann.setDescription("Big Event");
+            ann.setVenue(venue);
+            ann.setRequestedTypesArtist(Arrays.asList(TypeArtist.values()));
+            announcements.add(ann);
+
+            ann = new Announcement();
+            ann.setId(++idCounter);
+            ann.setState(AnnouncementState.OPEN);
+            ann.setRequestedGenres(Arrays.asList(MusicalGenre.POP, MusicalGenre.JAZZ));
+            ann.setStartEventDay(LocalDate.of(2026, Month.FEBRUARY, 25));
+            ann.setStartEventTime(LocalTime.of(21, 0));
+            ann.setDuration(Duration.ofMinutes(120));
+            ann.setCachet(111.0);
+            ann.setDeposit(222.0);
+            ann.setDescription("Evento Super!!!");
+            ann.setVenue(venue);
+            ann.setDoesUnreleased(false);
+            ann.setRequestedTypesArtist(Arrays.asList(TypeArtist.values()));
+            announcements.add(ann);
+
+            for (int i = 0; i < 30; i++) {
+                ann = new Announcement();
+                ann.setId(++idCounter);
+                ann.setState(AnnouncementState.OPEN);
+                ann.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.R_B));
+                ann.setStartEventDay(LocalDate.now().plusDays(200 + i));
+                ann.setStartEventTime(LocalTime.of(21, 30));
+                ann.setDuration(Duration.ofMinutes(100));
+                ann.setCachet(200.0);
+                ann.setDeposit(100.0);
+                ann.setDescription(".");
+                ann.setVenue(venue);
+                ann.setDoesUnreleased(true);
+                ann.setRequestedTypesArtist(Arrays.asList(TypeArtist.SINGER, TypeArtist.BAND));
+                announcements.add(ann);
+            }
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public static List<Announcement> getAnnouncements() {
