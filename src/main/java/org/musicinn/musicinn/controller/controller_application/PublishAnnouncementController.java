@@ -35,10 +35,10 @@ public class PublishAnnouncementController {
             throw new CalendarException();
         }
 
-        // 3. Mapping dal Bean all'Entity di Dominio
+        // Mapping dal Bean all'Entity di Dominio
         Announcement announcement = getAnnouncement(ab);
 
-        // 4. Persistenza
+        // Persistenza
         announcementDAO.save(announcement);
     }
 

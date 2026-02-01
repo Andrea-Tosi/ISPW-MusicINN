@@ -7,7 +7,6 @@ import org.musicinn.musicinn.util.dao.interfaces.AnnouncementDAO;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 import org.musicinn.musicinn.util.enumerations.TypeArtist;
-import org.musicinn.musicinn.util.enumerations.TypeVenue;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
@@ -22,7 +21,7 @@ import java.util.List;
 
 public class AnnouncementDAOMemory implements AnnouncementDAO {
     private static final List<Announcement> announcements = new ArrayList<>();
-    private static int idCounter = 1;
+    private static int idCounter = 0;
 
     static {
         try {
@@ -113,6 +112,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     @Override
     public void save(Announcement announcement) {
         announcement.setId(++idCounter);
+        announcement.setVenue(((Manager) Session.getSingletonInstance().getUser()).getActiveVenue());
         announcements.add(announcement);
     }
 
@@ -148,25 +148,27 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     public List<SchedulableEvent> getConfirmedEventsByDateForManager(LocalDate startingDate) {
         // Per il manager: scansiono i manager, trovo quello corrente, guardo le sue venue
         // e prendo gli annunci chiusi per quella data.
-        Manager manager = (Manager) UserDAOMemory.users.stream()
-                .filter(u -> u instanceof Manager && u.getUsername().equals(Session.getSingletonInstance().getUser().getUsername()))
-                .findFirst().orElse(null);
+        try {
+            Manager manager = (Manager) DAOFactory.getUserDAO().findByIdentifier(Session.getSingletonInstance().getUser().getUsername());
 
-        if (manager == null || manager.getActiveVenue() == null) return new ArrayList<>();
+            if (manager == null || manager.getActiveVenue() == null) return new ArrayList<>();
 
-        return announcements.stream()
-                .filter(a -> a.getVenue().getId() == manager.getActiveVenue().getId())
-                .filter(a -> a.getStartEventDay().equals(startingDate))
-                .filter(a -> a.getState() == AnnouncementState.CLOSED)
-                .map(a -> (SchedulableEvent) a)
-                .toList();
+            return announcements.stream()
+                    .filter(a -> a.getVenue().getId() == manager.getActiveVenue().getId())
+                    .filter(a -> a.getStartEventDay().equals(startingDate))
+                    .filter(a -> a.getState() == AnnouncementState.CLOSED)
+                    .map(a -> (SchedulableEvent) a)
+                    .toList();
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
     }
 
     @Override
-    public List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) {
+    public List<Announcement> findOpenAnnouncements(int page, int pageSize) {
         return announcements.stream()
                 .filter(a -> a.getState() == AnnouncementState.OPEN)
-                .filter(a -> !Collections.disjoint(artistGenres, a.getRequestedGenres()))
                 .skip((long) page * pageSize)
                 .limit(pageSize)
                 .toList();
@@ -182,15 +184,8 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         // Prendo tutti gli annunci che appartengono alle venue di quel manager
         List<Venue> managerVenues = manager.getVenueList();
         return announcements.stream()
-                .filter(a -> managerVenues.contains(a.getVenue()))
+                .filter(a -> a.getState().equals(AnnouncementState.OPEN) && managerVenues.contains(a.getVenue()))
                 .toList();
-    }
-
-    private List<Announcement> generateMockData() {
-        List<Announcement> list = new ArrayList<>();
-
-
-        return list;
     }
 
     @Override

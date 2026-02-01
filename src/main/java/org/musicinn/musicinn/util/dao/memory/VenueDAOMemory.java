@@ -15,7 +15,7 @@ import java.util.List;
 
 public class VenueDAOMemory implements VenueDAO {
     protected static final List<Venue> venues = new ArrayList<>();
-    private static int idCounter = 1;
+    private static int idCounter = 0;
 
     static {
         initVenue("The Rock Club", "Roma", "Via Ostiense 50", TypeVenue.CLUB, "the_rock_club");

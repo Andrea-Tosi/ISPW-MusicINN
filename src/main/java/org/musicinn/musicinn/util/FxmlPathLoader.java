@@ -10,7 +10,7 @@ public class FxmlPathLoader {
 
     static {
         // Carica il file app-paths.properties
-        try (InputStream input = FxmlPathLoader.class.getClassLoader().getResourceAsStream("app-paths.properties")) {
+        try (InputStream input = FxmlPathLoader.class.getResourceAsStream("/app-paths.properties")) {
             if (input != null) {
                 props.load(input);
             }

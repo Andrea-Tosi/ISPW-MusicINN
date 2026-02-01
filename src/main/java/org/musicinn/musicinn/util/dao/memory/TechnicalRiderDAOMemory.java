@@ -3,7 +3,6 @@ package org.musicinn.musicinn.util.dao.memory;
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.DAOFactory;
-import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
 import org.musicinn.musicinn.util.enumerations.CablePurpose;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
@@ -57,6 +56,15 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
             others.add(new CableSet(6, CablePurpose.XLR_XLR));
             artistRider.setOthers(others);
 
+            artist.setRider(artistRider);
+
+            artist = (Artist) DAOFactory.getUserDAO().findByIdentifier("art1");
+            artist.setRider(artistRider);
+            artist = (Artist) DAOFactory.getUserDAO().findByIdentifier("art5");
+            artist.setRider(artistRider);
+            artist = (Artist) DAOFactory.getUserDAO().findByIdentifier("art6");
+            artist.setRider(artistRider);
+            artist = (Artist) DAOFactory.getUserDAO().findByIdentifier("art7");
             artist.setRider(artistRider);
 
             Manager manager = (Manager) DAOFactory.getUserDAO().findByIdentifier("the_rock_club");

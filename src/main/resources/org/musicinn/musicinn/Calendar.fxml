@@ -100,7 +100,7 @@
             </VBox>
          </children>
       </GridPane>
-    <GridPane fx:id="calendarGrid" stylesheets="@calendar-style.css" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+    <GridPane fx:id="calendarGrid" stylesheets="@calendar-style.css" minWidth="0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="14.2857" />
             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="14.2857" />

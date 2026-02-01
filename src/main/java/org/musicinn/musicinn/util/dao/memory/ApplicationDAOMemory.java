@@ -2,7 +2,6 @@ package org.musicinn.musicinn.util.dao.memory;
 
 import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Application;
-import org.musicinn.musicinn.model.Artist;
 import org.musicinn.musicinn.model.observer_pattern.Observer;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.dao.DAOFactory;
@@ -21,31 +20,27 @@ import java.util.Map;
 
 public class ApplicationDAOMemory implements ApplicationDAO {
     private static final List<Application> applications = new ArrayList<>();
-    private static int idCounter = 1;
+    private static int idCounter = 0;
 
     static {
-        try {
-            Announcement ann = DAOFactory.getAnnouncementDAO().findByApplicationId(1);
+        Announcement ann = AnnouncementDAOMemory.getAnnouncements().getFirst();
+        initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88", ApplicationState.PENDING);
+        initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art1", ApplicationState.PENDING);
+        initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art5", ApplicationState.PENDING);
+        initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art6", ApplicationState.PENDING);
+        initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art7", ApplicationState.PENDING);
+        ann.setNumOfApplications(5);
 
-            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88");
-            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art1");
-            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art5");
-            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art6");
-            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art7");
-
-            ann = DAOFactory.getAnnouncementDAO().findByApplicationId(2);
-
-            initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88");
-        } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
-        }
+        ann = AnnouncementDAOMemory.getAnnouncements().get(1);
+        initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88", ApplicationState.ACCEPTED);
+        ann.setNumOfApplications(1);
     }
 
-    private static void initApplication(Announcement ann, LocalDate date, LocalTime time, String usernameArtist) {
+    private static void initApplication(Announcement ann, LocalDate date, LocalTime time, String usernameArtist, ApplicationState state) {
         Application app = new Application();
         app.setId(++idCounter);
         app.setSoundcheckTime(LocalDateTime.of(date, time.minusMinutes(40)));
-        app.setState(ApplicationState.PENDING);
+        app.setState(state);
         app.setScore(84.8);
         app.setUsernameArtist(usernameArtist);
         applications.add(app);
@@ -63,12 +58,13 @@ public class ApplicationDAOMemory implements ApplicationDAO {
         applications.add(application);
 
         // Cerca l'annuncio e gli consegna la candidatura
-        Announcement realAnn = AnnouncementDAOMemory.getAnnouncements().stream()
+        Announcement ann = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(a -> a.getId() == announcement.getId())
                 .findFirst()
                 .orElseThrow(() -> new DatabaseException("Annuncio non trovato."));
 
-        realAnn.addObserver(application);
+        ann.addObserver(application);
+        ann.setNumOfApplications(ann.getNumOfApplications() + 1);
     }
 
     @Override

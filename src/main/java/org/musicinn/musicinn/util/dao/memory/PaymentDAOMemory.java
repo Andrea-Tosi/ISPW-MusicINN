@@ -23,18 +23,18 @@ public class PaymentDAOMemory implements PaymentDAO {
             int announcementId = 2;
             Application app = DAOFactory.getApplicationDAO().findAcceptedByAnnouncement(announcementId);
 
-            initPayment(app, announcementId);
+            initPayment(app);
         } catch (PersistenceException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    private static void initPayment(Application app, int announcementId) {
+    private static void initPayment(Application app) {
         Payment payment = new Payment();
         payment.setState(EscrowState.WAITING_BOTH);
         payment.setPaymentDeadline(LocalDateTime.now().plusDays(5));
         app.setPayment(payment);
-        payments.put(announcementId, payment);
+        payments.put(app.getId(), payment);
     }
 
     @Override

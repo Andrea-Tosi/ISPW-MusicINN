@@ -42,8 +42,7 @@ public class ApplyController {
             ArtistDAODatabase artistDAO = new ArtistDAODatabase();
             currentUser.setGenresList(artistDAO.loadArtistGenres(Session.getSingletonInstance().getUser().getUsername()));
         }
-        List<Announcement> announcements = announcementDAO.findActiveByGenres(
-                currentUser.getGenresList(),
+        List<Announcement> announcements = announcementDAO.findOpenAnnouncements(
                 page,
                 10
         );

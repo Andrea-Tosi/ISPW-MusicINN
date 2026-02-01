@@ -211,31 +211,27 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     @Override
-    public List<Announcement> findActiveByGenres(List<MusicalGenre> artistGenres, int page, int pageSize) throws DatabaseException {
+    public List<Announcement> findOpenAnnouncements(int page, int pageSize) throws DatabaseException {
         List<Announcement> announcements = new ArrayList<>();
         // Usiamo l'ID della Venue come chiave della mappa
         Map<Integer, ManagerRider> riderMapByVenueId = new HashMap<>();
         // Mappa per associare gli ID annuncio agli oggetti Announcement per il batch loading dei generi/tipi
         Map<Integer, Announcement> announcementMap = new HashMap<>();
 
-        String placeholders = artistGenres.stream().map(g -> "?").collect(Collectors.joining(", "));
         // Notare che usiamo r.venues_id invece di r.id
         String query = "SELECT a.*, a.id as ann_id, v.*, r.min_length_stage, r.min_width_stage " +
                 "FROM announcements a " +
                 "JOIN venues v ON a.venues_id = v.id " +
                 "JOIN manager_riders r ON v.id = r.venues_id " +
                 "WHERE a.state = 'OPEN' " +
-                "AND EXISTS (SELECT 1 FROM announcements_has_genres ag WHERE ag.announcements_id = a.id AND ag.genres_genre IN (" + placeholders + ")) " +
                 "LIMIT ? OFFSET ?";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            int i = 1;
-            for (MusicalGenre genre : artistGenres) pstmt.setString(i++, genre.name());
-            pstmt.setInt(i++, pageSize);
-            pstmt.setInt(i, page * pageSize);
+            pstmt.setInt(1, pageSize);
+            pstmt.setInt(2, page * pageSize);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -274,6 +270,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return announcements;
@@ -289,7 +286,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 "(SELECT COUNT(*) FROM applications WHERE announcements_id = a.id) as app_count " +
                 "FROM announcements a " +
                 "JOIN venues v ON a.venues_id = v.id " +
-                "WHERE v.manager_username = ? " +
+                "WHERE v.manager_username = ? AND state = 'OPEN'" +
                 "ORDER BY a." + START_DAY_COLUMN + " DESC";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
@@ -481,7 +478,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             while (rs.next()) {
                 ManagerRider r = riderMap.get(rs.getInt(ID_VENUE_COLUMN));
                 if (r != null) {
-                    r.getOthers().add(new CableSet(rs.getInt(QUANTITY_COLUMN), CablePurpose.valueOf(rs.getString("function"))));
+                    r.getOthers().add(new CableSet(rs.getInt(QUANTITY_COLUMN), CablePurpose.valueOf(rs.getString("purpose"))));
                 }
             }
         }

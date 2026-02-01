@@ -39,7 +39,7 @@ public class AcceptApplicationController {
         // 2. Otteniamo l'istanza del DAO tramite la Factory
         AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
 
-        // 3. Chiamiamo il metodo del DAO (quello con la query che abbiamo appena spiegato)
+        // 3. Chiamiamo il metodo del DAO
         List<Announcement> announcementList = announcementDAO.findByManager(currentManager);
         announcements = announcementList;
 
@@ -68,7 +68,6 @@ public class AcceptApplicationController {
         bean.setRequestedGenres(entity.getRequestedGenres());
         bean.setRequestedTypesArtist(entity.getRequestedTypesArtist());
 
-        // Il dato "speciale" calcolato dalla subquery SQL
         bean.setNumOfApplications(entity.getNumOfApplications());
 
         return bean;
