@@ -5,7 +5,6 @@ import org.musicinn.musicinn.model.SchedulableEvent;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.SchedulableEventBean;
 import org.musicinn.musicinn.util.dao.DAOFactory;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.LocalDate;

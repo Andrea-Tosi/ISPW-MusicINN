@@ -21,7 +21,7 @@ public class PaymentDAOCSV implements PaymentDAO {
     private static final String CSV_FILE = "csv_files/payments.csv";
     private static final String HEADER = "application_id;escrow_state;payment_deadline;venue_payment_intent_id;artist_payment_intent_id";
     private static final String DELIMITER = ";";
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     public PaymentDAOCSV() throws CSVException {
         try {
@@ -45,7 +45,7 @@ public class PaymentDAOCSV implements PaymentDAO {
             String row = String.join(DELIMITER,
                     String.valueOf(applicationId),
                     EscrowState.WAITING_BOTH.toString(),
-                    deadline.format(formatter),
+                    deadline.format(DATE_TIME_FORMATTER),
                     "null", // venue_payment_intent_id
                     "null"  // artist_payment_intent_id
             );
@@ -75,7 +75,7 @@ public class PaymentDAOCSV implements PaymentDAO {
         Payment payment = new Payment();
 
         payment.setState(EscrowState.valueOf(v[1]));
-        payment.setPaymentDeadline(LocalDateTime.parse(v[2], formatter));
+        payment.setPaymentDeadline(LocalDateTime.parse(v[2], DATE_TIME_FORMATTER));
 
         // Gestione valori null per i Payment Intent
         payment.setManagerPaymentIntentId(v[3].equals("null") ? null : v[3]);
@@ -135,7 +135,7 @@ public class PaymentDAOCSV implements PaymentDAO {
         try {
             Path path = Paths.get(CSV_FILE);
             List<String> lines = Files.readAllLines(path);
-            List<String> peopleToRefund = processLinesForRefund(lines, applicationId);;
+            List<String> peopleToRefund = processLinesForRefund(lines, applicationId);
 
             if (!peopleToRefund.isEmpty()) {
                 Files.write(path, lines);
@@ -153,20 +153,18 @@ public class PaymentDAOCSV implements PaymentDAO {
             String[] parts = lines.get(i).split(DELIMITER);
 
             // Clausola di guardia: ignora le righe che non corrispondono all'ID
-            if (Integer.parseInt(parts[0]) != applicationId) {
-                continue;
-            }
+            if (Integer.parseInt(parts[0]) == applicationId) {
+                // Trovato l'ID, gestisce la logica specifica ed esce.
+                LocalDateTime deadline = LocalDateTime.parse(parts[2], DATE_TIME_FORMATTER);
 
-            // Trovato l'ID. Ora gestiamo la logica specifica ed usciamo.
-            LocalDateTime deadline = LocalDateTime.parse(parts[2], formatter);
-
-            if (deadline.isBefore(LocalDateTime.now())) {
-                // Se la deadline è superata, procedi
-                collectRefunds(parts, peopleToRefund);
-                markState(parts);
-                lines.set(i, String.join(DELIMITER, parts));
+                if (deadline.isBefore(LocalDateTime.now())) {
+                    // Se la deadline è superata, procede
+                    collectRefunds(parts, peopleToRefund);
+                    markState(parts);
+                    lines.set(i, String.join(DELIMITER, parts));
+                }
+                break;
             }
-            break;
         }
         return peopleToRefund;
     }

@@ -1,6 +1,5 @@
 package org.musicinn.musicinn.controller.controller_application;
 
-import com.stripe.exception.StripeException;
 import org.musicinn.musicinn.controller.controller_application.payment_controller.PaymentController;
 import org.musicinn.musicinn.controller.controller_application.payment_controller.PaymentServiceFactory;
 import org.musicinn.musicinn.model.Artist;
@@ -16,10 +15,7 @@ import org.musicinn.musicinn.util.dao.interfaces.VenueDAO;
 import org.musicinn.musicinn.util.bean.login_bean.ArtistRegistrationBean;
 import org.musicinn.musicinn.util.bean.login_bean.CredentialsBean;
 import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
-import org.musicinn.musicinn.util.exceptions.EmailAlreadyUsedException;
-import org.musicinn.musicinn.util.exceptions.PersistenceException;
-import org.musicinn.musicinn.util.exceptions.UsernameAlreadyUsedException;
+import org.musicinn.musicinn.util.exceptions.*;
 
 import java.util.Objects;
 
@@ -92,8 +88,13 @@ public class LoginController {
         EmailVerifier.getSingletonInstance().invalidateVerificationCode(email);
     }
 
-    public void completeSignup(ArtistRegistrationBean arb) throws StripeException {
-        Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword(), arb.getStageName(), arb.getTypeArtist(), arb.getDoesUnreleased(), arb.getCity(), arb.getAddress());
+    public void completeSignup(ArtistRegistrationBean arb) throws PaymentServiceException {
+        Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword());
+        artist.setStageName(arb.getStageName());
+        artist.setTypeArtist(arb.getTypeArtist());
+        artist.setDoesUnreleased(arb.getDoesUnreleased());
+        artist.setCity(arb.getCity());
+        artist.setAddress(arb.getAddress());
         artist.setGenresList(arb.getGenresList());
 
         PaymentController pc = PaymentServiceFactory.getPaymentController();
@@ -106,7 +107,7 @@ public class LoginController {
         Session.getSingletonInstance().setRole(Session.UserRole.ARTIST);
     }
 
-    public void completeSignup(ManagerRegistrationBean mrb) throws StripeException {
+    public void completeSignup(ManagerRegistrationBean mrb) throws PaymentServiceException {
         Manager manager = new Manager(cb.getUsername(), cb.getEmail(), cb.getPassword());
         Venue venue = new Venue(mrb.getNameVenue(), mrb.getCityVenue(), mrb.getAddressVenue(), mrb.getTypeVenue());
         manager.getVenueList().add(venue);

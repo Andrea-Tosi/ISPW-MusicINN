@@ -16,13 +16,8 @@ public class Artist extends User{
     private List<SocialAccount> socialAccounts;
     private ArtistRider rider;
 
-    public Artist(String username, String email, String password, String stageName, TypeArtist typeArtist, boolean doesUnreleased, String city, String address) {
+    public Artist(String username, String email, String password) {
         super(username, email, password);
-        this.stageName = stageName;
-        this.typeArtist = typeArtist;
-        this.doesUnreleased = doesUnreleased;
-        this.city = city;
-        this.address = address;
     }
 
     public Artist(String username, String email, String password, String paymentServiceAccountId) {

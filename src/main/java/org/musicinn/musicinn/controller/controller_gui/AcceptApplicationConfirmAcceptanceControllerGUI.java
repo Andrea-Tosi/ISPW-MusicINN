@@ -13,7 +13,6 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 import org.musicinn.musicinn.util.bean.ApplicationBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 public class AcceptApplicationConfirmAcceptanceControllerGUI {

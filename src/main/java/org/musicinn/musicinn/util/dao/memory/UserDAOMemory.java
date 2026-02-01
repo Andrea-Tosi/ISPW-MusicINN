@@ -15,9 +15,10 @@ import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
 
 public class UserDAOMemory implements UserDAO {
     protected static final List<User> users = new ArrayList<>();
+    private static final String PASSWORD = "password123";
 
     static{
-        Artist artist = new Artist("mario88", "mario@email.it", "password123", "acct_1SsQr9BApDdKQIqq");
+        Artist artist = new Artist("mario88", "mario@email.it", PASSWORD, "acct_1SsQr9BApDdKQIqq");
         artist.setStageName("Mario Rossi Band");
         artist.setTypeArtist(BAND);
         artist.setDoesUnreleased(true);
@@ -25,7 +26,7 @@ public class UserDAOMemory implements UserDAO {
         artist.setAddress("Via del Corso 10");
         artist.setGenresList(List.of(ROCK, POP, METAL));
         users.add(artist);
-        artist = new Artist("elena_singer", "elena@email.it", "password123", "acct_1SvF91BApD9njuiG");
+        artist = new Artist("elena_singer", "elena@email.it", PASSWORD, "acct_1SvF91BApD9njuiG");
         artist.setStageName("Elena Jazz");
         artist.setTypeArtist(SINGER);
         artist.setDoesUnreleased(false);
@@ -45,7 +46,7 @@ public class UserDAOMemory implements UserDAO {
         artist.setStageName("Jazz Quartet");
         artist.setTypeArtist(BAND);
         artist.setDoesUnreleased(false);
-        artist.setCity("Milano");
+        artist.setCity("Ancona");
         artist.setAddress(null);
         artist.setGenresList(List.of());
         users.add(artist);
@@ -101,7 +102,7 @@ public class UserDAOMemory implements UserDAO {
         artist.setStageName("Lounge Band");
         artist.setTypeArtist(BAND);
         artist.setDoesUnreleased(false);
-        artist.setCity("Milano");
+        artist.setCity("Bari");
         artist.setAddress(null);
         artist.setGenresList(List.of());
         users.add(artist);
@@ -114,8 +115,8 @@ public class UserDAOMemory implements UserDAO {
         artist.setGenresList(List.of());
         users.add(artist);
 
-        users.add(new Manager("the_rock_club", "info@rockclub.it", "password123", "acct_1SsQutBApDQC16rO"));
-        users.add(new Manager("blue_bar_mgr", "manager@bluebar.it", "password123", "acct_1SvFIgBApDQeHxzg"));
+        users.add(new Manager("the_rock_club", "info@rockclub.it", PASSWORD, "acct_1SsQutBApDQC16rO"));
+        users.add(new Manager("blue_bar_mgr", "manager@bluebar.it", PASSWORD, "acct_1SvFIgBApDQeHxzg"));
         users.add(new Manager("mgr1", "mgr1@test.it", "pass", null));
         users.add(new Manager("mgr2", "mgr2@test.it", "pass", null));
         users.add(new Manager("mgr3", "mgr3@test.it", "pass", null));

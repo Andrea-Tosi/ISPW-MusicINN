@@ -4,11 +4,9 @@ import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Application;
 import org.musicinn.musicinn.model.observer_pattern.Observer;
 import org.musicinn.musicinn.util.Session;
-import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ApplicationDAO;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
-import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,10 +15,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ApplicationDAOMemory implements ApplicationDAO {
     private static final List<Application> applications = new ArrayList<>();
-    private static int idCounter = 0;
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
+    private static final String ANNOUNCEMENT_NOT_FOUND = "Annuncio non trovato.";
 
     static {
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().getFirst();
@@ -38,7 +38,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
 
     private static void initApplication(Announcement ann, LocalDate date, LocalTime time, String usernameArtist, ApplicationState state) {
         Application app = new Application();
-        app.setId(++idCounter);
+        app.setId(ID_COUNTER.incrementAndGet());
         app.setSoundcheckTime(LocalDateTime.of(date, time.minusMinutes(40)));
         app.setState(state);
         app.setScore(84.8);
@@ -53,7 +53,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     }
 
     public void save(Application application, Announcement announcement) throws DatabaseException {
-        application.setId(++idCounter);
+        application.setId(ID_COUNTER.incrementAndGet());
         application.setUsernameArtist(Session.getSingletonInstance().getUser().getUsername());
         applications.add(application);
 
@@ -61,7 +61,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(a -> a.getId() == announcement.getId())
                 .findFirst()
-                .orElseThrow(() -> new DatabaseException("Annuncio non trovato."));
+                .orElseThrow(() -> new DatabaseException(ANNOUNCEMENT_NOT_FOUND));
 
         ann.addObserver(application);
         ann.setNumOfApplications(ann.getNumOfApplications() + 1);
@@ -72,7 +72,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(a -> a.getId() == announcementId)
                 .findFirst()
-                .orElseThrow(() -> new DatabaseException("Annuncio non trovato."));
+                .orElseThrow(() -> new DatabaseException(ANNOUNCEMENT_NOT_FOUND));
 
         Map<Application, String> results = new LinkedHashMap<>();
         for (Observer obs : ann.getApplicationList()) {
@@ -96,7 +96,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(a -> a.getId() == announcementId)
                 .findFirst()
-                .orElseThrow(() -> new DatabaseException("Annuncio non trovato."));
+                .orElseThrow(() -> new DatabaseException(ANNOUNCEMENT_NOT_FOUND));
 
         return (Application) ann.getApplicationList().stream()
                 .filter(obs -> ((Application) obs).getState() == ApplicationState.ACCEPTED)

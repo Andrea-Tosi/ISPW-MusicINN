@@ -14,7 +14,6 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.PaymentBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;

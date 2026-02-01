@@ -1,6 +1,5 @@
 package org.musicinn.musicinn.controller.controller_application.payment_controller;
 
-import com.stripe.exception.StripeException;
 import org.musicinn.musicinn.model.*;
 import org.musicinn.musicinn.util.PaymentService;
 import org.musicinn.musicinn.util.Session;
@@ -9,7 +8,7 @@ import org.musicinn.musicinn.util.bean.PaymentBean;
 import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.PaymentDAO;
 import org.musicinn.musicinn.util.enumerations.EscrowState;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PaymentServiceException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.Duration;
@@ -56,9 +55,7 @@ public class PaymentController {
         return beans;
     }
 
-    private void processPaymentForApplication(Application app, Announcement ann, List<PaymentBean> beans)
-            throws PersistenceException {
-
+    private void processPaymentForApplication(Application app, Announcement ann, List<PaymentBean> beans) throws PersistenceException {
         Payment payment = DAOFactory.getPaymentDAO().findByApplicationId(app.getId());
 
         if (isPaymentActive(payment)) {
@@ -90,16 +87,14 @@ public class PaymentController {
         return bean;
     }
 
-    private void handleExpiredPayment(Payment payment, int appId) throws DatabaseException {
+    private void handleExpiredPayment(Payment payment, int appId) throws PersistenceException {
         if (payment.getState().equals(EscrowState.REFUNDED)) return;
 
         // Logica di rimborso delegata al service (DIP)
         List<String> refundIntents = null;
-        try {
-            refundIntents = DAOFactory.getPaymentDAO().markAsRefunded(appId);
-        } catch (org.musicinn.musicinn.util.exceptions.PersistenceException e) {
-            throw new RuntimeException(e);
-        }
+
+        refundIntents = DAOFactory.getPaymentDAO().markAsRefunded(appId);
+
         for (String intentId : refundIntents) {
             executeSafeRefund(intentId);
         }
@@ -133,12 +128,7 @@ public class PaymentController {
             if (payment.getPaymentDeadline().isAfter(LocalDateTime.now())) {
                 beans.add(createArtistPaymentBean(payment, announcement, venue, app.getId()));
             } else if (!payment.getState().equals(EscrowState.REFUNDED)) {
-                List<String> peopleToRefund = null;
-                try {
-                    peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(app.getId());
-                } catch (org.musicinn.musicinn.util.exceptions.PersistenceException e) {
-                    throw new RuntimeException(e);
-                }
+                List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(app.getId());
 
                 for (String intentId : peopleToRefund) {
                     try {
@@ -205,23 +195,18 @@ public class PaymentController {
      * Verifica se il pagamento è ancora processabile.
      * Se scaduto, aggiorna lo stato sul DB prima di ritornare il risultato.
      */
-    public boolean isPaymentStillValid(PaymentBean bean) throws DatabaseException {
+    public boolean isPaymentStillValid(PaymentBean bean) throws PersistenceException {
         if (bean.getPaymentDeadline().isBefore(LocalDateTime.now())) {
             // 1. Aggiorna il DB e prendi gli ID delle transazioni da rimborsare
-            List<String> peopleToRefund = null;
-            try {
-                peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
-            } catch (org.musicinn.musicinn.util.exceptions.PersistenceException e) {
-                throw new RuntimeException(e);
-            }
+            List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
+
             // Logica di "Auto-pulizia": se è scaduto, lo marchiamo nel DB
             // 2. Esegui il rimborso reale su Stripe per ogni transazione trovata
             for (String id : peopleToRefund) {
                 try {
                     paymentService.issueRefund(id);
-                } catch (Exception e) {
-                    // Logga l'errore: il DB è REFUNDED ma Stripe ha fallito (rari casi)
-                    throw new DatabaseException("Rimborso Stripe fallito per: " + id);
+                } catch (PaymentServiceException e) {
+                    throw new RuntimeException(e);
                 }
             }
             return false; // Scaduto
@@ -229,13 +214,13 @@ public class PaymentController {
         return true; // Ancora valido
     }
 
-    public String createPaymentAccount(String email) throws StripeException {
+    public String createPaymentAccount(String email) throws PaymentServiceException {
         return paymentService.createPaymentAccount(email);
     }
 
-    public void completePaymentWorkflow(PaymentBean paymentBean, String stripeSessionId) throws Exception {
+    public void completePaymentWorkflow(PaymentBean paymentBean, String stripeSessionId) throws PaymentServiceException, PersistenceException {
         if (!isPaymentStillValid(paymentBean)) {
-            throw new Exception("Il pagamento è scaduto durante l'operazione.");
+            throw new PaymentServiceException("Il pagamento è scaduto durante l'operazione.");
         }
 
         String transactionId = paymentService.getPaymentIntentFromSession(stripeSessionId);

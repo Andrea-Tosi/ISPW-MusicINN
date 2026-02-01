@@ -167,7 +167,7 @@ public class UserRegistrationControllerGUI implements Initializable {
 
             // Indica che la nuova finestra blocca l'interazione con il parent
             verificationStage.initModality(Modality.WINDOW_MODAL);
-            // Collega la modale allo Stage principale ( primaryStage )
+            // Collega la modale allo Stage principale (primaryStage)
             verificationStage.initOwner(primaryStage);
 
             verificationStage.setOnHidden(event ->
@@ -184,7 +184,7 @@ public class UserRegistrationControllerGUI implements Initializable {
                 statusLabel.setText("Il codice fornito è errato. Email non verificata. Clicca su 'Conferma' per riprovare la verifica.");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
         }
     }
 }

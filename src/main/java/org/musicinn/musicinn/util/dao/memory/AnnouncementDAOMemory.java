@@ -16,19 +16,19 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AnnouncementDAOMemory implements AnnouncementDAO {
     private static final List<Announcement> announcements = new ArrayList<>();
-    private static int idCounter = 0;
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
     static {
         try {
             Venue venue = DAOFactory.getVenueDAO().read("the_rock_club");
 
             Announcement ann = new Announcement();
-            ann.setId(++idCounter);
+            ann.setId(ID_COUNTER.incrementAndGet());
             ann.setState(AnnouncementState.OPEN);
             ann.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.METAL));
             ann.setStartEventDay(LocalDate.of(2026, Month.MARCH, 20));
@@ -42,7 +42,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
             announcements.add(ann);
 
             ann = new Announcement();
-            ann.setId(++idCounter);
+            ann.setId(ID_COUNTER.incrementAndGet());
             ann.setState(AnnouncementState.CLOSED);
             ann.setRequestedGenres(List.of(MusicalGenre.ROCK));
             ann.setStartEventDay(LocalDate.of(2026, Month.MAY, 1));
@@ -56,7 +56,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
             announcements.add(ann);
 
             ann = new Announcement();
-            ann.setId(++idCounter);
+            ann.setId(ID_COUNTER.incrementAndGet());
             ann.setState(AnnouncementState.OPEN);
             ann.setRequestedGenres(List.of(MusicalGenre.ROCK));
             ann.setStartEventDay(LocalDate.of(2026, Month.MAY, 15));
@@ -70,7 +70,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
             announcements.add(ann);
 
             ann = new Announcement();
-            ann.setId(++idCounter);
+            ann.setId(ID_COUNTER.incrementAndGet());
             ann.setState(AnnouncementState.OPEN);
             ann.setRequestedGenres(Arrays.asList(MusicalGenre.POP, MusicalGenre.JAZZ));
             ann.setStartEventDay(LocalDate.of(2026, Month.FEBRUARY, 25));
@@ -84,9 +84,9 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
             ann.setRequestedTypesArtist(Arrays.asList(TypeArtist.values()));
             announcements.add(ann);
 
-            for (int i = 0; i < 30; i++) {
+            for (long i = 0; i < 30; i++) {
                 ann = new Announcement();
-                ann.setId(++idCounter);
+                ann.setId(ID_COUNTER.incrementAndGet());
                 ann.setState(AnnouncementState.OPEN);
                 ann.setRequestedGenres(Arrays.asList(MusicalGenre.ROCK, MusicalGenre.R_B));
                 ann.setStartEventDay(LocalDate.now().plusDays(200 + i));
@@ -111,7 +111,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public void save(Announcement announcement) {
-        announcement.setId(++idCounter);
+        announcement.setId(ID_COUNTER.incrementAndGet());
         announcement.setVenue(((Manager) Session.getSingletonInstance().getUser()).getActiveVenue());
         announcements.add(announcement);
     }
@@ -129,7 +129,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         } else if (Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER)) {
             return getConfirmedEventsByDateForManager(startingDate);
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public List<SchedulableEvent> getConfirmedEventsByDateForArtist(LocalDate startingDate) {
@@ -141,7 +141,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
                             return app.getUsernameArtist().equals(Session.getSingletonInstance().getUser().getUsername())
                                     && app.getState().toString().equals("ACCEPTED");
                         }))
-                .map(ann -> (SchedulableEvent) ann)
+                .map(SchedulableEvent.class::cast)
                 .toList();
     }
 
@@ -162,7 +162,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         } catch (PersistenceException e) {
             System.err.println(e.getMessage());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

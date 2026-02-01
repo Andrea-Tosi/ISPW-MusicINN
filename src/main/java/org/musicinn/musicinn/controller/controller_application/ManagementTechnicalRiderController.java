@@ -5,7 +5,6 @@ import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.TechnicalRiderMapper;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import org.musicinn.musicinn.util.dao.DAOFactory;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 

@@ -13,7 +13,6 @@ import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
 
 import org.musicinn.musicinn.util.exceptions.CalendarException;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.List;

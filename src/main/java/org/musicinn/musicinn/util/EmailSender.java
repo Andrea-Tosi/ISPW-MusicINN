@@ -34,7 +34,7 @@ public class EmailSender {
             System.out.println(response.getBody());
             System.out.println(response.getHeaders());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
         }
     }
 }

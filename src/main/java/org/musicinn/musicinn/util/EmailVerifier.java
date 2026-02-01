@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmailVerifier {
-    private Random random = new Random();
+    private final Random random = new Random();
 
     private EmailVerifier() {}
 
@@ -33,7 +33,7 @@ public class EmailVerifier {
             emailSender.sendEmail(email, "Verifica email per registrarti a MusicINN", code);
         } catch (RuntimeException e) {
             verificationCodesCache.remove(email);
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
         }
     }
 

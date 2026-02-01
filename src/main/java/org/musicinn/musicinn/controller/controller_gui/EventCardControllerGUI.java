@@ -142,7 +142,7 @@ public class EventCardControllerGUI {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Errore nel salvataggio della candidatura nel database. Riprovare.");
             alert.show();
         } catch (IOException e) {
-            System.err.println(e.getMessage());;
+            System.err.println(e.getMessage());
         }
     }
 }

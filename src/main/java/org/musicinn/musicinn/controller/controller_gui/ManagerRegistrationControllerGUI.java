@@ -1,6 +1,5 @@
 package org.musicinn.musicinn.controller.controller_gui;
 
-import com.stripe.exception.StripeException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +15,7 @@ import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.NavigationGUI;
 import org.musicinn.musicinn.util.enumerations.TypeVenue;
 import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
+import org.musicinn.musicinn.util.exceptions.PaymentServiceException;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -91,8 +91,7 @@ public class ManagerRegistrationControllerGUI implements Initializable {
             String fxmlPath = FxmlPathLoader.getPath("fxml.manager.home");
 
             NavigationGUI.navigateToPath(stage, fxmlPath);
-        } catch (StripeException e) {
-            e.printStackTrace();
+        } catch (PaymentServiceException e) {
             statusLabel.setText("C'è stato un problema con il servizio di pagamento per la creazione dell'account");
         }
     }

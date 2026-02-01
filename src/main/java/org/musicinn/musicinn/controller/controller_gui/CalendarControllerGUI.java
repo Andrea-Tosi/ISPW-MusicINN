@@ -13,7 +13,6 @@ import javafx.util.StringConverter;
 import org.musicinn.musicinn.controller.controller_application.CalendarController;
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.bean.SchedulableEventBean;
-import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
