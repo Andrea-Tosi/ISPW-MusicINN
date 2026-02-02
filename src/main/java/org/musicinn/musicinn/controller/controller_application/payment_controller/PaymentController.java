@@ -15,10 +15,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PaymentController {
     private final PaymentService paymentService;
     private static final int DAYS_OF_DEADLINE = 5;
+    private static final Logger LOGGER = Logger.getLogger(PaymentController.class.getName());
 
     // Il costruttore è protected perché può essere chiamato solamente da PaymentServiceFactory
     protected PaymentController(PaymentService paymentService) {
@@ -104,7 +107,7 @@ public class PaymentController {
         try {
             paymentService.issueRefund(intentId);
         } catch (Exception _) {
-            System.err.println("Fallito rimborso automatico on-access per: " + intentId);
+            LOGGER.log(Level.FINE, "Fallito rimborso automatico on-access per: {0}", intentId);
         }
     }
 
@@ -134,7 +137,7 @@ public class PaymentController {
                     try {
                         paymentService.issueRefund(intentId);
                     } catch (Exception _) {
-                        System.err.println("Fallito rimborso automatico on-access per: " + intentId);
+                        LOGGER.log(Level.FINE, "Fallito rimborso automatico on-access per: ", intentId);
                     }
                 }
             }

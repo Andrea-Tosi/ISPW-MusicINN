@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CalendarControllerGUI implements Initializable {
     @FXML
@@ -42,6 +44,8 @@ public class CalendarControllerGUI implements Initializable {
     private GridPane calendarGrid;
 
     private final List<CalendarCellControllerGUI> cellControllersGUI = new ArrayList<>();
+
+    private static final Logger LOGGER = Logger.getLogger(CalendarControllerGUI.class.getName());
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -206,8 +210,8 @@ public class CalendarControllerGUI implements Initializable {
             for (SchedulableEventBean event : events) {
                 cellControllerGUI.addEvent(event);
             }
-        } catch (PersistenceException _) {
-            System.err.println("Errore nell'interazione con il database per prelevare gli eventi");
+        } catch (PersistenceException e) {
+            LOGGER.log(Level.FINE, "Errore nell'interazione con il database per prelevare gli eventi: {0}", e.getMessage());
         }
     }
 }

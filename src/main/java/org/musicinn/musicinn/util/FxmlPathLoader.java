@@ -2,11 +2,13 @@ package org.musicinn.musicinn.util;
 
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class FxmlPathLoader {
     private FxmlPathLoader() {}
 
     private static final Properties props = new Properties();
+    private static final Logger LOGGER = Logger.getLogger(FxmlPathLoader.class.getName());
 
     static {
         // Carica il file app-paths.properties
@@ -15,7 +17,7 @@ public class FxmlPathLoader {
                 props.load(input);
             }
         } catch (Exception ex) {
-            System.err.println("Errore caricamento configurazione: " + ex.getMessage());
+            LOGGER.fine(ex.getMessage());
         }
     }
 

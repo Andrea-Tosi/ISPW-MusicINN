@@ -3,6 +3,7 @@ package org.musicinn.musicinn.util;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class EmailVerifier {
     private final Random random = new Random();
@@ -21,6 +22,7 @@ public class EmailVerifier {
 
     private record VerificationEntry(String code, long expiresAt) {}
 
+    private static final Logger LOGGER = Logger.getLogger(EmailVerifier.class.getName());
     private static final long EXPIRATION_TIME_MS = 10 * 60 * 1000L; //minuti in millisecondi
 
     public void sendCode(String email) {
@@ -33,7 +35,7 @@ public class EmailVerifier {
             emailSender.sendEmail(email, "Verifica email per registrarti a MusicINN", code);
         } catch (RuntimeException e) {
             verificationCodesCache.remove(email);
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

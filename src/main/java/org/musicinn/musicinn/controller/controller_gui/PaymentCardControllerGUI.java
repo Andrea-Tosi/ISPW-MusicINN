@@ -21,6 +21,7 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 public class PaymentCardControllerGUI {
     @FXML
@@ -51,6 +52,8 @@ public class PaymentCardControllerGUI {
     private Button managePaymentButton;
 
     private PaymentBean paymentBean; // Il riferimento ai dati
+
+    private static final Logger LOGGER = Logger.getLogger(PaymentCardControllerGUI.class.getName());
 
     public void setPaymentBean(PaymentBean paymentBean) {
         this.paymentBean = paymentBean;
@@ -110,7 +113,7 @@ public class PaymentCardControllerGUI {
 
             hideCard();
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

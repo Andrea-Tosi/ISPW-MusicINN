@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements Initializable {
     @FXML
@@ -35,6 +37,7 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
     private HeaderControllerGUI headerController;
 
     private static final String DESCRIPTION_PAGE = "Accetta Candidatura";
+    private static final Logger LOGGER = Logger.getLogger(AcceptApplicationViewAnnouncementSelectionControllerGUI.class.getName());
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -80,7 +83,7 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
 
             announcementCardsContainer.getChildren().add(cardRoot);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

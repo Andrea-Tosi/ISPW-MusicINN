@@ -15,8 +15,11 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PaymentDAODatabase implements PaymentDAO {
+    private static final Logger LOGGER = Logger.getLogger(PaymentDAODatabase.class.getName());
+
     @Override
     public void save(int applicationId, int daysOfDeadline) throws DatabaseException {
         // 1. Definiamo la query
@@ -104,7 +107,7 @@ public class PaymentDAODatabase implements PaymentDAO {
             try {
                 conn.rollback();
             } catch (SQLException e) {
-                System.err.println(e.getMessage());
+                LOGGER.fine(e.getMessage());
             }
             throw new DatabaseException("Errore nel salvataggio del pagamento.");
         }
@@ -148,14 +151,14 @@ public class PaymentDAODatabase implements PaymentDAO {
             try {
                 conn.rollback();
             } catch (SQLException e) {
-                System.err.println(e.getMessage());
+                LOGGER.fine(e.getMessage());
             }
             throw new DatabaseException("Errore durante l'aggiornamento dello stato del pagamento.");
         } finally {
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException e){
-                System.err.println(e.getMessage());
+                LOGGER.fine(e.getMessage());
             }
         }
     }

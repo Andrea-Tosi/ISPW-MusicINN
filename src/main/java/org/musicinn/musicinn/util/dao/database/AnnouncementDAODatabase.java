@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class AnnouncementDAODatabase implements AnnouncementDAO {
@@ -26,6 +27,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     private static final String DEPOSIT_COLUMN = "deposit";
     private static final String ID_VENUE_COLUMN = "manager_riders_venues_id";
     private static final String QUANTITY_COLUMN = "quantity";
+    private static final Logger LOGGER = Logger.getLogger(AnnouncementDAODatabase.class.getName());
 
     @Override
     public List<SchedulableEvent> getEventsByDate(LocalDate startingDate) throws DatabaseException {
@@ -151,7 +153,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             executeInsert(conn, insertAnnouncement, announcement, venueId);
             conn.commit(); // Fine Transazione con successo
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
     }

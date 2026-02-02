@@ -45,8 +45,7 @@ public class VenueDAOMemory implements VenueDAO {
                 manager.getVenueList().add(venue);
                 manager.setActiveVenue(venue);
             }
-        } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+        } catch (PersistenceException _) {
         }
     }
 

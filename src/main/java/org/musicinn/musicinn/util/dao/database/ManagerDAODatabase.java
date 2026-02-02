@@ -7,8 +7,11 @@ import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class ManagerDAODatabase implements ManagerDAO {
+    private static final Logger LOGGER = Logger.getLogger(ManagerDAODatabase.class.getName());
+
     @Override
     public void create(Manager manager) {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
@@ -23,7 +26,7 @@ public class ManagerDAODatabase implements ManagerDAO {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 }

@@ -6,8 +6,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class NavigationGUI {
+    private static final Logger LOGGER = Logger.getLogger(NavigationGUI.class.getName());
+
     private NavigationGUI() {}
 
     public static void navigateToPath(Stage currentStage, String fxmlPath){
@@ -18,8 +21,7 @@ public class NavigationGUI {
             currentStage.setScene(newScene);
             currentStage.show();
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Errore nel caricamento del file FXML: " + fxmlPath);
+            LOGGER.fine(e.getMessage());
         }
     }
 }

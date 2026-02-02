@@ -20,6 +20,7 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class LoginControllerGUI implements Initializable {
     @FXML
@@ -45,6 +46,8 @@ public class LoginControllerGUI implements Initializable {
 
     @FXML
     private Label statusLabel;
+
+    private static final Logger LOGGER = Logger.getLogger(LoginControllerGUI.class.getName());
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -84,8 +87,7 @@ public class LoginControllerGUI implements Initializable {
             stage.setScene(newScene);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Errore nel caricamento del file FXML: " + fxmlPath);
+            LOGGER.fine(e.getMessage());
         }
     }
 

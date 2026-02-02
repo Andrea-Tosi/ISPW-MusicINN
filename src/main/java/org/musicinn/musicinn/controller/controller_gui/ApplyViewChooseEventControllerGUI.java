@@ -20,6 +20,7 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ApplyViewChooseEventControllerGUI {
     @FXML
@@ -38,8 +39,9 @@ public class ApplyViewChooseEventControllerGUI {
     private HeaderControllerGUI headerController;
 
     private static final String DESCRIPTION_PAGE = "Candidati";
+    private static final Logger LOGGER = Logger.getLogger(ApplyViewChooseEventControllerGUI.class.getName());
 
-    private List<EventBean> loadedEvents = new ArrayList<>();
+    private final List<EventBean> loadedEvents = new ArrayList<>();
     private int currentPage = 0;
     private boolean isLoading = false; // Per evitare chiamate multiple simultanee
 
@@ -101,7 +103,7 @@ public class ApplyViewChooseEventControllerGUI {
             // 4. Aggiungiamo la carta al FlowPane principale
             eventCardsContainer.getChildren().add(cardRoot);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

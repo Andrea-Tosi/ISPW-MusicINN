@@ -15,8 +15,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ArtistDAODatabase implements ArtistDAO {
+    private static final Logger LOGGER = Logger.getLogger(ArtistDAODatabase.class.getName());
+
     @Override
     public void create(Artist artist) {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
@@ -49,13 +52,13 @@ public class ArtistDAODatabase implements ArtistDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
+                LOGGER.fine(ex.getMessage());
             }
         } finally {
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException e) {
-                System.err.println(e.getMessage());
+                LOGGER.fine(e.getMessage());
             }
         }
     }

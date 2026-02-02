@@ -7,7 +7,11 @@ import org.musicinn.musicinn.util.dao.interfaces.*;
 import org.musicinn.musicinn.util.dao.memory.*;
 import org.musicinn.musicinn.util.exceptions.CSVException;
 
+import java.util.logging.Logger;
+
 public class DAOFactory {
+    private static final Logger LOGGER = Logger.getLogger(DAOFactory.class.getName());
+
     private DAOFactory() {}
 
     // Metodo privato per capire se siamo in modalità Demo
@@ -60,7 +64,7 @@ public class DAOFactory {
         try {
             return new PaymentDAOCSV();
         } catch (CSVException _) {
-            System.err.println("Errore nell'apertura del file dei pagamenti.");
+            LOGGER.fine("Errore nell'apertura del file dei pagamenti.");
         }
         return null;
     }

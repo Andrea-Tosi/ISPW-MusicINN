@@ -12,8 +12,11 @@ import org.musicinn.musicinn.util.enumerations.TypeVenue;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
 
 import java.sql.*;
+import java.util.logging.Logger;
 
 public class VenueDAODatabase implements VenueDAO {
+    private static final Logger LOGGER = Logger.getLogger(VenueDAODatabase.class.getName());
+
     @Override
     public void create(Venue venue, Manager manager) {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
@@ -36,14 +39,14 @@ public class VenueDAODatabase implements VenueDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
+                LOGGER.fine(ex.getMessage());
             }
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         } finally {
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException e) {
-                System.err.println(e.getMessage());
+                LOGGER.fine(e.getMessage());
             }
         }
     }

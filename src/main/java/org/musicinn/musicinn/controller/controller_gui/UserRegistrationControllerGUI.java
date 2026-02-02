@@ -20,6 +20,7 @@ import org.musicinn.musicinn.util.exceptions.UsernameAlreadyUsedException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class UserRegistrationControllerGUI implements Initializable {
     @FXML
@@ -54,6 +55,8 @@ public class UserRegistrationControllerGUI implements Initializable {
 
     @FXML
     private Label statusLabel;
+
+    private static final Logger LOGGER = Logger.getLogger(UserRegistrationControllerGUI.class.getName());
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -184,7 +187,7 @@ public class UserRegistrationControllerGUI implements Initializable {
                 statusLabel.setText("Il codice fornito è errato. Email non verificata. Clicca su 'Conferma' per riprovare la verifica.");
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 }

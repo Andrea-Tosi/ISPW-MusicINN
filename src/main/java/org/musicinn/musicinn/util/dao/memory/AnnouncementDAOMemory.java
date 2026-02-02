@@ -18,10 +18,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 public class AnnouncementDAOMemory implements AnnouncementDAO {
     private static final List<Announcement> announcements = new ArrayList<>();
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
+    private static final Logger LOGGER = Logger.getLogger(AnnouncementDAOMemory.class.getName());
 
     static {
         try {
@@ -101,7 +103,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
                 announcements.add(ann);
             }
         } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 
@@ -160,7 +162,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
                     .map(a -> (SchedulableEvent) a)
                     .toList();
         } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
         return new ArrayList<>();
     }

@@ -27,6 +27,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class PublishAnnouncementControllerGUI implements Initializable {
     @FXML
@@ -88,6 +89,8 @@ public class PublishAnnouncementControllerGUI implements Initializable {
 
     private static final String DESCRIPTION_PAGE = "Pubblica Annuncio";
 
+    private static final Logger LOGGER = Logger.getLogger(PublishAnnouncementControllerGUI.class.getName());
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
@@ -100,12 +103,12 @@ public class PublishAnnouncementControllerGUI implements Initializable {
 
         // Impedisce l'inserimento di caratteri non numerici nei text field di cachet e cauzione
         cachetField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*([\\.,]\\d{0,2})?")) {
+            if (!newValue.matches("\\d*([.,]\\d{0,2})?")) {
                 cachetField.setText(oldValue);
             }
         });
         depositField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*([\\.,]\\d{0,2})?")) {
+            if (!newValue.matches("\\d*([.,]\\d{0,2})?")) {
                 depositField.setText(oldValue);
             }
         });
@@ -287,7 +290,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
             // Arrotondamento a 2 cifre decimali
             return Math.round(valore * 100.0) / 100.0;
         } catch (NumberFormatException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
             return null; // Input non valido
         }
     }

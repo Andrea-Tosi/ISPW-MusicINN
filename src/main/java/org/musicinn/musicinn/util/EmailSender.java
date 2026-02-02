@@ -10,11 +10,13 @@ import com.sendgrid.helpers.mail.objects.Email;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class EmailSender {
     private static final Dotenv DOTENV = Dotenv.load();
     private static final String SENDER_EMAIL = DOTENV.get("EMAIL_APP");
     private static final String API_KEY = DOTENV.get("SENDGRIP_API_KEY");
+    private static final Logger LOGGER = Logger.getLogger(EmailSender.class.getName());
 
     public void sendEmail(String to, String subject, String body) {
         Email sender = new Email(SENDER_EMAIL);
@@ -30,11 +32,10 @@ public class EmailSender {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
             Response response = sg.api(request);
-            System.out.println(response.getStatusCode());
-            System.out.println(response.getBody());
-            System.out.println(response.getHeaders());
+            LOGGER.fine(String.valueOf(response.getStatusCode()));
+            LOGGER.fine(response.getBody());
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 }

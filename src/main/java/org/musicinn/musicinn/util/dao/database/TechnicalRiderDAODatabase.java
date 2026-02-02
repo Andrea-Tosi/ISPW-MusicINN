@@ -11,9 +11,11 @@ import org.musicinn.musicinn.util.exceptions.DatabaseException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     private static final String QUANTITY_COLUMN = "quantity";
+    private static final Logger LOGGER = Logger.getLogger(TechnicalRiderDAODatabase.class.getName());
 
     @Override
     public void create(TechnicalRider rider) throws DatabaseException {
@@ -68,7 +70,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         try {
             conn.rollback();
         } catch (SQLException ex) {
-            System.err.println(ex.getMessage());
+            LOGGER.fine(ex.getMessage());
         }
     }
 
@@ -76,7 +78,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         try {
             conn.setAutoCommit(true);
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

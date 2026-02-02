@@ -5,9 +5,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class DBConnectionManager {
     private static final Dotenv dotenv = Dotenv.load();
+    private static final Logger LOGGER = Logger.getLogger(DBConnectionManager.class.getName());
 
     // Parametri di connessione
     private static final String URL = dotenv.get("DB_URL");
@@ -31,10 +33,10 @@ public class DBConnectionManager {
             // Controlliamo se la connessione è null O se è stata chiusa (es. timeout)
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("✅ Nuova connessione MySQL stabilita!");
+                LOGGER.info("✅ Nuova connessione MySQL stabilita!");
             }
         } catch (SQLException e) {
-            System.err.println("❌ Errore durante la connessione: " + e.getMessage());
+            LOGGER.info("❌ Errore durante la connessione: " + e.getMessage());
             return null; // Restituisce null solo se fallisce l'apertura
         }
         return connection; // Restituisce la connessione APERTA

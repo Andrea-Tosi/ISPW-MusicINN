@@ -19,6 +19,7 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class EventCardControllerGUI {
     @FXML
@@ -49,6 +50,8 @@ public class EventCardControllerGUI {
     private Label riderCompatibilityLabel;
 
     private EventBean eventBean;
+
+    private static final Logger LOGGER = Logger.getLogger(EventCardControllerGUI.class.getName());
 
     public EventBean getEventBean() {
         return eventBean;
@@ -142,7 +145,7 @@ public class EventCardControllerGUI {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Errore nel salvataggio della candidatura nel database. Riprovare.");
             alert.show();
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 }

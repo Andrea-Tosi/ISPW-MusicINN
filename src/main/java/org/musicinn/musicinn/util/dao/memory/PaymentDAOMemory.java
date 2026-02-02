@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class PaymentDAOMemory implements PaymentDAO {
     private static final Map<Integer, Payment> payments = new HashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(PaymentDAOMemory.class.getName());
 
     static {
         try {
@@ -25,7 +27,7 @@ public class PaymentDAOMemory implements PaymentDAO {
 
             initPayment(app);
         } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

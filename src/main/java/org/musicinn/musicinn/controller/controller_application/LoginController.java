@@ -18,8 +18,11 @@ import org.musicinn.musicinn.util.bean.login_bean.ManagerRegistrationBean;
 import org.musicinn.musicinn.util.exceptions.*;
 
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LoginController {
+    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
     private CredentialsBean cb;
 
     private LoginController() {}
@@ -41,7 +44,7 @@ public class LoginController {
             user = isIdentifierOccupied(credentialsBean.getEmail());
         }
         if(user == null){
-            System.out.println("username non trovato");
+            LOGGER.fine("username non trovato.");
             return null;
         } else {
             if (Objects.equals(credentialsBean.getPassword(), user.getHashedPassword())) {
@@ -53,7 +56,7 @@ public class LoginController {
                 Session.getSingletonInstance().setUser(user);
                 return user;
             } else {
-                System.out.println("password relativa a " + user.getUsername() + " errata");
+                LOGGER.log(Level.FINE, "password relativa a {0} errata", user.getUsername());
                 return null;
             }
         }

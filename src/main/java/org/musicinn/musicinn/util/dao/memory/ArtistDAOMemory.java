@@ -10,16 +10,19 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.musicinn.musicinn.util.dao.memory.UserDAOMemory.users;
 
 public class ArtistDAOMemory implements ArtistDAO {
+    private static final Logger LOGGER = Logger.getLogger(ArtistDAOMemory.class.getName());
+
     @Override
     public void create(Artist artist) {
         try {
             DAOFactory.getUserDAO().insertBaseUser(artist, null);
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 
@@ -28,7 +31,7 @@ public class ArtistDAOMemory implements ArtistDAO {
         try {
             return (Artist) DAOFactory.getUserDAO().findByIdentifier(username);
         } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
         return null;
     }

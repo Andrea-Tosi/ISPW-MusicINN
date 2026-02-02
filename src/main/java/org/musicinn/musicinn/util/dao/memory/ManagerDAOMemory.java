@@ -5,14 +5,17 @@ import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ManagerDAO;
 
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class ManagerDAOMemory implements ManagerDAO {
+    private static final Logger LOGGER = Logger.getLogger(ManagerDAOMemory.class.getName());
+
     @Override
     public void create(Manager manager) {
         try {
             DAOFactory.getUserDAO().insertBaseUser(manager, null);
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 }

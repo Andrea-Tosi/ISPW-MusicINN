@@ -124,8 +124,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
             managerRider.setOthers(otherEquipments);
 
             manager.getActiveVenue().setRider(managerRider);
-        } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+        } catch (PersistenceException _) {
         }
     }
 

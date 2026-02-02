@@ -18,11 +18,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 public class ApplicationDAOMemory implements ApplicationDAO {
     private static final List<Application> applications = new ArrayList<>();
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     private static final String ANNOUNCEMENT_NOT_FOUND = "Annuncio non trovato.";
+    private static final Logger LOGGER = Logger.getLogger(ApplicationDAOMemory.class.getName());
 
     static {
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().getFirst();
@@ -50,7 +52,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
             ann.getApplicationList().add(app);
             DAOFactory.getArtistDAO().read(usernameArtist).getApplications().add(app);
         } catch (PersistenceException e) {
-            System.err.println(e.getMessage());
+            LOGGER.fine(e.getMessage());
         }
     }
 

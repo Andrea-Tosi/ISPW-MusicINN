@@ -8,12 +8,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Launcher {
-    private static final Logger logger = Logger.getLogger(Launcher.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Launcher.class.getName());
 
     public static void main(String[] args) {
             LogConfigurator.setup();
-            logger.info("PROVA INFO");
-            logger.fine("PROVA FINE");
+            LOGGER.info("PROVA INFO");
+            LOGGER.fine("PROVA FINE");
         try {
             if (args.length > 2) {
                 throw new IllegalArgumentException("Troppi argomenti! Massimo due consentiti.");
@@ -27,7 +27,7 @@ public class Launcher {
                 startCLIVersion();
             }
         } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
