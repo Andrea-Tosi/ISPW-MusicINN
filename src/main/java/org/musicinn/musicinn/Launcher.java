@@ -2,19 +2,32 @@ package org.musicinn.musicinn;
 
 import javafx.application.Application;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.logger.LogConfigurator;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Launcher {
+    private static final Logger logger = Logger.getLogger(Launcher.class.getName());
+
     public static void main(String[] args) {
-        if (args.length > 2) {
-            throw new IllegalArgumentException("Troppi argomenti! Massimo due consentiti.");
-        }
+            LogConfigurator.setup();
+            logger.info("PROVA INFO");
+            logger.fine("PROVA FINE");
+        try {
+            if (args.length > 2) {
+                throw new IllegalArgumentException("Troppi argomenti! Massimo due consentiti.");
+            }
 
-        parseArguments(args);
+            parseArguments(args);
 
-        if (Session.getSingletonInstance().getInterfaceType().equals(Session.InterfaceType.GUI)) {
-            Application.launch(App.class, args);
-        } else {
-            startCLIVersion();
+            if (Session.getSingletonInstance().getInterfaceType().equals(Session.InterfaceType.GUI)) {
+                Application.launch(App.class, args);
+            } else {
+                startCLIVersion();
+            }
+        } catch (IllegalArgumentException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
