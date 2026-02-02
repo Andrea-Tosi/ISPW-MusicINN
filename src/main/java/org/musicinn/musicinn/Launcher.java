@@ -80,5 +80,6 @@ public class Launcher {
     private static void startCLIVersion() {
         System.out.println("Avvio MusicINN in modalità CLI...");
         //TODO istanziare View CLI (es. LoginViewCLI)
+
     }
 }
