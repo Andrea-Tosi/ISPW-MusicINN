@@ -80,7 +80,7 @@ public class ApplyViewChooseEventControllerGUI {
             }
 
             isLoading = false;
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             statusLabel.setText("Errore nel caricamento degli eventi.");
         }
     }
