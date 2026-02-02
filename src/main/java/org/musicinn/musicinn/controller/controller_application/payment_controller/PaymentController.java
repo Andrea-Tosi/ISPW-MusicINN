@@ -187,7 +187,7 @@ public class PaymentController {
         return "Pochi secondi";
     }
 
-    public String getPaymentUrl(PaymentBean bean) throws Exception {
+    public String getPaymentUrl(PaymentBean bean) throws PaymentServiceException {
         return paymentService.getCheckoutSessionUrl(bean);
     }
 
@@ -195,7 +195,7 @@ public class PaymentController {
      * Verifica se il pagamento è ancora processabile.
      * Se scaduto, aggiorna lo stato sul DB prima di ritornare il risultato.
      */
-    public boolean isPaymentStillValid(PaymentBean bean) throws PersistenceException {
+    public boolean isPaymentStillValid(PaymentBean bean) throws PersistenceException, PaymentServiceException {
         if (bean.getPaymentDeadline().isBefore(LocalDateTime.now())) {
             // 1. Aggiorna il DB e prendi gli ID delle transazioni da rimborsare
             List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
@@ -206,7 +206,7 @@ public class PaymentController {
                 try {
                     paymentService.issueRefund(id);
                 } catch (PaymentServiceException e) {
-                    throw new RuntimeException(e);
+                    throw new PaymentServiceException(e.getMessage());
                 }
             }
             return false; // Scaduto

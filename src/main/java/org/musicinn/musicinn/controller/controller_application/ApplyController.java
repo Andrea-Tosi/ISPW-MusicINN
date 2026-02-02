@@ -1,6 +1,7 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.*;
+import org.musicinn.musicinn.util.DistanceService;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.TechnicalRiderMapper;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
@@ -26,13 +27,12 @@ public class ApplyController {
     private final AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
     private final TechnicalRiderDAO riderDAO = DAOFactory.getTechnicalRiderDAO();
     // Supponiamo di avere un servizio per la distanza
-//    private final DistanceService distanceService = new DistanceService();
+    private final DistanceService distanceService = new DistanceService();
 
     public List<EventBean> getCompatibleEvents(int page) throws PersistenceException {
         // 1. Recupero Artista e il suo Rider dalla Sessione
-        String currentUserId = Session.getSingletonInstance().getUser().getUsername();
-        UserDAO userDAO = DAOFactory.getUserDAO();
-        Artist currentUser = (Artist) userDAO.findByIdentifier(currentUserId);
+        String currentUsername = Session.getSingletonInstance().getUser().getUsername();
+        Artist currentUser = DAOFactory.getArtistDAO().read(currentUsername);
         // Carichiamo l'Entity completa del rider dell'artista per fare i confronti
         ArtistRider artistRider = (ArtistRider) riderDAO.read(Session.getSingletonInstance().getUser().getUsername(), Session.UserRole.ARTIST);
 
@@ -42,10 +42,7 @@ public class ApplyController {
             ArtistDAODatabase artistDAO = new ArtistDAODatabase();
             currentUser.setGenresList(artistDAO.loadArtistGenres(Session.getSingletonInstance().getUser().getUsername()));
         }
-        List<Announcement> announcements = announcementDAO.findOpenAnnouncements(
-                page,
-                10
-        );
+        List<Announcement> announcements = announcementDAO.findOpenAnnouncements(page, 10);
 
         List<EventBean> results = new ArrayList<>();
 
@@ -64,8 +61,8 @@ public class ApplyController {
             bean.setTypeVenue(venue.getTypeVenue());
 
             // Calcolo distanza (Logica di Business)
-            //int dist = distanceService.calculate(currentUser.getAddress(), venue.getAddress());
-            bean.setDistance(10); //TODO introdurre servizio calcolo distanza
+            int distance = distanceService.calculateDistance(currentUser.getCity(), currentUser.getAddress(), venue.getCity(), venue.getAddress());
+            bean.setDistance(distance);
 
             // Incapsulamento Bean Interni
             bean.setAnnouncementBean(createAnnouncementBean(ann));

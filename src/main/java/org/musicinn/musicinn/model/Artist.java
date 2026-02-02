@@ -15,17 +15,24 @@ public class Artist extends User{
     private List<MusicalGenre> genresList;
     private List<SocialAccount> socialAccounts;
     private ArtistRider rider;
+    private List<Application> applications;
 
     public Artist(String username, String email, String password) {
         super(username, email, password);
+        this.genresList = new ArrayList<>();
+        this.applications = new ArrayList<>();
     }
 
     public Artist(String username, String email, String password, String paymentServiceAccountId) {
         super(username, email, password, paymentServiceAccountId);
+        this.genresList = new ArrayList<>();
+        this.applications = new ArrayList<>();
     }
 
     public Artist() {
         super();
+        this.genresList = new ArrayList<>();
+        this.applications = new ArrayList<>();
     }
 
     public String getStageName() {
@@ -97,5 +104,13 @@ public class Artist extends User{
 
     public void setRider(ArtistRider rider) {
         this.rider = rider;
+    }
+
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
     }
 }

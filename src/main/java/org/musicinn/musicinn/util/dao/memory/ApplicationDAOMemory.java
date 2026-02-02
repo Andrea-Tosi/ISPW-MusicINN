@@ -4,9 +4,11 @@ import org.musicinn.musicinn.model.Announcement;
 import org.musicinn.musicinn.model.Application;
 import org.musicinn.musicinn.model.observer_pattern.Observer;
 import org.musicinn.musicinn.util.Session;
+import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.ApplicationDAO;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,15 +39,19 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     }
 
     private static void initApplication(Announcement ann, LocalDate date, LocalTime time, String usernameArtist, ApplicationState state) {
-        Application app = new Application();
-        app.setId(ID_COUNTER.incrementAndGet());
-        app.setSoundcheckTime(LocalDateTime.of(date, time.minusMinutes(40)));
-        app.setState(state);
-        app.setScore(84.8);
-        app.setUsernameArtist(usernameArtist);
-        applications.add(app);
-        ann.getApplicationList().add(app);
-//TODO        ((Artist) DAOFactory.getUserDAO().findByIdentifier(usernameArtist)).getApplications().add(app);
+        try {
+            Application app = new Application();
+            app.setId(ID_COUNTER.incrementAndGet());
+            app.setSoundcheckTime(LocalDateTime.of(date, time.minusMinutes(40)));
+            app.setState(state);
+            app.setScore(84.8);
+            app.setUsernameArtist(usernameArtist);
+            applications.add(app);
+            ann.getApplicationList().add(app);
+            DAOFactory.getArtistDAO().read(usernameArtist).getApplications().add(app);
+        } catch (PersistenceException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public static List<Application> getApplications() {
@@ -85,10 +91,6 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     // Il seguente metodo non serve perché ci sono gli Observer apposta
     @Override
     public void updateApplicationState(Application app) {
-//        applications.stream()
-//                .filter(a -> a.getId() == app.getId())
-//                .findFirst()
-//                .ifPresent(a -> a.setState(app.getState()));
     }
 
     @Override

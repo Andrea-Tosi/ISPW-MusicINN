@@ -16,7 +16,10 @@ import org.musicinn.musicinn.controller.controller_application.payment_controlle
 import org.musicinn.musicinn.util.FxmlPathLoader;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.bean.PaymentBean;
+import org.musicinn.musicinn.util.exceptions.PaymentServiceException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class PaymentCardControllerGUI {
@@ -101,11 +104,13 @@ public class PaymentCardControllerGUI {
 
                 updateUI();
             }
-        } catch (Exception e) {
+        } catch (PaymentServiceException | PersistenceException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Errore nel pagamento. Riprovare");
             alert.show();
 
             hideCard();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 
