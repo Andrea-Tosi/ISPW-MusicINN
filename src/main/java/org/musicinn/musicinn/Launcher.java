@@ -12,8 +12,6 @@ public class Launcher {
 
     public static void main(String[] args) {
             LogConfigurator.setup();
-            LOGGER.info("PROVA INFO");
-            LOGGER.fine("PROVA FINE");
         try {
             if (args.length > 2) {
                 throw new IllegalArgumentException("Troppi argomenti! Massimo due consentiti.");
