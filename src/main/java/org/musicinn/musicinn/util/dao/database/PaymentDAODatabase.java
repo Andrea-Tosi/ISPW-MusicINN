@@ -44,7 +44,7 @@ public class PaymentDAODatabase implements PaymentDAO {
     @Override
     public Payment findByApplicationId(int applicationId) throws DatabaseException {
         Payment payment = null;
-        String sql = "SELECT * FROM payments WHERE applications_id = ?";
+        String sql = "SELECT payment_deadline, escrow_state, venue_payment_intent_id, artist_payment_intent_id FROM payments WHERE applications_id = ?";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 

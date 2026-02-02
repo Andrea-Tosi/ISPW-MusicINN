@@ -147,50 +147,50 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
         try {
             conn.setAutoCommit(false); // Inizio Transazione
-
-            VenueDAO venueDAO = DAOFactory.getVenueDAO();
-            int venueId = venueDAO.getActiveVenueIdByManager(managerUser);
-
-            try (PreparedStatement pstmt = conn.prepareStatement(insertAnnouncement, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setDate(1, java.sql.Date.valueOf(announcement.getStartEventDay()));
-                pstmt.setTime(2, java.sql.Time.valueOf(announcement.getStartEventTime()));
-                pstmt.setLong(3, announcement.getDuration().toMinutes()); // Salviamo in minuti
-                pstmt.setDouble(4, announcement.getCachet());
-                pstmt.setDouble(5, announcement.getDeposit());
-
-                if (announcement.getDoesUnreleased() == null) pstmt.setNull(6, java.sql.Types.BOOLEAN);
-                else pstmt.setBoolean(6, announcement.getDoesUnreleased());
-
-                pstmt.setString(7, announcement.getDescription());
-                pstmt.setString(8, announcement.getState().toString());
-                pstmt.setInt(9, venueId);
-
-                pstmt.executeUpdate();
-
-                // Recuperiamo l'ID generato per inserire i generi e i tipi
-                ResultSet generatedKeys = pstmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int id = generatedKeys.getInt(1);
-                    saveGenres(id, announcement.getRequestedGenres(), conn);
-                    saveTypes(id, announcement.getRequestedTypesArtist(), conn);
-                }
-
-                conn.commit(); // Fine Transazione con successo
-            } catch (SQLException e) {
-                conn.rollback();
-                throw e;
-            }
+            int venueId = DAOFactory.getVenueDAO().getActiveVenueIdByManager(managerUser);
+            executeInsert(conn, insertAnnouncement, announcement, venueId);
+            conn.commit(); // Fine Transazione con successo
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
     }
 
+    private void executeInsert(Connection conn, String query, Announcement announcement, int venueId) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setDate(1, java.sql.Date.valueOf(announcement.getStartEventDay()));
+            pstmt.setTime(2, java.sql.Time.valueOf(announcement.getStartEventTime()));
+            pstmt.setLong(3, announcement.getDuration().toMinutes()); // Salviamo in minuti
+            pstmt.setDouble(4, announcement.getCachet());
+            pstmt.setDouble(5, announcement.getDeposit());
+
+            if (announcement.getDoesUnreleased() == null) pstmt.setNull(6, java.sql.Types.BOOLEAN);
+            else pstmt.setBoolean(6, announcement.getDoesUnreleased());
+
+            pstmt.setString(7, announcement.getDescription());
+            pstmt.setString(8, announcement.getState().toString());
+            pstmt.setInt(9, venueId);
+
+            pstmt.executeUpdate();
+
+            // Recuperiamo l'ID generato per inserire i generi e i tipi
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int id = generatedKeys.getInt(1);
+                saveGenres(id, announcement.getRequestedGenres(), conn);
+                saveTypes(id, announcement.getRequestedTypesArtist(), conn);
+            }
+        } catch (SQLException e) {
+            conn.rollback();
+            throw e;
+        }
+    }
+
     private void saveGenres(int announcementId, List<MusicalGenre> genres, Connection conn) throws SQLException {
         String query = "INSERT INTO announcements_has_genres (announcements_id, genres_genre) VALUES (?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, announcementId);
             for (MusicalGenre g : genres) {
-                pstmt.setInt(1, announcementId);
                 pstmt.setString(2, g.name());
                 pstmt.addBatch();
             }
@@ -201,8 +201,8 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     private void saveTypes(int announcementId, List<TypeArtist> types, Connection conn) throws SQLException {
         String query = "INSERT INTO announcements_has_artist_types (announcements_id, artist_types_type) VALUES (?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, announcementId);
             for (TypeArtist t : types) {
-                pstmt.setInt(1, announcementId);
                 pstmt.setString(2, t.name());
                 pstmt.addBatch();
             }
@@ -508,7 +508,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         List<Announcement> announcements = new ArrayList<>();
 
         // Query per selezionare gli annunci chiusi di una specifica venue
-        String sql = "SELECT * FROM announcements WHERE venues_id = ? AND state = 'CLOSED'";
+        String sql = "SELECT id, " + CACHET_COLUMN + ", " + DEPOSIT_COLUMN + ", " + START_DAY_COLUMN + ", " + START_TIME_COLUMN + " FROM announcements WHERE venues_id = ? AND state = 'CLOSED'";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
@@ -543,7 +543,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
         Announcement announcement = null;
 
         // Partiamo dall'ID dell'applicazione per trovare l'annuncio corrispondente
-        String sql = "SELECT a.* FROM announcements a " +
+        String sql = "SELECT a.id, a.state, a." + CACHET_COLUMN + ", a." + DEPOSIT_COLUMN + ", a." + START_DAY_COLUMN + ", a." + START_TIME_COLUMN + " FROM announcements a " +
                 "JOIN applications app ON a.id = app.announcements_id " +
                 "WHERE app.id = ?";
 

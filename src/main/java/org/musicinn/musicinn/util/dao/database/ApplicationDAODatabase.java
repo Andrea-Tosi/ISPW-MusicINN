@@ -39,7 +39,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
     @Override
     public Map<Application, String> findByAnnouncementId(int announcementId) throws DatabaseException {
         Map<Application, String> results = new LinkedHashMap<>(); // Linked per mantenere l'ordine SQL
-        String query = "SELECT * FROM applications WHERE announcements_id = ?";
+        String query = "SELECT id, score, soundcheck_time, state, artists_username FROM applications WHERE announcements_id = ?";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
@@ -88,7 +88,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
         Application acceptedApp = null;
 
         // Cerchiamo la candidatura che è stata accettata per quel determinato annuncio
-        String sql = "SELECT * FROM applications WHERE announcements_id = ? AND state = 'ACCEPTED'";
+        String sql = "SELECT id, artists_username FROM applications WHERE announcements_id = ? AND state = 'ACCEPTED'";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
@@ -113,7 +113,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
         List<Application> acceptedApplications = new ArrayList<>();
 
         // Query per recuperare le candidature accettate di uno specifico artista
-        String sql = "SELECT * FROM applications WHERE artists_username = ? AND state = 'ACCEPTED'";
+        String sql = "SELECT id, state FROM applications WHERE artists_username = ? AND state = 'ACCEPTED'";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
@@ -123,11 +123,8 @@ public class ApplicationDAODatabase implements ApplicationDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Application app = new Application();
-
                     app.setId(rs.getInt("id"));
                     app.setState(ApplicationState.valueOf(rs.getString("state")));
-                    // Se hai altri campi come la data di sottomissione, caricali qui
-
                     acceptedApplications.add(app);
                 }
             }

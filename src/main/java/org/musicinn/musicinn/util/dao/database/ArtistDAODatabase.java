@@ -66,8 +66,9 @@ public class ArtistDAODatabase implements ArtistDAO {
             for (MusicalGenre genre : artist.getGenresList()) {
                 ps.setString(1, artist.getUsername());
                 ps.setString(2, genre.toString());
-                ps.executeUpdate();
+                ps.addBatch();
             }
+            ps.executeBatch();
         }
     }
 

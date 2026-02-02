@@ -83,12 +83,12 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     // Nuovo metodo per evitare duplicati quando si aggiorna
     private void deleteExistingComponents(Connection conn, String artistUser, Integer venueId) throws SQLException {
         String[] tables = {"mixers", "stage_boxes", "mic_sets", "di_box_sets", "monitor_sets", "mic_stand_sets", "cable_sets"};
+        String column = (artistUser != null) ? "artist_username" : "manager_riders_venues_id";
+        Object param = (artistUser != null) ? artistUser : venueId;
         for (String table : tables) {
-            String column = (artistUser != null) ? "artist_username" : "manager_riders_venues_id";
             String sql = "DELETE FROM " + table + " WHERE " + column + " = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                if (artistUser != null) ps.setString(1, artistUser);
-                else ps.setInt(1, venueId);
+                ps.setObject(1, param);
                 ps.executeUpdate();
             }
         }
@@ -101,8 +101,8 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
                 "ON DUPLICATE KEY UPDATE min_length_stage=VALUES(min_length_stage), min_width_stage=VALUES(min_width_stage)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
-            ps.setInt(2, 0); // O ar.getMinLength() se lo hai aggiunto al bean
-            ps.setInt(3, 0); // O ar.getMinWidth()
+            ps.setInt(2, ar.getMinLengthStage());
+            ps.setInt(3, ar.getMinWidthStage());
             ps.executeUpdate();
         }
     }
@@ -112,8 +112,8 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
                 "ON DUPLICATE KEY UPDATE min_length_stage=VALUES(min_length_stage), min_width_stage=VALUES(min_width_stage)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, venueId);
-            ps.setInt(2, 0);
-            ps.setInt(3, 0);
+            ps.setInt(2, mr.getMinLengthStage());
+            ps.setInt(3, mr.getMinWidthStage());
             ps.executeUpdate();
         }
     }
