@@ -187,7 +187,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
             positionVenueLabel.setText(bean.getAddress() + ", " + bean.getCity());
             riderVenueLabel.setText(TechnicalRiderFormatter.format(bean.getRider(), Session.UserRole.MANAGER));
 
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             statusLabel.setText("Si è verificata un errore nel database.");
         }
     }
@@ -287,6 +287,7 @@ public class PublishAnnouncementControllerGUI implements Initializable {
             // Arrotondamento a 2 cifre decimali
             return Math.round(valore * 100.0) / 100.0;
         } catch (NumberFormatException e) {
+            System.err.println(e.getMessage());
             return null; // Input non valido
         }
     }

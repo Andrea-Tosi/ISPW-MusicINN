@@ -60,7 +60,7 @@ public class AcceptApplicationSelectionControllerGUI {
             for (ApplicationBean app : apps) {
                 addApplicationCard(app);
             }
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             statusLabel.setText("Errore nel caricamento delle candidature.");
         }
     }

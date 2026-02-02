@@ -138,7 +138,7 @@ public class EventCardControllerGUI {
                 Stage stage = (Stage) currentScene.getWindow();
                 NavigationGUI.navigateToPath(stage, fxmlPath);
             }
-        } catch (PersistenceException e){
+        } catch (PersistenceException _){
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Errore nel salvataggio della candidatura nel database. Riprovare.");
             alert.show();
         } catch (IOException e) {

@@ -104,7 +104,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
             if (trBean.getMonitors() != null) trBean.getMonitors().forEach(this::displayMonitor);
             if (trBean.getMicStands() != null) trBean.getMicStands().forEach(this::displayMicStand);
             if (trBean.getCables() != null) trBean.getCables().forEach(this::displayCable);
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             statusLabel.setText("Errore del database: Nessun rider precedente trovato.");
         }
     }

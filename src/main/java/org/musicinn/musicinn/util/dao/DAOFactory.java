@@ -59,7 +59,7 @@ public class DAOFactory {
         if (isDatabase()) return new PaymentDAODatabase();
         try {
             return new PaymentDAOCSV();
-        } catch (CSVException e) {
+        } catch (CSVException _) {
             System.err.println("Errore nell'apertura del file dei pagamenti.");
         }
         return null;

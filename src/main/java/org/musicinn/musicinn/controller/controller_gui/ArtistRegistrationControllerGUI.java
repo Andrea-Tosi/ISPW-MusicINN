@@ -214,7 +214,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
             String fxmlPath = FxmlPathLoader.getPath("fxml.artist.home");
 
             NavigationGUI.navigateToPath(stage, fxmlPath);
-        } catch (PaymentServiceException e) {
+        } catch (PaymentServiceException _) {
             statusLabel.setText("C'è stato un problema con il servizio di pagamento per la creazione dell'account");
         }
     }

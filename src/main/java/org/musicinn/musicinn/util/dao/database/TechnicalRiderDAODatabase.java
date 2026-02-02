@@ -56,7 +56,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             saveCables(conn, rider.getOthers(), artistUser, venueId);
 
             conn.commit();
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             rollback(conn);
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         } finally {
@@ -262,7 +262,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
 
             return rider;
 
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
     }

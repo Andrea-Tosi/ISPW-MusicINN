@@ -206,7 +206,7 @@ public class CalendarControllerGUI implements Initializable {
             for (SchedulableEventBean event : events) {
                 cellControllerGUI.addEvent(event);
             }
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             System.err.println("Errore nell'interazione con il database per prelevare gli eventi");
         }
     }

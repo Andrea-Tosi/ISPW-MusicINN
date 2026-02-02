@@ -102,7 +102,7 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
                     throw new DatabaseException("Errore: Il gestore non ha locali attivi.");
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
     }
@@ -131,7 +131,7 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
                     venue.setRider(rider);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
 
@@ -158,7 +158,7 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
                     venue.setName(rs.getString("name"));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero del locale.");
         }
 
@@ -186,7 +186,7 @@ private void updateManagerActiveVenue(String username, int venueId, Connection c
                 }
             }
             return venueName;
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero del nome del locale.");
         }
     }

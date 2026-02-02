@@ -62,7 +62,7 @@ public class ApplyViewTechnicalRiderRevisionControllerGUI implements Initializab
         else if (ROLE.equals(Session.UserRole.MANAGER)) riderHeaderLabel.setText("Attrezzatura a disposizione");
         try {
             trBean = controller.getEquipmentBeans();
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             statusLabel.setText("Errore del database: Nessun rider precedente trovato.");
         }
         setupStageDimensionsLabel(trBean.getMinLengthStage(), trBean.getMinWidthStage());

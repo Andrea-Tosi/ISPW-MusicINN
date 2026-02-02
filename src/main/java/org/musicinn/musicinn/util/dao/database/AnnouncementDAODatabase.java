@@ -54,7 +54,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     events.add(announcement);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return events;
@@ -99,7 +99,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     events.add(announcement);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero degli eventi confermati per l'artista.");
         }
         return events;
@@ -132,7 +132,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     events.add(announcement);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return events;
@@ -317,7 +317,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 loadAnnouncementRequirements(conn, announcementMap);
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero degli annunci del manager.");
         }
         return announcements;
@@ -498,7 +498,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             if (affectedRows == 0) {
                 throw new DatabaseException("Impossibile chiudere l'annuncio: ID non trovato o già chiuso.");
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio");
         }
     }
@@ -531,7 +531,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     announcements.add(ann);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero degli annunci chiusi.");
         }
 
@@ -563,7 +563,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     announcement.setState(AnnouncementState.valueOf(rs.getString("state")));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero dell'annuncio.");
         }
 

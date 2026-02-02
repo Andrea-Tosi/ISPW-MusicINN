@@ -36,7 +36,7 @@ public class PaymentDAODatabase implements PaymentDAO {
 
             // Esecuzione
             ps.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore durante il salvataggio del pagamento.");
         }
     }
@@ -60,7 +60,7 @@ public class PaymentDAODatabase implements PaymentDAO {
                     payment.setArtistPaymentIntentId(rs.getString("artist_payment_intent_id"));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero del record di pagamento.");
         }
         return payment;
@@ -100,8 +100,12 @@ public class PaymentDAODatabase implements PaymentDAO {
             }
 
             conn.commit();
-        } catch (SQLException e) {
-            try { conn.rollback(); } catch (SQLException ex) { /* log */ }
+        } catch (SQLException _) {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
             throw new DatabaseException("Errore nel salvataggio del pagamento.");
         }
     }
@@ -140,18 +144,18 @@ public class PaymentDAODatabase implements PaymentDAO {
             conn.commit();
 
             return peopleToRefund;
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             try {
                 conn.rollback();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
             }
             throw new DatabaseException("Errore durante l'aggiornamento dello stato del pagamento.");
         } finally {
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException e){
-                System.err.println(e.getMessage());;
+                System.err.println(e.getMessage());
             }
         }
     }

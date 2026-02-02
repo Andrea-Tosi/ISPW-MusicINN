@@ -45,7 +45,7 @@ public class ArtistDAODatabase implements ArtistDAO {
             insertType(artist, conn);
 
             conn.commit();
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
@@ -108,7 +108,7 @@ public class ArtistDAODatabase implements ArtistDAO {
                     artist.setGenresList(loadArtistGenres(username));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return artist;
@@ -127,7 +127,7 @@ public class ArtistDAODatabase implements ArtistDAO {
                     genres.add(MusicalGenre.valueOf(rs.getString("genres_genre")));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return genres;
@@ -151,7 +151,7 @@ public class ArtistDAODatabase implements ArtistDAO {
                     stageName = rs.getString("stage_name");
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nella ricerca del nome d'arte dell'artista.");
         }
 

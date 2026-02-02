@@ -47,7 +47,7 @@ public class UserDAODatabase implements UserDAO {
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: impossibile trovare utente.");
         }
         return null;

@@ -64,7 +64,7 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
 
             statusLabel.setText("Hai pubblicato " + announcements.size() + " annunci.");
 
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             statusLabel.setText("Errore critico nel recupero degli annunci.");
         }
     }
@@ -80,7 +80,7 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
 
             announcementCardsContainer.getChildren().add(cardRoot);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 

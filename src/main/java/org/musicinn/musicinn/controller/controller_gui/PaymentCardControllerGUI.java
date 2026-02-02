@@ -104,7 +104,7 @@ public class PaymentCardControllerGUI {
 
                 updateUI();
             }
-        } catch (PaymentServiceException | PersistenceException e) {
+        } catch (PaymentServiceException | PersistenceException _) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Errore nel pagamento. Riprovare");
             alert.show();
 

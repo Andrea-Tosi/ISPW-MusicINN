@@ -56,8 +56,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                     results.put(app, artistUser);
                 }
             }
-        } catch (SQLException e) {
-
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nella ricerca dell'annuncio.");
         }
         return results;
@@ -78,7 +77,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
             if (affectedRows == 0) {
                 throw new DatabaseException("Impossibile accettare la candidatura: ID non trovato o già accettato/rifiutato.");
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore durante l'aggiornamento dello stato dell'annuncio.");
         }
     }
@@ -102,7 +101,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                     acceptedApp.setUsernameArtist(rs.getString("artists_username"));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero della candidatura accettata.");
         }
 
@@ -128,7 +127,7 @@ public class ApplicationDAODatabase implements ApplicationDAO {
                     acceptedApplications.add(app);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero delle candidature accettate dell'artista.");
         }
 

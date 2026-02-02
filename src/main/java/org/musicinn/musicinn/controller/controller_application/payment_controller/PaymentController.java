@@ -103,7 +103,7 @@ public class PaymentController {
     private void executeSafeRefund(String intentId) {
         try {
             paymentService.issueRefund(intentId);
-        } catch (Exception e) {
+        } catch (Exception _) {
             System.err.println("Fallito rimborso automatico on-access per: " + intentId);
         }
     }
@@ -133,7 +133,7 @@ public class PaymentController {
                 for (String intentId : peopleToRefund) {
                     try {
                         paymentService.issueRefund(intentId);
-                    } catch (Exception e) {
+                    } catch (Exception _) {
                         System.err.println("Fallito rimborso automatico on-access per: " + intentId);
                     }
                 }
