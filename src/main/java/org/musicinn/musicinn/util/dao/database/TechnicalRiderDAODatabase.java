@@ -87,10 +87,14 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         Object param = (artistUser != null) ? artistUser : venueId;
         for (String table : tables) {
             String sql = "DELETE FROM " + table + " WHERE " + column + " = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setObject(1, param);
-                ps.executeUpdate();
-            }
+            executeDelete(conn, sql, param);
+        }
+    }
+
+    private void executeDelete(Connection conn, String sql, Object param) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setObject(1, param);
+            ps.executeUpdate();
         }
     }
 

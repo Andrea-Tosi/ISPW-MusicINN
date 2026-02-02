@@ -88,9 +88,9 @@ public class ApplicationDAOMemory implements ApplicationDAO {
         return results;
     }
 
-    // Il seguente metodo non serve perché ci sono gli Observer apposta
     @Override
     public void updateApplicationState(Application app) {
+        // Il presente metodo non serve perché ci sono gli Observer apposta
     }
 
     @Override
