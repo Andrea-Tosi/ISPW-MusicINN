@@ -137,7 +137,7 @@ public class PaymentController {
                     try {
                         paymentService.issueRefund(intentId);
                     } catch (Exception _) {
-                        LOGGER.log(Level.FINE, "Fallito rimborso automatico on-access per: ", intentId);
+                        LOGGER.log(Level.FINE, "Fallito rimborso automatico on-access per: {0}", intentId);
                     }
                 }
             }

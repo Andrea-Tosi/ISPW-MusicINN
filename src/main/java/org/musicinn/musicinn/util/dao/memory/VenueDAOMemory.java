@@ -46,6 +46,7 @@ public class VenueDAOMemory implements VenueDAO {
                 manager.setActiveVenue(venue);
             }
         } catch (PersistenceException _) {
+            // Corpo del catch vuoto perché avrei voluto invocare il logger, ma ha solo metodi non statici per stampare
         }
     }
 

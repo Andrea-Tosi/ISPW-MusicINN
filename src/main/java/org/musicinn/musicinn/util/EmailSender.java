@@ -10,6 +10,7 @@ import com.sendgrid.helpers.mail.objects.Email;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EmailSender {
@@ -32,7 +33,7 @@ public class EmailSender {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
             Response response = sg.api(request);
-            LOGGER.fine(String.valueOf(response.getStatusCode()));
+            LOGGER.log(Level.FINE, String.valueOf(response.getStatusCode()));
             LOGGER.fine(response.getBody());
         } catch (IOException e) {
             LOGGER.fine(e.getMessage());

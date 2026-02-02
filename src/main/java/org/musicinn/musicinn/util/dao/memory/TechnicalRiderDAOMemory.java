@@ -125,6 +125,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
 
             manager.getActiveVenue().setRider(managerRider);
         } catch (PersistenceException _) {
+            // Corpo del catch vuoto perché avrei voluto invocare il logger, ma ha solo metodi non statici per stampare
         }
     }
 

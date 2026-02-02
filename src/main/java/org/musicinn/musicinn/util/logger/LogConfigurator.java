@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.logging.LogManager;
 
 public class LogConfigurator {
+    private LogConfigurator() {}
+
     public static void setup() {
         try {
             // Crea cartella logs se manca

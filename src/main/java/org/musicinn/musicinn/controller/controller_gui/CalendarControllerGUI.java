@@ -211,7 +211,8 @@ public class CalendarControllerGUI implements Initializable {
                 cellControllerGUI.addEvent(event);
             }
         } catch (PersistenceException e) {
-            LOGGER.log(Level.FINE, "Errore nell'interazione con il database per prelevare gli eventi: {0}", e.getMessage());
+            // Singolo apice scritto due volte, il primo è usato come carattere escape
+            LOGGER.log(Level.FINE, "Errore nell''interazione con il database per prelevare gli eventi: {0}", e.getMessage());
         }
     }
 }
