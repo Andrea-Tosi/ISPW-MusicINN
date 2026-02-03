@@ -106,7 +106,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
             managerRider.setStageBoxes(stageBoxes);
 
             List<InputEquipment> inputEquipments = new ArrayList<>();
-            inputEquipments.add(new MicrophoneSet(11, false));
+            inputEquipments.add(new MicrophoneSet(11, true));
             inputEquipments.add(new MicrophoneSet(10, false));
             inputEquipments.add(new DIBoxSet(12, true));
             inputEquipments.add(new DIBoxSet(8, false));

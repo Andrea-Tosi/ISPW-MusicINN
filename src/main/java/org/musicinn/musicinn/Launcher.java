@@ -1,6 +1,7 @@
 package org.musicinn.musicinn;
 
 import javafx.application.Application;
+import org.musicinn.musicinn.controller.controller_cli.CLIManager;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.logger.LogConfigurator;
 
@@ -79,7 +80,7 @@ public class Launcher {
 
     private static void startCLIVersion() {
         LOGGER.info("Avvio MusicINN in modalità CLI...");
-        //TODO istanziare View CLI (es. LoginViewCLI)
-
+        CLIManager cliManager = new CLIManager();
+        cliManager.start();
     }
 }
