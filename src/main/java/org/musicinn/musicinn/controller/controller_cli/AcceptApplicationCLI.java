@@ -94,7 +94,7 @@ public class AcceptApplicationCLI {
                 return false;
             }
 
-            LOGGER.log(Level.INFO, "\n*** CANDIDATURE PER L'EVENTO DEL {0} ***", annBean.getStartingDate());
+            LOGGER.log(Level.INFO, "\n*** CANDIDATURE PER L''EVENTO DEL {0} ***", annBean.getStartingDate());
             displayApplications(apps);
 
             LOGGER.info("\nComandi: [Indice] Dettagli Artista | [b] Torna alla lista Annunci");

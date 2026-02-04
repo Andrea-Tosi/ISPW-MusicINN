@@ -83,7 +83,7 @@ public class LoginController {
         cb = credentialsBean;
     }
 
-    public Boolean checkEnteredCode(String email, String code) {
+    public boolean checkEnteredCode(String email, String code) {
         return EmailVerifier.getSingletonInstance().checkEnteredCode(email, code);
     }
 

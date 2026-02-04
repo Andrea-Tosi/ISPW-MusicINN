@@ -137,7 +137,7 @@ public class ApplyCLI {
         // Visualizzazione report compatibilità (ValidationResult)
         if (!event.getReport().isValid()) {
             LOGGER.info("\nATTENZIONE: Rider non compatibile:");
-            LOGGER.log(Level.INFO, "{0}", event.getReport().toString());
+            LOGGER.log(Level.INFO, "{0}", event.getReport());
             LOGGER.info("\nPremi INVIO per tornare alla lista...");
             scanner.nextLine();
             return false;

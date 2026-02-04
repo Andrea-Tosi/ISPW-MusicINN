@@ -39,7 +39,7 @@ public class EmailVerifier {
         }
     }
 
-    public Boolean checkEnteredCode(String email, String enteredCode) {
+    public boolean checkEnteredCode(String email, String enteredCode) {
         VerificationEntry entry = verificationCodesCache.get(email);
         // CASO A: Il codice non esiste (mai inviato o già rimosso)
         if (entry == null) {

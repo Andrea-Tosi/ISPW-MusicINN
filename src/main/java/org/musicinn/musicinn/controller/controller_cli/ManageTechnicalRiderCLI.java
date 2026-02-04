@@ -201,7 +201,7 @@ public class ManageTechnicalRiderCLI {
             StageBoxBean sb = stageBoxes.get(i);
             String type;
             if (sb.getDigital() == null) type = "Indifferente";
-            else type = sb.getDigital() ? "Digitale" : "Analogica";
+            else type = sb.getDigital().equals(Boolean.TRUE) ? "Digitale" : "Analogica";
             LOGGER.log(Level.INFO, "{0}. Stage Box ({1} canali, {2})", new Object[]{i, sb.getInputChannels(), type});
         }
     }
