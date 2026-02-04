@@ -114,7 +114,7 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     private void displayMicrophone(MicrophoneSetBean newBean) {
         for (Node node : inputEquipmentsVBox.getChildren()) {
             if (node.getUserData() instanceof MicrophoneSetBean existing &&
-                    existing.getNeedsPhantomPower().equals(newBean.getNeedsPhantomPower())) {
+                    Objects.equals(existing.getNeedsPhantomPower(), newBean.getNeedsPhantomPower())) {
                 existing.setQuantity(existing.getQuantity() + newBean.getQuantity());
                 updateRowLabel(node, formatMic(existing));
                 return;
