@@ -9,8 +9,11 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
+    private static final Logger LOGGER = Logger.getLogger(TechnicalRiderDAOMemory.class.getName());
     private static boolean isInitialized = false;
 
     // Uso del lazy loading invece che dello static initializer per evitare l'ExceptionInInitializerError
@@ -144,7 +147,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
             isInitialized = true;
         } catch (PersistenceException e) {
             // Log dell'errore senza interrompere il caricamento della classe
-            System.err.println("[DEMO] Impossibile caricare alcuni dati tecnici: " + e.getMessage());
+            LOGGER.log(Level.INFO, "[DEMO] Impossibile caricare alcuni dati tecnici!", e);
         }
     }
 

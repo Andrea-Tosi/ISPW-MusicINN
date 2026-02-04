@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 public class ManageTechnicalRiderCLI {
     private static final String OP_CHOICE = "1. Aggiungi | 2. Rimuovi";
     private static final String QUANTITY = "Quantità: ";
+    private static final String NOT_VALID_OPTION = "Opzione non valida.";
+    private static final String PHANTOM_POWER_QUESTION = "Phantom Power?";
     private static final Logger LOGGER = Logger.getLogger(ManageTechnicalRiderCLI.class.getName());
     private final Scanner scanner;
     private final ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
@@ -60,7 +62,7 @@ public class ManageTechnicalRiderCLI {
                     case "10" -> exitView = true;
                     default -> LOGGER.info("Scelta non valida.");
                 }
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 LOGGER.info("Errore: Inserisci un numero valido.");
             }
         }
@@ -76,7 +78,7 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
             case "1" -> addMixer(isArtist);
             case "2" -> removeMixer(isArtist);
-            default -> LOGGER.info("Opzione non valida.");
+            default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
@@ -91,7 +93,7 @@ public class ManageTechnicalRiderCLI {
         if (isArtist) {
             boolean isFoh = mixers.isEmpty();
             bean.setFOH(isFoh);
-            LOGGER.info("Aggiunto mixer: " + (isFoh ? "FOH" : "STAGE"));
+            LOGGER.log(Level.INFO, "Aggiunto mixer: {0}", isFoh ? "FOH" : "STAGE");
         } else {
             bean.setFOH(askBoolean("È FOH?").orElse(false));
         }
@@ -113,7 +115,7 @@ public class ManageTechnicalRiderCLI {
 
     private MixerBean collectMixerData() {
         Boolean dig = askBoolean("Digitale?").orElse(null);
-        Boolean ph = askBoolean("Phantom Power?").orElse(null);
+        Boolean ph = askBoolean(PHANTOM_POWER_QUESTION).orElse(null);
         int ch = askInt("Canali Input: ");
         int aux = askInt("Mandate AUX: ");
         return new MixerBean(ch, aux, dig, ph);
@@ -123,7 +125,7 @@ public class ManageTechnicalRiderCLI {
         for (int i = 0; i < mixers.size(); i++) {
             MixerBean m = mixers.get(i);
             String type = m.isFOH() ? "FOH" : "Stage";
-            LOGGER.info(String.format("%d. Mixer %s (%d ch)", i, type, m.getInputChannels()));
+            LOGGER.log(Level.INFO, "{0}. Mixer {1} ({2} ch)", new Object[] { i, type, m.getInputChannels() });
         }
 
         LOGGER.info("Indice da rimuovere: ");
@@ -136,7 +138,7 @@ public class ManageTechnicalRiderCLI {
             } else {
                 LOGGER.info("Indice non valido.");
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             LOGGER.info("Inserimento non valido: inserire un numero.");
         }
     }
@@ -150,7 +152,7 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
         case "1" -> addStageBox(isArtist);
         case "2" -> removeStageBox(isArtist);
-        default -> LOGGER.info("Opzione non valida.");
+        default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
@@ -197,7 +199,9 @@ public class ManageTechnicalRiderCLI {
         LOGGER.info("--- Seleziona la Stage Box da rimuovere ---");
         for (int i = 0; i < stageBoxes.size(); i++) {
             StageBoxBean sb = stageBoxes.get(i);
-            String type = (sb.getDigital() == null) ? "Indifferente" : (sb.getDigital() ? "Digitale" : "Analogica");
+            String type;
+            if (sb.getDigital() == null) type = "Indifferente";
+            else type = sb.getDigital() ? "Digitale" : "Analogica";
             LOGGER.log(Level.INFO, "{0}. Stage Box ({1} canali, {2})", new Object[]{i, sb.getInputChannels(), type});
         }
     }
@@ -212,12 +216,12 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
             case "1" -> addMicrophones();
             case "2" -> removeMicrophones();
-            default -> LOGGER.info("Opzione non valida.");
+            default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
     private void addMicrophones() {
-        Boolean ph = askBoolean("Phantom Power?").orElse(null);
+        Boolean ph = askBoolean(PHANTOM_POWER_QUESTION).orElse(null);
         int qty = askInt(QUANTITY);
 
         // Cerchiamo se esiste già un set con la stessa caratteristica
@@ -234,7 +238,7 @@ public class ManageTechnicalRiderCLI {
     }
 
     private void removeMicrophones() {
-        Boolean ph = askBoolean("Phantom Power?").orElse(null);
+        Boolean ph = askBoolean(PHANTOM_POWER_QUESTION).orElse(null);
         int qty = askInt(QUANTITY);
 
         // Usiamo removeIf come facevi tu, ma isolato per chiarezza
@@ -249,7 +253,7 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
             case "1" -> addDIBoxes();
             case "2" -> removeDIBoxes();
-            default -> LOGGER.info("Opzione non valida.");
+            default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
@@ -281,7 +285,7 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
             case "1" -> addMonitors();
             case "2" -> removeMonitors();
-            default -> LOGGER.info("Opzione non valida.");
+            default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
@@ -314,7 +318,7 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
             case "1" -> addMicStands();
             case "2" -> removeMicStands();
-            default -> LOGGER.info("Opzione non valida.");
+            default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
@@ -345,7 +349,7 @@ public class ManageTechnicalRiderCLI {
         switch (op) {
             case "1" -> addCables();
             case "2" -> removeCables();
-            default -> LOGGER.info("Opzione non valida.");
+            default -> LOGGER.info(NOT_VALID_OPTION);
         }
     }
 
@@ -370,14 +374,14 @@ public class ManageTechnicalRiderCLI {
         for (CableSetBean b : cables) {
             if (b.getPurpose() == cp) {
                 b.setQuantity(b.getQuantity() + qty);
-                LOGGER.info("Quantità aggiornata per i cavi " + cp);
+                LOGGER.log(Level.INFO, "Quantità aggiornata per i cavi {0}", cp);
                 return; // Usciamo subito: obiettivo raggiunto
             }
         }
 
         // 2. Se il ciclo finisce senza ritorni, il set non esiste: lo aggiungiamo
         cables.add(new CableSetBean(qty, cp));
-        LOGGER.info("Nuovo set di cavi aggiunto (" + cp + ").");
+        LOGGER.log(Level.INFO, "Nuovo set di cavi aggiunto ({0}).", cp);
     }
 
     private CablePurpose askCablePurpose() {
@@ -388,7 +392,7 @@ public class ManageTechnicalRiderCLI {
         LOGGER.log(Level.INFO, "Scopo ({0}): ", availableOptions);
         try {
             return CablePurpose.valueOf(scanner.nextLine().toUpperCase().trim());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             LOGGER.info("Scopo cavo non riconosciuto.");
             return null;
         }
@@ -432,7 +436,7 @@ public class ManageTechnicalRiderCLI {
         boolean isArt = Session.getSingletonInstance().getRole() == Session.UserRole.ARTIST;
         String opt = isArt ? "(s = Sì, n = No, i = Indifferente)" : "(s = Sì, n = No)";
         while (true) {
-            LOGGER.info(prompt + " " + opt + ": ");
+            LOGGER.log(Level.INFO, "{0} {1}: ", new Object[] {prompt, opt});
             String in = scanner.nextLine().toLowerCase().trim();
             if (in.equals("s")) return Optional.of(true);
             if (in.equals("n")) return Optional.of(false);
@@ -447,7 +451,7 @@ public class ManageTechnicalRiderCLI {
             String input = scanner.nextLine().trim();
             try {
                 return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 LOGGER.info("Errore: devi inserire un numero intero valido.");
             }
         }
@@ -462,7 +466,7 @@ public class ManageTechnicalRiderCLI {
         b.setMonitors(monitors);
         b.setMicStands(stands);
         b.setCables(cables);
-        LOGGER.info(TechnicalRiderFormatter.format(b, Session.getSingletonInstance().getRole()));
+        LOGGER.log(Level.INFO, "{0}", TechnicalRiderFormatter.format(b, Session.getSingletonInstance().getRole()));
     }
 
     private void loadExistingRider() {
@@ -477,10 +481,8 @@ public class ManageTechnicalRiderCLI {
                 stands = new ArrayList<>(b.getMicStands());
                 cables = new ArrayList<>(b.getCables());
             }
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             LOGGER.info("Errore caricamento.");
-        } catch (Throwable t) {
-            LOGGER.log(Level.SEVERE, "Errore", t);
         }
     }
 

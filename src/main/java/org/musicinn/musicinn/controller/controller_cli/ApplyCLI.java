@@ -28,7 +28,7 @@ public class ApplyCLI {
         try {
             // 1. REVISIONE RIDER TECNICO (come 4.1.0_ApplyView-TechnicalRiderRevision)
             if (!handleRiderRevision()) {
-                //TODO goToRiderManagement();
+                Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.MANAGE_RIDER);
                 return;
             }
 
@@ -60,25 +60,9 @@ public class ApplyCLI {
                         if (currentPage > 0) currentPage--;
                         else LOGGER.info("Sei già sulla prima pagina.");
                     }
-                    default -> {
-                        try {
-                            int index = Integer.parseInt(input);
-                            if (index >= 0 && index < events.size()) {
-                                // Se la candidatura viene completata con successo handleEventSelection restituisce true, usciamo dal loop
-                                if (handleEventSelection(events.get(index))) {
-                                    inSelection = false;
-                                }
-                                // Altrimenti (se torna indietro dai dettagli), il loop ricomincia e ristampa la tabella
-                            } else {
-                                LOGGER.info("Indice non valido.");
-                            }
-                        } catch (NumberFormatException e) {
-                            LOGGER.info("Comando non riconosciuto.");
-                        }
-                    }
+                    default -> inSelection = !handleIndexSelection(input, events);
                 }
             }
-
         } catch (PersistenceException e) {
             LOGGER.log(Level.WARNING, "Errore caricamento dati: {0}", e.getMessage());
         } finally {
@@ -86,12 +70,28 @@ public class ApplyCLI {
         }
     }
 
+    private boolean handleIndexSelection(String input, List<EventBean> events) throws PersistenceException {
+        try {
+            int index = Integer.parseInt(input);
+
+            if (index >= 0 && index < events.size()) {
+                // Se la candidatura va a buon fine, restituiamo true per chiudere il loop
+                return handleEventSelection(events.get(index));
+            }
+
+            LOGGER.info("Indice non valido.");
+        } catch (NumberFormatException _) {
+            LOGGER.info("Comando non riconosciuto.");
+        }
+        return false;
+    }
+
     private boolean handleRiderRevision() throws PersistenceException {
         LOGGER.info("\n*** REVISIONE RIDER TECNICO ***");
         TechnicalRiderBean myRider = controller.getEquipmentBeans();
 
         LOGGER.info("Ecco i tuoi dati tecnici attuali:");
-        LOGGER.info(TechnicalRiderFormatter.format(myRider, Session.UserRole.ARTIST));
+        LOGGER.log(Level.INFO, "{0}", TechnicalRiderFormatter.format(myRider, Session.UserRole.ARTIST));
         LOGGER.log(Level.INFO, "Dimensioni minime palco: {0}m x {1}m", new Object[] {myRider.getMinLengthStage(), myRider.getMinWidthStage()});
 
         LOGGER.info("\nI dati sono corretti? (1. Sì / 2. No, modifica in Gestione Rider): ");
@@ -100,7 +100,7 @@ public class ApplyCLI {
     }
 
     private void displayEventList(List<EventBean> events) {
-        LOGGER.info(String.format("\n*** ANNUNCI COMPATIBILI (Pagina %d) ***", currentPage + 1));
+        LOGGER.log(Level.INFO, "\n*** ANNUNCI COMPATIBILI (Pagina {0}) ***", currentPage + 1);
 
         String header = String.format("%-3s | %-20s | %-15s | %-10s | %-10s | %-5s",
                                       "ID", "Locale", "Città", "Data", "Distanza", "Rider");
@@ -128,7 +128,7 @@ public class ApplyCLI {
      */
     private boolean handleEventSelection(EventBean event) throws PersistenceException {
         LOGGER.info("\n--- DETTAGLI EVENTO SELEZIONATO ---");
-        LOGGER.log(Level.INFO, "Locale:    {0} ({1})", new Object[] {event.getVenueName(), event.getTypeVenue().toString()});
+        LOGGER.log(Level.INFO, "Locale:    {0} ({1})", new Object[] {event.getVenueName(), event.getTypeVenue()});
         LOGGER.log(Level.INFO, "Indirizzo: {0}, {1}", new Object[] {event.getVenueAddress(), event.getVenueCity()});
         LOGGER.log(Level.INFO, "Data/Ora:  {0} alle {1}", new Object[] {event.getAnnouncementBean().getStartingDate(), event.getAnnouncementBean().getStartingTime()});
         LOGGER.log(Level.INFO, "Compenso:  Cachet {0}€ | Cauzione {1}€", new Object[] {event.getAnnouncementBean().getCachet(), event.getAnnouncementBean().getDeposit()});
@@ -137,7 +137,7 @@ public class ApplyCLI {
         // Visualizzazione report compatibilità (ValidationResult)
         if (!event.getReport().isValid()) {
             LOGGER.info("\nATTENZIONE: Rider non compatibile:");
-            LOGGER.info(event.getReport().toString());
+            LOGGER.log(Level.INFO, "{0}", event.getReport().toString());
             LOGGER.info("\nPremi INVIO per tornare alla lista...");
             scanner.nextLine();
             return false;
@@ -160,8 +160,8 @@ public class ApplyCLI {
 
                 controller.createApplication(event);
                 LOGGER.info("Candidatura inviata con successo!");
-                return true; // CORRETTO: ora restituisce true per chiudere il ciclo in run()
-            } catch (NumberFormatException e) {
+                return true; // Restituisce true per chiudere il ciclo in run()
+            } catch (NumberFormatException _) {
                 LOGGER.info("Input non valido. Candidatura annullata.");
                 return false;
             }

@@ -3,6 +3,7 @@ package org.musicinn.musicinn.controller.controller_cli;
 import org.musicinn.musicinn.util.Session;
 
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ManagerHomeCLI {
@@ -15,7 +16,7 @@ public class ManagerHomeCLI {
 
     public void run() {
         String username = Session.getSingletonInstance().getUser().getUsername();
-        LOGGER.info("\n--- HOME GESTORE (" + username + ") ---");
+        LOGGER.log(Level.INFO, "\n--- HOME GESTORE ({0}) ---", username);
         LOGGER.info("1. Pubblica un nuovo Annuncio");
         LOGGER.info("2. Accetta una Candidatura");
         LOGGER.info("3. Gestisci Pagamenti e Accordi");

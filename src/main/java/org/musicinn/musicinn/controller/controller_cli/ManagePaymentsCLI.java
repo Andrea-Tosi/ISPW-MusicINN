@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ManagePaymentsCLI {
+    private static final String IN_ATTESA = "IN ATTESA";
     private static final Logger LOGGER = Logger.getLogger(ManagePaymentsCLI.class.getName());
     private final Scanner scanner;
     private final PaymentController controller = PaymentServiceFactory.getPaymentController();
@@ -52,7 +53,7 @@ public class ManagePaymentsCLI {
             } catch (PersistenceException e) {
                 LOGGER.log(Level.WARNING, "Errore nel recupero dei pagamenti: {0}", e.getMessage());
                 exitView = true;
-            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            } catch (NumberFormatException | IndexOutOfBoundsException _) {
                 LOGGER.info("Selezione non valida. Riprova.");
             }
         }
@@ -89,12 +90,12 @@ public class ManagePaymentsCLI {
         LOGGER.info("\n--- DETTAGLI ACCORDO ---");
         if (role == Session.UserRole.ARTIST) {
             LOGGER.log(Level.INFO, "Locale: {0}", bean.getVenueName());
-            LOGGER.log(Level.INFO, "Tua Cauzione ({0}€): {1}", new Object[] {bean.getDeposit(), (bean.isDepositPaid() ? "VERSATA" : "IN ATTESA")});
-            LOGGER.log(Level.INFO, "Cachet del Gestore ({0}€): {1}", new Object[] {bean.getCachet(), (bean.isCachetPaid() ? "VERSATO" : "IN ATTESA")});
+            LOGGER.log(Level.INFO, "Tua Cauzione ({0}€): {1}", new Object[] {bean.getDeposit(), (bean.isDepositPaid() ? "VERSATA" : IN_ATTESA)});
+            LOGGER.log(Level.INFO, "Cachet del Gestore ({0}€): {1}", new Object[] {bean.getCachet(), (bean.isCachetPaid() ? "VERSATO" : IN_ATTESA)});
         } else {
             LOGGER.log(Level.INFO, "Artista: {0}", bean.getArtistStageName());
-            LOGGER.log(Level.INFO, "Tuo Cachet ({0}€): {1}", new Object[] {bean.getCachet(), (bean.isCachetPaid() ? "VERSATO" : "IN ATTESA")});
-            LOGGER.log(Level.INFO, "Cauzione Artista ({0}€): {1}", new Object[] {bean.getDeposit(), (bean.isDepositPaid() ? "VERSATA" : "IN ATTESA")});
+            LOGGER.log(Level.INFO, "Tuo Cachet ({0}€): {1}", new Object[] {bean.getCachet(), (bean.isCachetPaid() ? "VERSATO" : IN_ATTESA)});
+            LOGGER.log(Level.INFO, "Cauzione Artista ({0}€): {1}", new Object[] {bean.getDeposit(), (bean.isDepositPaid() ? "VERSATA" : IN_ATTESA)});
         }
         LOGGER.log(Level.INFO, "Data Evento: {0} alle {1}", new Object[] {bean.getStartingDate(), bean.getStartingTime()});
         LOGGER.log(Level.INFO, "Deadline Pagamento: {0}", bean.getPaymentDeadline());
@@ -124,12 +125,12 @@ public class ManagePaymentsCLI {
 
             // Apre il browser reale
             if (openWebpage(url)) {
-                System.out.println("\n------------------------------------------------------------");
-                System.out.println("1. Completa la transazione nel browser.");
-                System.out.println("2. Verrai reindirizzato a una pagina (che probabilmente darà errore 404).");
-                System.out.println("3. Guarda l'URL nella barra degli indirizzi.");
-                System.out.println("4. Copia la stringa dopo 'session_id=' (inizia con cs_test_).");
-                System.out.println("------------------------------------------------------------");
+                LOGGER.info("\n------------------------------------------------------------");
+                LOGGER.info("1. Completa la transazione nel browser.");
+                LOGGER.info("2. Verrai reindirizzato a una pagina (che probabilmente darà errore 404).");
+                LOGGER.info("3. Guarda l'URL nella barra degli indirizzi.");
+                LOGGER.info("4. Copia la stringa dopo 'session_id=' (inizia con cs_test_).");
+                LOGGER.info("------------------------------------------------------------");
 
                 LOGGER.info("Incolla qui il Session ID (cs_test_...): ");
                 String rawInput = scanner.nextLine().trim();

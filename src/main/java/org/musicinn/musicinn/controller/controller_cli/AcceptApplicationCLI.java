@@ -60,7 +60,7 @@ public class AcceptApplicationCLI {
             } catch (PersistenceException e) {
                 LOGGER.log(Level.WARNING, "Errore nel recupero dati: {0}", e.getMessage());
                 exitView = true;
-            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            } catch (NumberFormatException | IndexOutOfBoundsException _) {
                 LOGGER.info("Selezione non valida. Riprova.");
             }
         }
@@ -94,7 +94,7 @@ public class AcceptApplicationCLI {
                 return false;
             }
 
-            LOGGER.info(String.format("\n*** CANDIDATURE PER L'EVENTO DEL %s ***", annBean.getStartingDate()));
+            LOGGER.log(Level.INFO, "\n*** CANDIDATURE PER L'EVENTO DEL {0} ***", annBean.getStartingDate());
             displayApplications(apps);
 
             LOGGER.info("\nComandi: [Indice] Dettagli Artista | [b] Torna alla lista Annunci");
@@ -110,8 +110,7 @@ public class AcceptApplicationCLI {
                 if (handleApplicationDecision(annBean, apps.get(appIndex))) {
                     return true; // Un artista è stato accettato, chiudi tutto e torna in home
                 }
-                // Se handleApplicationDecision è false, il ciclo while(true) ricomincia e mostra la lista candidati
-            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            } catch (NumberFormatException | IndexOutOfBoundsException _) {
                 LOGGER.info("Indice non valido.");
             }
         }
@@ -137,7 +136,7 @@ public class AcceptApplicationCLI {
         LOGGER.log(Level.INFO, "Score:   {0}%", Math.round(app.getTotalScore()));
         LOGGER.log(Level.INFO, "Arrivo soundcheck richiesto: {0}", app.getRequestedSoundcheck());
         LOGGER.info("\nRider Tecnico dell'artista:");
-        LOGGER.info(TechnicalRiderFormatter.format(app.getRiderBean(), Session.UserRole.ARTIST));
+        LOGGER.log(Level.INFO, "{0}", TechnicalRiderFormatter.format(app.getRiderBean(), Session.UserRole.ARTIST));
 
         LOGGER.info("\nVuoi accettare ufficialmente questa candidatura? (s/n)");
         LOGGER.info("(Nota: accettando, l'annuncio verrà chiuso e dovrai versare il cachet)");
