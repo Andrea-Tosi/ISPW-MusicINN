@@ -19,8 +19,10 @@ import java.util.logging.Logger;
 public class PaymentDAOMemory implements PaymentDAO {
     private static final Map<Integer, Payment> payments = new HashMap<>();
     private static final Logger LOGGER = Logger.getLogger(PaymentDAOMemory.class.getName());
+    private static boolean isLoaded = false;
 
-    static {
+    private static synchronized void ensureDataLoaded() {
+        if (isLoaded) return;
         try {
             int announcementId = 2;
             Application app = DAOFactory.getApplicationDAO().findAcceptedByAnnouncement(announcementId);
@@ -29,6 +31,7 @@ public class PaymentDAOMemory implements PaymentDAO {
         } catch (PersistenceException e) {
             LOGGER.fine(e.getMessage());
         }
+        isLoaded = true;
     }
 
     private static void initPayment(Application app) {
@@ -41,6 +44,7 @@ public class PaymentDAOMemory implements PaymentDAO {
 
     @Override
     public void save(int applicationId, int daysOfDeadline) throws DatabaseException {
+        ensureDataLoaded();
         Payment p = new Payment();
         p.setPaymentDeadline(LocalDateTime.now().plusDays(daysOfDeadline));
         p.setState(EscrowState.WAITING_BOTH);
@@ -50,6 +54,7 @@ public class PaymentDAOMemory implements PaymentDAO {
 
     @Override
     public Payment findByApplicationId(int applicationId) throws DatabaseException {
+        ensureDataLoaded();
         Payment p = payments.get(applicationId);
         if (p == null) {
             throw new DatabaseException("Nessun record di pagamento trovato per l'applicazione: " + applicationId);
@@ -59,6 +64,7 @@ public class PaymentDAOMemory implements PaymentDAO {
 
     @Override
     public void updatePaymentState(int applicationId, Session.UserRole role, String transactionId) throws DatabaseException {
+        ensureDataLoaded();
         Payment p = findByApplicationId(applicationId);
 
         // Aggiorna l'ID transazione in base a chi ha pagato
@@ -80,6 +86,7 @@ public class PaymentDAOMemory implements PaymentDAO {
 
     @Override
     public List<String> markAsRefunded(int applicationId) throws PersistenceException {
+        ensureDataLoaded();
         Payment p = findByApplicationId(applicationId);
         List<String> peopleToRefund = new ArrayList<>();
 

@@ -24,8 +24,11 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     private static final List<Announcement> announcements = new ArrayList<>();
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     private static final Logger LOGGER = Logger.getLogger(AnnouncementDAOMemory.class.getName());
+    private static boolean isLoaded = false;
 
-    static {
+    private static synchronized void ensureDataLoaded() {
+        if (isLoaded) return;
+
         try {
             Venue venue = DAOFactory.getVenueDAO().read("the_rock_club");
 
@@ -105,6 +108,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         } catch (PersistenceException e) {
             LOGGER.fine(e.getMessage());
         }
+        isLoaded = true;
     }
 
     public static List<Announcement> getAnnouncements() {
@@ -113,12 +117,14 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public void save(Announcement announcement) {
+        ensureDataLoaded();
         announcement.setId(ID_COUNTER.incrementAndGet());
         announcement.setVenue(((Manager) Session.getSingletonInstance().getUser()).getActiveVenue());
         announcements.add(announcement);
     }
 
     public List<SchedulableEvent> getEventsByDate(LocalDate date) {
+        ensureDataLoaded();
         return announcements.stream()
                 .filter(a -> a.getStartEventDay().equals(date))
                 .map(a -> (SchedulableEvent) a).toList();
@@ -126,6 +132,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) {
+        ensureDataLoaded();
         if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) {
             return getConfirmedEventsByDateForArtist(startingDate);
         } else if (Session.getSingletonInstance().getRole().equals(Session.UserRole.MANAGER)) {
@@ -135,6 +142,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     }
 
     public List<SchedulableEvent> getConfirmedEventsByDateForArtist(LocalDate startingDate) {
+        ensureDataLoaded();
         return announcements.stream()
                 .filter(ann -> ann.getStartEventDay().equals(startingDate))
                 .filter(ann -> ann.getApplicationList().stream()
@@ -148,6 +156,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
     }
 
     public List<SchedulableEvent> getConfirmedEventsByDateForManager(LocalDate startingDate) {
+        ensureDataLoaded();
         // Per il manager: scansiono i manager, trovo quello corrente, guardo le sue venue
         // e prendo gli annunci chiusi per quella data.
         try {
@@ -169,6 +178,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public List<Announcement> findOpenAnnouncements(int page, int pageSize) {
+        ensureDataLoaded();
         return announcements.stream()
                 .filter(a -> a.getState() == AnnouncementState.OPEN)
                 .skip((long) page * pageSize)
@@ -178,6 +188,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public List<Announcement> findByManager(String managerUsername) throws DatabaseException {
+        ensureDataLoaded();
         Manager manager = (Manager) UserDAOMemory.getUsers().stream()
                 .filter(u -> u instanceof Manager && u.getUsername().equals(managerUsername))
                 .findFirst()
@@ -192,6 +203,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public void updateAnnouncementState(Announcement ann) {
+        ensureDataLoaded();
         announcements.stream()
                 .filter(a -> a.getId() == ann.getId())
                 .findFirst()
@@ -200,6 +212,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public List<Announcement> findClosedByIdVenue(int venueId) {
+        ensureDataLoaded();
         return announcements.stream()
                 .filter(a -> a.getVenue().getId() == venueId && a.getState() == AnnouncementState.CLOSED)
                 .toList();
@@ -207,6 +220,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
     @Override
     public Announcement findByApplicationId(int id) throws DatabaseException {
+        ensureDataLoaded();
         return announcements.stream()
                 .filter(ann -> ann.getApplicationList().stream()
                         .anyMatch(obs -> obs.getId() == id))

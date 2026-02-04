@@ -5,12 +5,14 @@ import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.TechnicalRiderFormatter;
 import org.musicinn.musicinn.util.bean.technical_rider_bean.*;
 import org.musicinn.musicinn.util.enumerations.CablePurpose;
+import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ManageTechnicalRiderCLI {
@@ -39,8 +41,8 @@ public class ManageTechnicalRiderCLI {
             displayCurrentRiderState();
             LOGGER.info("\n--- MENU AZIONI ---");
             LOGGER.info("1. Gestisci Mixer | 2. Gestisci Stage Box | 3. Gestisci Microfoni");
-            LOGGER.info("4. Gestisci DI Box | 5. Gestisci Monitor | 6. Gestisci Aste/Cavi");
-            LOGGER.info("7. SALVA MODIFICHE | 8. Pulisci tutto | 9. Esci");
+            LOGGER.info("4. Gestisci DI Box | 5. Gestisci Monitor   | 6. Gestisci Aste | 7. Gestisci Cavi");
+            LOGGER.info("8. SALVA MODIFICHE   | 9. Pulisci tutto | 10. Esci");
 
             String choice = scanner.nextLine();
             try {
@@ -50,10 +52,11 @@ public class ManageTechnicalRiderCLI {
                     case "3" -> manageMicrophones();
                     case "4" -> manageDIBoxes();
                     case "5" -> manageMonitors();
-                    case "6" -> manageOthers();
-                    case "7" -> { if (saveRider()) exitView = true; }
-                    case "8" -> clearLists();
-                    case "9" -> exitView = true;
+                    case "6" -> manageMicStands();
+                    case "7" -> manageCables();
+                    case "8" -> { if (saveRider()) exitView = true; }
+                    case "9" -> clearLists();
+                    case "10" -> exitView = true;
                     default -> LOGGER.info("Scelta non valida.");
                 }
             } catch (NumberFormatException e) {
@@ -108,18 +111,56 @@ public class ManageTechnicalRiderCLI {
 
     // --- LOGICA GESTIONE STAGE BOX ---
     private void manageStageBoxes() {
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        boolean isArtist = Session.getSingletonInstance().getRole() == Session.UserRole.ARTIST;
+        LOGGER.info("1. Aggiungi Stage Box | 2. Rimuovi Stage Box");
         String op = scanner.nextLine();
+
         if (op.equals("1")) {
-            if (Session.getSingletonInstance().getRole() == Session.UserRole.ARTIST && !stageBoxes.isEmpty()) {
-                LOGGER.info("L'artista può avere massimo 1 Stage Box.");
+            // Vincolo Artista: Massimo 1 Stage Box
+            if (isArtist && !stageBoxes.isEmpty()) {
+                LOGGER.info("Limite raggiunto: l'artista può avere al massimo 1 Stage Box.");
                 return;
             }
-            Boolean dig = askBoolean("Digitale?");
-            LOGGER.info("Canali: ");
-            stageBoxes.add(new StageBoxBean(Integer.parseInt(scanner.nextLine()), dig));
-        } else if (op.equals("2") && !stageBoxes.isEmpty()) {
-            stageBoxes.removeLast();
+
+            Boolean dig = askBoolean("La Stage Box deve essere digitale?");
+            LOGGER.info("Canali Input: ");
+            int ch = Integer.parseInt(scanner.nextLine());
+
+            stageBoxes.add(new StageBoxBean(ch, dig));
+            LOGGER.info("Stage Box aggiunta correttamente.");
+
+        } else if (op.equals("2")) {
+            if (stageBoxes.isEmpty()) {
+                LOGGER.info("Nessuna Stage Box presente nel rider.");
+                return;
+            }
+
+            if (isArtist) {
+                // L'artista ha al massimo una Stage Box, la rimuoviamo direttamente
+                stageBoxes.removeFirst();
+                LOGGER.info("Stage Box rimossa dal rider.");
+            } else {
+                // Il Manager può averne più di una, mostriamo la lista con indici
+                LOGGER.info("--- Seleziona la Stage Box da rimuovere ---");
+                for (int i = 0; i < stageBoxes.size(); i++) {
+                    StageBoxBean sb = stageBoxes.get(i);
+                    String tipo = (sb.getDigital() == null) ? "Indifferente" : (sb.getDigital() ? "Digitale" : "Analogica");
+                    LOGGER.log(Level.INFO, "{0}. Stage Box ({1} canali, {2})", new Object[]{i, sb.getInputChannels(), tipo});
+                }
+
+                LOGGER.info("Inserisci l'indice: ");
+                try {
+                    int idx = Integer.parseInt(scanner.nextLine());
+                    if (idx >= 0 && idx < stageBoxes.size()) {
+                        stageBoxes.remove(idx);
+                        LOGGER.info("Stage Box rimossa con successo.");
+                    } else {
+                        LOGGER.info("Indice non valido.");
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.info("Errore: Inserisci un numero valido per l'indice.");
+                }
+            }
         }
     }
 
@@ -188,37 +229,48 @@ public class ManageTechnicalRiderCLI {
         }
     }
 
-    private void manageOthers() {
-        LOGGER.info("1. Aste | 2. Cavi");
-        String type = scanner.nextLine();
+    // --- GESTIONE ASTE (DIVISA) ---
+    private void manageMicStands() {
         LOGGER.info("1. Aggiungi | 2. Rimuovi");
         String op = scanner.nextLine();
+        Boolean t = askBoolean("Deve essere alta?");
+        LOGGER.info("Quantità: ");
+        int qty = Integer.parseInt(scanner.nextLine());
 
-        if (type.equals("1")) {
-            Boolean t = askBoolean("Alta?");
+        if (op.equals("1")) {
+            for (MicStandSetBean b : stands) {
+                if (Objects.equals(b.getTall(), t)) {
+                    b.setQuantity(b.getQuantity() + qty); return;
+                }
+            }
+            stands.add(new MicStandSetBean(qty, t));
+        } else if (op.equals("2")) {
+            stands.removeIf(b -> Objects.equals(b.getTall(), t) && isQtyEmptyAfterSubStand(b, qty));
+        }
+    }
+
+    // --- GESTIONE CAVI (DIVISA) ---
+    private void manageCables() {
+        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        String op = scanner.nextLine();
+        LOGGER.info("Scopo (XLR_XLR, JACK_JACK, POWER_STRIP): ");
+        try {
+            CablePurpose cp = CablePurpose.valueOf(scanner.nextLine().toUpperCase());
             LOGGER.info("Quantità: ");
             int qty = Integer.parseInt(scanner.nextLine());
+
             if (op.equals("1")) {
-                boolean f = false;
-                for (MicStandSetBean b : stands) if (Objects.equals(b.getTall(), t)) { b.setQuantity(b.getQuantity() + qty); f = true; break; }
-                if (!f) stands.add(new MicStandSetBean(qty, t));
-            } else {
-                stands.removeIf(b -> Objects.equals(b.getTall(), t) && isQtyEmptyAfterSubStand(b, qty));
-            }
-        } else if (type.equals("2")) {
-            LOGGER.info("Scopo (XLR_XLR, JACK_JACK, POWER_STRIP): ");
-            try {
-                CablePurpose cp = CablePurpose.valueOf(scanner.nextLine().toUpperCase());
-                LOGGER.info("Quantità: ");
-                int qty = Integer.parseInt(scanner.nextLine());
-                if (op.equals("1")) {
-                    boolean f = false;
-                    for (CableSetBean b : cables) if (b.getPurpose() == cp) { b.setQuantity(b.getQuantity() + qty); f = true; break; }
-                    if (!f) cables.add(new CableSetBean(qty, cp));
-                } else {
-                    cables.removeIf(b -> b.getPurpose() == cp && isQtyEmptyAfterSubCable(b, qty));
+                for (CableSetBean b : cables) {
+                    if (b.getPurpose() == cp) {
+                        b.setQuantity(b.getQuantity() + qty); return;
+                    }
                 }
-            } catch (Exception e) { LOGGER.info("Scopo non valido."); }
+                cables.add(new CableSetBean(qty, cp));
+            } else if (op.equals("2")) {
+                cables.removeIf(b -> b.getPurpose() == cp && isQtyEmptyAfterSubCable(b, qty));
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.info("Scopo cavo non riconosciuto.");
         }
     }
 
@@ -258,14 +310,14 @@ public class ManageTechnicalRiderCLI {
 
     private Boolean askBoolean(String prompt) {
         boolean isArt = Session.getSingletonInstance().getRole() == Session.UserRole.ARTIST;
-        String opt = isArt ? "(s/n/i)" : "(s/n)";
+        String opt = isArt ? "(s = Sì, n = No, i = Indifferente)" : "(s = Sì, n = No)";
         while (true) {
             LOGGER.info(prompt + " " + opt + ": ");
-            String in = scanner.nextLine().toLowerCase();
+            String in = scanner.nextLine().toLowerCase().trim();
             if (in.equals("s")) return true;
             if (in.equals("n")) return false;
             if (isArt && in.equals("i")) return null;
-            LOGGER.info("Riprova.");
+            LOGGER.info("Input non valido.");
         }
     }
 
@@ -285,23 +337,28 @@ public class ManageTechnicalRiderCLI {
         try {
             TechnicalRiderBean b = controller.loadRiderData();
             if (b != null) {
-                mixers = new ArrayList<>(b.getMixers()); stageBoxes = new ArrayList<>(b.getStageBoxes());
-                mics = new ArrayList<>(b.getMics()); diBoxes = new ArrayList<>(b.getDiBoxes());
-                monitors = new ArrayList<>(b.getMonitors()); stands = new ArrayList<>(b.getMicStands());
+                mixers = new ArrayList<>(b.getMixers());
+                stageBoxes = new ArrayList<>(b.getStageBoxes());
+                mics = new ArrayList<>(b.getMics());
+                diBoxes = new ArrayList<>(b.getDiBoxes());
+                monitors = new ArrayList<>(b.getMonitors());
+                stands = new ArrayList<>(b.getMicStands());
                 cables = new ArrayList<>(b.getCables());
             }
         } catch (PersistenceException e) {
             LOGGER.info("Errore caricamento.");
+        } catch (Throwable t) {
+            LOGGER.log(Level.SEVERE, "Errore", t);
         }
     }
 
     private boolean saveRider() {
         try {
             controller.saveRiderData(mixers, stageBoxes, mics, diBoxes, monitors, stands, cables);
-            LOGGER.info("SALVATO!");
+            LOGGER.info("RIDER SALVATO!");
             return true;
-        } catch (Exception e) {
-            LOGGER.info("Errore: " + e.getMessage());
+        } catch (NotConsistentRiderException | PersistenceException e) {
+            LOGGER.log(Level.INFO, "Salvataggio fallito: {0}", e.getMessage());
             return false;
         }
     }
@@ -314,6 +371,7 @@ public class ManageTechnicalRiderCLI {
         monitors.clear();
         stands.clear();
         cables.clear();
+        LOGGER.info("Rider azzerato localmente.");
     }
 
     private void backToHome() {

@@ -16,8 +16,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class VenueDAOMemory implements VenueDAO {
     protected static final List<Venue> venues = new ArrayList<>();
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
+    private static boolean isLoaded = false;
 
-    static {
+    // Metodo per il lazy loading (per evitare problemi di inizializzazione statica circolare)
+    public static synchronized void ensureDataLoaded() {
+        if (isLoaded) return;
+
         initVenue("The Rock Club", "Roma", "Via Ostiense 50", TypeVenue.CLUB, "the_rock_club");
         initVenue("Blue Bar", "Milano", "Via Brera 12", TypeVenue.BAR, "blue_bar_mgr");
         initVenue("Rock Cave", "Roma", "Via A", TypeVenue.CLUB, "mgr1");
@@ -30,6 +34,8 @@ public class VenueDAOMemory implements VenueDAO {
         initVenue("Pub 12", "Palermo", "Via H", TypeVenue.BAR, "mgr8");
         initVenue("Disco Lux", "Rimini", "Via I", TypeVenue.CLUB, "mgr9");
         initVenue("Roof Garden", "Napoli", "Via L", TypeVenue.PUB, "mgr10");
+
+        isLoaded = true;
     }
 
     private static void initVenue(String name, String city, String addr, TypeVenue type, String mgrUsername) {
@@ -52,6 +58,7 @@ public class VenueDAOMemory implements VenueDAO {
 
     @Override
     public void create(Venue venue, Manager manager) {
+        ensureDataLoaded();
         venue.setId(ID_COUNTER.incrementAndGet());
         venue.setActive(true);
         venues.add(venue);
@@ -59,6 +66,7 @@ public class VenueDAOMemory implements VenueDAO {
 
     @Override
     public int getActiveVenueIdByManager(String managerUsername) throws DatabaseException {
+        ensureDataLoaded();
         Manager manager = (Manager) UserDAOMemory.getUsers().stream()
                 .filter(u -> u.getUsername().equals(managerUsername))
                 .findFirst().orElse(null);
@@ -71,6 +79,7 @@ public class VenueDAOMemory implements VenueDAO {
 
     @Override
     public Venue read(String usernameManager) throws DatabaseException {
+        ensureDataLoaded();
         Manager manager = (Manager) UserDAOMemory.getUsers().stream()
                 .filter(u -> u.getUsername().equals(usernameManager))
                 .findFirst().orElse(null);
@@ -83,6 +92,7 @@ public class VenueDAOMemory implements VenueDAO {
 
     @Override
     public Venue findByApplicationId(int applicationId) throws DatabaseException {
+        ensureDataLoaded();
         Announcement announcement = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(ann -> ann.getApplicationList().stream()
                         .anyMatch(obs -> obs.getId() == applicationId))
@@ -94,6 +104,7 @@ public class VenueDAOMemory implements VenueDAO {
 
     @Override
     public String findVenueNameByAnnouncementId(int announcementId) throws DatabaseException {
+        ensureDataLoaded();
         Venue venue = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(ann -> ann.getId() == announcementId) // Nota: qui usi l'id dell'annuncio
                 .map(Announcement::getVenue)

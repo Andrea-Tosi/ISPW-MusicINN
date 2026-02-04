@@ -25,8 +25,11 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     private static final String ANNOUNCEMENT_NOT_FOUND = "Annuncio non trovato.";
     private static final Logger LOGGER = Logger.getLogger(ApplicationDAOMemory.class.getName());
+    private static boolean isLoaded = false;
 
-    static {
+    private static synchronized void ensureDataLoaded() {
+        if (isLoaded) return;
+
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().getFirst();
         initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88", ApplicationState.PENDING);
         initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "art1", ApplicationState.PENDING);
@@ -38,6 +41,8 @@ public class ApplicationDAOMemory implements ApplicationDAO {
         ann = AnnouncementDAOMemory.getAnnouncements().get(1);
         initApplication(ann, ann.getStartEventDay(), ann.getStartEventTime(), "mario88", ApplicationState.ACCEPTED);
         ann.setNumOfApplications(1);
+
+        isLoaded = true;
     }
 
     private static void initApplication(Announcement ann, LocalDate date, LocalTime time, String usernameArtist, ApplicationState state) {
@@ -61,6 +66,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     }
 
     public void save(Application application, Announcement announcement) throws DatabaseException {
+        ensureDataLoaded();
         application.setId(ID_COUNTER.incrementAndGet());
         application.setUsernameArtist(Session.getSingletonInstance().getUser().getUsername());
         applications.add(application);
@@ -77,6 +83,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
 
     @Override
     public Map<Application, String> findByAnnouncementId(int announcementId) throws DatabaseException {
+        ensureDataLoaded();
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(a -> a.getId() == announcementId)
                 .findFirst()
@@ -97,6 +104,7 @@ public class ApplicationDAOMemory implements ApplicationDAO {
 
     @Override
     public Application findAcceptedByAnnouncement(int announcementId) throws DatabaseException {
+        ensureDataLoaded();
         Announcement ann = AnnouncementDAOMemory.getAnnouncements().stream()
                 .filter(a -> a.getId() == announcementId)
                 .findFirst()
@@ -109,7 +117,8 @@ public class ApplicationDAOMemory implements ApplicationDAO {
     }
 
     @Override
-    public List<Application> findAcceptedByArtist(String artistUsername) throws DatabaseException {
+    public List<Application> findAcceptedByArtist(String artistUsername) {
+        ensureDataLoaded();
         return applications.stream()
                 .filter(app -> app.getUsernameArtist().equals(artistUsername)
                         && app.getState() == ApplicationState.ACCEPTED)

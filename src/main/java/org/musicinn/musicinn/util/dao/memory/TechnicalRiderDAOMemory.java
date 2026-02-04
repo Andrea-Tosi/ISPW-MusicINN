@@ -19,6 +19,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
         if (isInitialized) return;
 
         try {
+            VenueDAOMemory.ensureDataLoaded();
             // 1. CARICAMENTO UTENTE ARTISTA PRINCIPALE (mario88)
             Artist artist = (Artist) DAOFactory.getUserDAO().findByIdentifier("mario88");
 
@@ -67,7 +68,7 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
                 // Assegnazione ad Artista 1
                 artist.setRider(artistRider);
 
-                // ASSEGNAZIONE AGLI ALTRI 4 ARTISTI (art1, art5, art6, art7)
+                // ASSEGNAZIONE AGLI ALTRI ARTISTI (art1, art5, art6, art7)
                 String[] otherArtists = {"art1", "art5", "art6", "art7"};
                 for (String username : otherArtists) {
                     Artist other = (Artist) DAOFactory.getUserDAO().findByIdentifier(username);

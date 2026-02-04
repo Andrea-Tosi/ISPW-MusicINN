@@ -16,8 +16,11 @@ import org.musicinn.musicinn.util.dao.interfaces.UserDAO;
 public class UserDAOMemory implements UserDAO {
     protected static final List<User> users = new ArrayList<>();
     private static final String PASSWORD = "password123";
+    private static boolean isLoaded = false;
 
-    static{
+    private static synchronized void ensureDataLoaded() {
+        if (isLoaded) return;
+
         Artist artist = new Artist("mario88", "mario@email.it", PASSWORD, "acct_1SsQr9BApDdKQIqq");
         artist.setStageName("Mario Rossi Band");
         artist.setTypeArtist(BAND);
@@ -127,14 +130,18 @@ public class UserDAOMemory implements UserDAO {
         users.add(new Manager("mgr8", "mgr8@test.it", "pass", null));
         users.add(new Manager("mgr9", "mgr9@test.it", "pass", null));
         users.add(new Manager("mgr10", "mgr10@test.it", "pass", null));
+
+        isLoaded = true;
     }
 
     public static List<User> getUsers() {
+        ensureDataLoaded();
         return users;
     }
 
     @Override
     public User findByIdentifier(String identifier) {
+        ensureDataLoaded();
         return users.stream()
                 .filter(u -> u.getUsername().equals(identifier) || u.getEmail().equals(identifier))
                 .findFirst().orElse(null);
@@ -142,6 +149,7 @@ public class UserDAOMemory implements UserDAO {
 
     @Override
     public void insertBaseUser(User user, Connection conn) {
+        ensureDataLoaded();
         users.add(user);
     }
 }
