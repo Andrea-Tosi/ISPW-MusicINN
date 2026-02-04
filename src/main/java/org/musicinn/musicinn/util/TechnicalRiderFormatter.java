@@ -104,8 +104,9 @@ public class TechnicalRiderFormatter {
             sb.append("Asta microfono: ");
             if (mss.getTall() != null) {
                 boolean isTall = mss.getTall();
-                sb.append(isTall ? "Alta" : "Bassa").append(" (x").append(mss.getQuantity()).append(")\n");
+                sb.append(isTall ? "Alta" : "Bassa");
             }
+            sb.append(" (x").append(mss.getQuantity()).append(")\n");
         }
     }
 
