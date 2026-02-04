@@ -23,6 +23,7 @@ public class CLIManager {
                 case LOGIN -> new LoginCLI(scanner).run();
                 case ARTIST_HOME -> new ArtistHomeCLI(scanner).run();
                 case MANAGER_HOME -> new ManagerHomeCLI(scanner).run();
+                case MANAGE_RIDER -> new ManageTechnicalRiderCLI(scanner).run();
                 case PUBLISH_ANNOUNCEMENT -> new PublishAnnouncementCLI(scanner).run();
                 case APPLY_EVENT -> new ApplyCLI(scanner).run();
                 case ACCEPT_APPLICATION -> new AcceptApplicationCLI(scanner).run();

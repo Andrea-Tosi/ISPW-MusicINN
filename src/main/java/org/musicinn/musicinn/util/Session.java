@@ -10,7 +10,7 @@ public class Session {
     public enum InterfaceType { GUI, CLI }
     private PersistenceType persistenceType = PersistenceType.DATABASE; // Default
     private InterfaceType interfaceType = InterfaceType.GUI; // Default
-    public enum CLIView {LOGIN, ARTIST_HOME, MANAGER_HOME, PUBLISH_ANNOUNCEMENT, APPLY_EVENT, ACCEPT_APPLICATION, MANAGE_PAYMENTS, EXIT}
+    public enum CLIView {LOGIN, ARTIST_HOME, MANAGER_HOME, MANAGE_RIDER, PUBLISH_ANNOUNCEMENT, APPLY_EVENT, ACCEPT_APPLICATION, MANAGE_PAYMENTS, EXIT}
     private CLIView currentCLIView = CLIView.LOGIN;
 
     private Session() {}

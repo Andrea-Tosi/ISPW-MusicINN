@@ -50,7 +50,7 @@ public class ManagePaymentsCLI {
                     handlePaymentAction(payments.get(index));
                 }
             } catch (PersistenceException e) {
-                LOGGER.log(Level.SEVERE, "Errore nel recupero dei pagamenti: {0}", e.getMessage());
+                LOGGER.log(Level.WARNING, "Errore nel recupero dei pagamenti: {0}", e.getMessage());
                 exitView = true;
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 LOGGER.info("Selezione non valida. Riprova.");
@@ -88,16 +88,16 @@ public class ManagePaymentsCLI {
 
         LOGGER.info("\n--- DETTAGLI ACCORDO ---");
         if (role == Session.UserRole.ARTIST) {
-            LOGGER.info("Locale: " + bean.getVenueName());
-            LOGGER.info("Tua Cauzione (" + bean.getDeposit() + "€): " + (bean.isDepositPaid() ? "VERSATA" : "IN ATTESA"));
-            LOGGER.info("Cachet del Gestore (" + bean.getCachet() + "€): " + (bean.isCachetPaid() ? "VERSATO" : "IN ATTESA"));
+            LOGGER.log(Level.INFO, "Locale: {0}", bean.getVenueName());
+            LOGGER.log(Level.INFO, "Tua Cauzione ({0}€): {1}", new Object[] {bean.getDeposit(), (bean.isDepositPaid() ? "VERSATA" : "IN ATTESA")});
+            LOGGER.log(Level.INFO, "Cachet del Gestore ({0}€): {1}", new Object[] {bean.getCachet(), (bean.isCachetPaid() ? "VERSATO" : "IN ATTESA")});
         } else {
-            LOGGER.info("Artista: " + bean.getArtistStageName());
-            LOGGER.info("Tuo Cachet (" + bean.getCachet() + "€): " + (bean.isCachetPaid() ? "VERSATO" : "IN ATTESA"));
-            LOGGER.info("Cauzione Artista (" + bean.getDeposit() + "€): " + (bean.isDepositPaid() ? "VERSATA" : "IN ATTESA"));
+            LOGGER.log(Level.INFO, "Artista: {0}", bean.getArtistStageName());
+            LOGGER.log(Level.INFO, "Tuo Cachet ({0}€): {1}", new Object[] {bean.getCachet(), (bean.isCachetPaid() ? "VERSATO" : "IN ATTESA")});
+            LOGGER.log(Level.INFO, "Cauzione Artista ({0}€): {1}", new Object[] {bean.getDeposit(), (bean.isDepositPaid() ? "VERSATA" : "IN ATTESA")});
         }
-        LOGGER.info("Data Evento: " + bean.getStartingDate() + " " + bean.getStartingTime());
-        LOGGER.info("Deadline Pagamento: " + bean.getPaymentDeadline());
+        LOGGER.log(Level.INFO, "Data Evento: {0} alle {1}", new Object[] {bean.getStartingDate(), bean.getStartingTime()});
+        LOGGER.log(Level.INFO, "Deadline Pagamento: {0}", bean.getPaymentDeadline());
 
         if (alreadyPaid) {
             LOGGER.info("\nHai già completato la tua parte di pagamento per questo accordo.");

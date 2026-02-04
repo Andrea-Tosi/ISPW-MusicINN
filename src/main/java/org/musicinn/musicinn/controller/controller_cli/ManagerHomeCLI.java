@@ -19,7 +19,8 @@ public class ManagerHomeCLI {
         LOGGER.info("1. Pubblica un nuovo Annuncio");
         LOGGER.info("2. Accetta una Candidatura");
         LOGGER.info("3. Gestisci Pagamenti e Accordi");
-        LOGGER.info("4. Logout");
+        LOGGER.info("4. Gestisci Rider Tecnico");
+        LOGGER.info("5. Logout");
         LOGGER.info("Scelta: ");
 
         String choice = scanner.nextLine();
@@ -28,7 +29,8 @@ public class ManagerHomeCLI {
             case "1" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.PUBLISH_ANNOUNCEMENT);
             case "2" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.ACCEPT_APPLICATION);
             case "3" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.MANAGE_PAYMENTS);
-            case "4" -> {
+            case "4" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.MANAGE_RIDER);
+            case "5" -> {
                 Session.getSingletonInstance().setUser(null);
                 Session.getSingletonInstance().setRole(null);
                 Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.LOGIN);

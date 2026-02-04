@@ -27,10 +27,7 @@ public class ArtistHomeCLI {
         switch (choice) {
             case "1" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.APPLY_EVENT);
             case "2" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.MANAGE_PAYMENTS);
-            case "3" -> {
-                // TODO: Implementazione TechnicalRiderCLI
-                LOGGER.info("Funzionalità in fase di sviluppo per la CLI.");
-            }
+            case "3" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.MANAGE_RIDER);
             case "4" -> {
                 Session.getSingletonInstance().setUser(null);
                 Session.getSingletonInstance().setRole(null);
