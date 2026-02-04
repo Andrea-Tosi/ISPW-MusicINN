@@ -8,14 +8,15 @@ import org.musicinn.musicinn.util.enumerations.CablePurpose;
 import org.musicinn.musicinn.util.exceptions.NotConsistentRiderException;
 import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ManageTechnicalRiderCLI {
+    private static final String OP_CHOICE = "1. Aggiungi | 2. Rimuovi";
+    private static final String QUANTITY = "Quantità: ";
     private static final Logger LOGGER = Logger.getLogger(ManageTechnicalRiderCLI.class.getName());
     private final Scanner scanner;
     private final ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
@@ -54,7 +55,7 @@ public class ManageTechnicalRiderCLI {
                     case "5" -> manageMonitors();
                     case "6" -> manageMicStands();
                     case "7" -> manageCables();
-                    case "8" -> { if (saveRider()) exitView = true; }
+                    case "8" -> exitView = saveRider();
                     case "9" -> clearLists();
                     case "10" -> exitView = true;
                     default -> LOGGER.info("Scelta non valida.");
@@ -69,43 +70,74 @@ public class ManageTechnicalRiderCLI {
     // --- LOGICA GESTIONE MIXER (CON VINCOLI ARTISTA) ---
     private void manageMixers() {
         boolean isArtist = Session.getSingletonInstance().getRole() == Session.UserRole.ARTIST;
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        LOGGER.info(OP_CHOICE);
         String op = scanner.nextLine();
 
-        if (op.equals("1")) {
-            if (isArtist && mixers.size() >= 2) {
-                LOGGER.info("L'artista può avere massimo 2 mixer.");
-                return;
-            }
-            Boolean dig = askBoolean("Digitale?");
-            Boolean ph = askBoolean("Phantom Power?");
-            LOGGER.info("Canali Input: ");
-            int ch = Integer.parseInt(scanner.nextLine());
-            LOGGER.info("Mandate AUX: ");
-            int aux = Integer.parseInt(scanner.nextLine());
+        switch (op) {
+            case "1" -> addMixer(isArtist);
+            case "2" -> removeMixer(isArtist);
+            default -> LOGGER.info("Opzione non valida.");
+        }
+    }
 
-            MixerBean bean = new MixerBean(ch, aux, dig, ph);
-            if (isArtist) {
-                boolean isFoh = mixers.isEmpty(); // Il primo è sempre FOH
-                bean.setFOH(isFoh);
-                LOGGER.info("Aggiunto mixer: " + (isFoh ? "FOH" : "STAGE"));
+    private void addMixer(boolean isArtist) {
+        if (isArtist && mixers.size() >= 2) {
+            LOGGER.info("PUoi avere massimo 2 mixer.");
+            return;
+        }
+
+        MixerBean bean = collectMixerData(); // Delegato il recupero dati input
+
+        if (isArtist) {
+            boolean isFoh = mixers.isEmpty();
+            bean.setFOH(isFoh);
+            LOGGER.info("Aggiunto mixer: " + (isFoh ? "FOH" : "STAGE"));
+        } else {
+            bean.setFOH(askBoolean("È FOH?").orElse(false));
+        }
+        mixers.add(bean);
+    }
+
+    private void removeMixer(boolean isArtist) {
+        if (mixers.isEmpty()) return;
+
+        if (isArtist) {
+            // Logica specifica Artista: rimuove lo Stage se presente, altrimenti il FOH
+            int indexToRemove = (mixers.size() == 2) ? 1 : 0;
+            LOGGER.info("Rimosso mixer " + (mixers.get(indexToRemove).isFOH() ? "FOH" : "STAGE"));
+            mixers.remove(indexToRemove);
+        } else {
+            removeMixerByList(); // Delegata logica di rimozione manuale
+        }
+    }
+
+    private MixerBean collectMixerData() {
+        Boolean dig = askBoolean("Digitale?").orElse(null);
+        Boolean ph = askBoolean("Phantom Power?").orElse(null);
+        int ch = askInt("Canali Input: ");
+        int aux = askInt("Mandate AUX: ");
+        return new MixerBean(ch, aux, dig, ph);
+    }
+
+    private void removeMixerByList() {
+        for (int i = 0; i < mixers.size(); i++) {
+            MixerBean m = mixers.get(i);
+            String type = m.isFOH() ? "FOH" : "Stage";
+            LOGGER.info(String.format("%d. Mixer %s (%d ch)", i, type, m.getInputChannels()));
+        }
+
+        LOGGER.info("Indice da rimuovere: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine());
+
+            if (idx >= 0 && idx < mixers.size()) {
+                mixers.remove(idx);
+                LOGGER.info("Mixer rimosso con successo.");
             } else {
-                bean.setFOH(askBoolean("È FOH?"));
+                LOGGER.info("Indice non valido.");
             }
-            mixers.add(bean);
-        } else if (op.equals("2")) {
-            if (mixers.isEmpty()) return;
-            if (isArtist) {
-                // Rimuove Stage (index 1) se esiste, altrimenti FOH (index 0)
-                int indexToRemove = (mixers.size() == 2) ? 1 : 0;
-                LOGGER.info("Rimosso mixer " + (mixers.get(indexToRemove).isFOH() ? "FOH" : "STAGE"));
-                mixers.remove(indexToRemove);
-            } else {
-                for (int i = 0; i < mixers.size(); i++) LOGGER.info(i + ". Mixer " + (mixers.get(i).isFOH() ? "FOH" : "Stage") + " (" + mixers.get(i).getInputChannels() + "ch)");
-                LOGGER.info("Indice da rimuovere: ");
-                int idx = Integer.parseInt(scanner.nextLine());
-                if (idx >= 0 && idx < mixers.size()) mixers.remove(idx);
-            }
+        } catch (NumberFormatException e) {
+            LOGGER.info("Inserimento non valido: inserire un numero.");
         }
     }
 
@@ -115,162 +147,250 @@ public class ManageTechnicalRiderCLI {
         LOGGER.info("1. Aggiungi Stage Box | 2. Rimuovi Stage Box");
         String op = scanner.nextLine();
 
-        if (op.equals("1")) {
-            // Vincolo Artista: Massimo 1 Stage Box
-            if (isArtist && !stageBoxes.isEmpty()) {
-                LOGGER.info("Limite raggiunto: l'artista può avere al massimo 1 Stage Box.");
-                return;
-            }
+        switch (op) {
+        case "1" -> addStageBox(isArtist);
+        case "2" -> removeStageBox(isArtist);
+        default -> LOGGER.info("Opzione non valida.");
+        }
+    }
 
-            Boolean dig = askBoolean("La Stage Box deve essere digitale?");
-            LOGGER.info("Canali Input: ");
-            int ch = Integer.parseInt(scanner.nextLine());
+    private void addStageBox(boolean isArtist) {
+        if (isArtist && !stageBoxes.isEmpty()) {
+            LOGGER.info("Limite raggiunto: puoi avere al massimo 1 Stage Box.");
+            return;
+        }
 
-            stageBoxes.add(new StageBoxBean(ch, dig));
-            LOGGER.info("Stage Box aggiunta correttamente.");
+        Boolean dig = askBoolean("La Stage Box deve essere digitale?").orElse(null);
+        int ch = askInt("Canali Input: ");
 
-        } else if (op.equals("2")) {
-            if (stageBoxes.isEmpty()) {
-                LOGGER.info("Nessuna Stage Box presente nel rider.");
-                return;
-            }
+        stageBoxes.add(new StageBoxBean(ch, dig));
+        LOGGER.info("Stage Box aggiunta correttamente.");
+    }
 
-            if (isArtist) {
-                // L'artista ha al massimo una Stage Box, la rimuoviamo direttamente
-                stageBoxes.removeFirst();
-                LOGGER.info("Stage Box rimossa dal rider.");
-            } else {
-                // Il Manager può averne più di una, mostriamo la lista con indici
-                LOGGER.info("--- Seleziona la Stage Box da rimuovere ---");
-                for (int i = 0; i < stageBoxes.size(); i++) {
-                    StageBoxBean sb = stageBoxes.get(i);
-                    String tipo = (sb.getDigital() == null) ? "Indifferente" : (sb.getDigital() ? "Digitale" : "Analogica");
-                    LOGGER.log(Level.INFO, "{0}. Stage Box ({1} canali, {2})", new Object[]{i, sb.getInputChannels(), tipo});
-                }
+    private void removeStageBox(boolean isArtist) {
+        if (stageBoxes.isEmpty()) {
+            LOGGER.info("Nessuna Stage Box presente nel rider.");
+            return;
+        }
 
-                LOGGER.info("Inserisci l'indice: ");
-                try {
-                    int idx = Integer.parseInt(scanner.nextLine());
-                    if (idx >= 0 && idx < stageBoxes.size()) {
-                        stageBoxes.remove(idx);
-                        LOGGER.info("Stage Box rimossa con successo.");
-                    } else {
-                        LOGGER.info("Indice non valido.");
-                    }
-                } catch (NumberFormatException e) {
-                    LOGGER.info("Errore: Inserisci un numero valido per l'indice.");
-                }
-            }
+        if (isArtist) {
+            stageBoxes.removeFirst();
+            LOGGER.info("Stage Box rimossa dal rider.");
+        } else {
+            selectAndRemoveStageBox();
+        }
+    }
+
+    private void selectAndRemoveStageBox() {
+        displayStageBoxes();
+        int idx = askInt("Inserisci l'indice: ");
+
+        if (idx >= 0 && idx < stageBoxes.size()) {
+            stageBoxes.remove(idx);
+            LOGGER.info("Stage Box rimossa con successo.");
+        } else {
+            LOGGER.info("Indice non valido.");
+        }
+    }
+
+    private void displayStageBoxes() {
+        LOGGER.info("--- Seleziona la Stage Box da rimuovere ---");
+        for (int i = 0; i < stageBoxes.size(); i++) {
+            StageBoxBean sb = stageBoxes.get(i);
+            String type = (sb.getDigital() == null) ? "Indifferente" : (sb.getDigital() ? "Digitale" : "Analogica");
+            LOGGER.log(Level.INFO, "{0}. Stage Box ({1} canali, {2})", new Object[]{i, sb.getInputChannels(), type});
         }
     }
 
     // --- LOGICA GESTIONE SET (MICROFONI, DI, MONITOR, ASTE, CAVI) ---
 
     private void manageMicrophones() {
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        LOGGER.info(OP_CHOICE);
         String op = scanner.nextLine();
-        Boolean ph = askBoolean("Phantom Power?");
-        LOGGER.info("Quantità: ");
-        int qty = Integer.parseInt(scanner.nextLine());
 
-        if (op.equals("1")) {
-            boolean found = false;
-            for (MicrophoneSetBean b : mics) {
-                if (Objects.equals(b.getNeedsPhantomPower(), ph)) {
-                    b.setQuantity(b.getQuantity() + qty);
-                    found = true; break;
-                }
-            }
-            if (!found) mics.add(new MicrophoneSetBean(qty, ph));
-        } else {
-            mics.removeIf(b -> Objects.equals(b.getNeedsPhantomPower(), ph) && isQtyEmptyAfterSub(b, qty));
+        // Spostiamo la raccolta dati dentro i rami per non chiedere dati inutili in caso di errore
+        switch (op) {
+            case "1" -> addMicrophones();
+            case "2" -> removeMicrophones();
+            default -> LOGGER.info("Opzione non valida.");
         }
+    }
+
+    private void addMicrophones() {
+        Boolean ph = askBoolean("Phantom Power?").orElse(null);
+        int qty = askInt(QUANTITY);
+
+        // Cerchiamo se esiste già un set con la stessa caratteristica
+        for (MicrophoneSetBean b : mics) {
+            if (Objects.equals(b.getNeedsPhantomPower(), ph)) {
+                b.setQuantity(b.getQuantity() + qty);
+                LOGGER.info("Quantità aggiornata.");
+                return;
+            }
+        }
+        // Se non trovato, aggiungiamo nuovo set
+        mics.add(new MicrophoneSetBean(qty, ph));
+        LOGGER.info("Nuovo set di microfoni aggiunto.");
+    }
+
+    private void removeMicrophones() {
+        Boolean ph = askBoolean("Phantom Power?").orElse(null);
+        int qty = askInt(QUANTITY);
+
+        // Usiamo removeIf come facevi tu, ma isolato per chiarezza
+        mics.removeIf(b -> Objects.equals(b.getNeedsPhantomPower(), ph) && isQtyEmptyAfterSub(b, qty));
+        LOGGER.info("Rimozione completata (se l'elemento esisteva).");
     }
 
     private void manageDIBoxes() {
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        LOGGER.info(OP_CHOICE);
         String op = scanner.nextLine();
-        Boolean act = askBoolean("Attiva?");
-        LOGGER.info("Quantità: ");
-        int qty = Integer.parseInt(scanner.nextLine());
 
-        if (op.equals("1")) {
-            boolean found = false;
-            for (DIBoxSetBean b : diBoxes) {
-                if (Objects.equals(b.getActive(), act)) {
-                    b.setQuantity(b.getQuantity() + qty);
-                    found = true; break;
-                }
-            }
-            if (!found) diBoxes.add(new DIBoxSetBean(qty, act));
-        } else {
-            diBoxes.removeIf(b -> Objects.equals(b.getActive(), act) && isQtyEmptyAfterSubDI(b, qty));
+        switch (op) {
+            case "1" -> addDIBoxes();
+            case "2" -> removeDIBoxes();
+            default -> LOGGER.info("Opzione non valida.");
         }
     }
 
-    private void manageMonitors() {
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
-        String op = scanner.nextLine();
-        Boolean p = askBoolean("Amplificato?");
-        LOGGER.info("Quantità: ");
-        int qty = Integer.parseInt(scanner.nextLine());
+    private void addDIBoxes() {
+        Boolean act = askBoolean("Attiva?").orElse(null);
+        int qty = askInt(QUANTITY);
 
-        if (op.equals("1")) {
-            boolean found = false;
-            for (MonitorSetBean b : monitors) {
-                if (Objects.equals(b.getPowered(), p)) {
-                    b.setQuantity(b.getQuantity() + qty);
-                    found = true; break;
-                }
+        for (DIBoxSetBean b : diBoxes) {
+            if (Objects.equals(b.getActive(), act)) {
+                b.setQuantity(b.getQuantity() + qty);
+                LOGGER.info("Quantità DI Box aggiornata.");
+                return;
             }
-            if (!found) monitors.add(new MonitorSetBean(qty, p));
-        } else {
-            monitors.removeIf(b -> Objects.equals(b.getPowered(), p) && isQtyEmptyAfterSubMon(b, qty));
         }
+        diBoxes.add(new DIBoxSetBean(qty, act));
+        LOGGER.info("Nuovo set DI Box aggiunto.");
+    }
+
+    private void removeDIBoxes() {
+        Boolean act = askBoolean("Attiva?").orElse(null);
+        int qty = askInt(QUANTITY);
+        diBoxes.removeIf(b -> Objects.equals(b.getActive(), act) && isQtyEmptyAfterSubDI(b, qty));
+    }
+
+    private void manageMonitors() {
+        LOGGER.info(OP_CHOICE);
+        String op = scanner.nextLine();
+
+        switch (op) {
+            case "1" -> addMonitors();
+            case "2" -> removeMonitors();
+            default -> LOGGER.info("Opzione non valida.");
+        }
+    }
+
+    private void addMonitors() {
+        Boolean p = askBoolean("Amplificato?").orElse(null);
+        int qty = askInt(QUANTITY);
+
+        for (MonitorSetBean b : monitors) {
+            if (Objects.equals(b.getPowered(), p)) {
+                b.setQuantity(b.getQuantity() + qty);
+                LOGGER.info("Quantità Monitor aggiornata.");
+                return;
+            }
+        }
+        monitors.add(new MonitorSetBean(qty, p));
+        LOGGER.info("Nuovo set Monitor aggiunto.");
+    }
+
+    private void removeMonitors() {
+        Boolean p = askBoolean("Amplificato?").orElse(null);
+        int qty = askInt(QUANTITY);
+        monitors.removeIf(b -> Objects.equals(b.getPowered(), p) && isQtyEmptyAfterSubMon(b, qty));
     }
 
     // --- GESTIONE ASTE (DIVISA) ---
     private void manageMicStands() {
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        LOGGER.info(OP_CHOICE);
         String op = scanner.nextLine();
-        Boolean t = askBoolean("Deve essere alta?");
-        LOGGER.info("Quantità: ");
-        int qty = Integer.parseInt(scanner.nextLine());
 
-        if (op.equals("1")) {
-            for (MicStandSetBean b : stands) {
-                if (Objects.equals(b.getTall(), t)) {
-                    b.setQuantity(b.getQuantity() + qty); return;
-                }
-            }
-            stands.add(new MicStandSetBean(qty, t));
-        } else if (op.equals("2")) {
-            stands.removeIf(b -> Objects.equals(b.getTall(), t) && isQtyEmptyAfterSubStand(b, qty));
+        switch (op) {
+            case "1" -> addMicStands();
+            case "2" -> removeMicStands();
+            default -> LOGGER.info("Opzione non valida.");
         }
+    }
+
+    private void addMicStands() {
+        Boolean t = askBoolean("Deve essere alta?").orElse(null);
+        int qty = askInt(QUANTITY);
+
+        for (MicStandSetBean b : stands) {
+            if (Objects.equals(b.getTall(), t)) {
+                b.setQuantity(b.getQuantity() + qty);
+                return;
+            }
+        }
+        stands.add(new MicStandSetBean(qty, t));
+    }
+
+    private void removeMicStands() {
+        Boolean t = askBoolean("Deve essere alta?").orElse(null);
+        int qty = askInt(QUANTITY);
+        stands.removeIf(b -> Objects.equals(b.getTall(), t) && isQtyEmptyAfterSubStand(b, qty));
     }
 
     // --- GESTIONE CAVI (DIVISA) ---
     private void manageCables() {
-        LOGGER.info("1. Aggiungi | 2. Rimuovi");
+        LOGGER.info(OP_CHOICE);
         String op = scanner.nextLine();
-        LOGGER.info("Scopo (XLR_XLR, JACK_JACK, POWER_STRIP): ");
-        try {
-            CablePurpose cp = CablePurpose.valueOf(scanner.nextLine().toUpperCase());
-            LOGGER.info("Quantità: ");
-            int qty = Integer.parseInt(scanner.nextLine());
 
-            if (op.equals("1")) {
-                for (CableSetBean b : cables) {
-                    if (b.getPurpose() == cp) {
-                        b.setQuantity(b.getQuantity() + qty); return;
-                    }
-                }
-                cables.add(new CableSetBean(qty, cp));
-            } else if (op.equals("2")) {
-                cables.removeIf(b -> b.getPurpose() == cp && isQtyEmptyAfterSubCable(b, qty));
+        switch (op) {
+            case "1" -> addCables();
+            case "2" -> removeCables();
+            default -> LOGGER.info("Opzione non valida.");
+        }
+    }
+
+    private void addCables() {
+        CablePurpose cp = askCablePurpose();
+        if (cp == null) return;
+
+        int qty = askInt(QUANTITY);
+        updateOrAddCable(cp, qty);
+    }
+
+    private void removeCables() {
+        CablePurpose cp = askCablePurpose();
+        if (cp == null) return;
+
+        int qty = askInt(QUANTITY);
+        cables.removeIf(b -> b.getPurpose() == cp && isQtyEmptyAfterSubCable(b, qty));
+    }
+
+    private void updateOrAddCable(CablePurpose cp, int qty) {
+        // 1. Cerchiamo se esiste già un set di cavi con lo stesso scopo
+        for (CableSetBean b : cables) {
+            if (b.getPurpose() == cp) {
+                b.setQuantity(b.getQuantity() + qty);
+                LOGGER.info("Quantità aggiornata per i cavi " + cp);
+                return; // Usciamo subito: obiettivo raggiunto
             }
+        }
+
+        // 2. Se il ciclo finisce senza ritorni, il set non esiste: lo aggiungiamo
+        cables.add(new CableSetBean(qty, cp));
+        LOGGER.info("Nuovo set di cavi aggiunto (" + cp + ").");
+    }
+
+    private CablePurpose askCablePurpose() {
+        String availableOptions = Stream.of(CablePurpose.values())
+                .map(Enum::toString)
+                .collect(Collectors.joining(", "));
+
+        LOGGER.log(Level.INFO, "Scopo ({0}): ", availableOptions);
+        try {
+            return CablePurpose.valueOf(scanner.nextLine().toUpperCase().trim());
         } catch (IllegalArgumentException e) {
             LOGGER.info("Scopo cavo non riconosciuto.");
+            return null;
         }
     }
 
@@ -308,16 +428,28 @@ public class ManageTechnicalRiderCLI {
 
     // --- METODI DI SUPPORTO STANDARD ---
 
-    private Boolean askBoolean(String prompt) {
+    private Optional<Boolean> askBoolean(String prompt) {
         boolean isArt = Session.getSingletonInstance().getRole() == Session.UserRole.ARTIST;
         String opt = isArt ? "(s = Sì, n = No, i = Indifferente)" : "(s = Sì, n = No)";
         while (true) {
             LOGGER.info(prompt + " " + opt + ": ");
             String in = scanner.nextLine().toLowerCase().trim();
-            if (in.equals("s")) return true;
-            if (in.equals("n")) return false;
-            if (isArt && in.equals("i")) return null;
+            if (in.equals("s")) return Optional.of(true);
+            if (in.equals("n")) return Optional.of(false);
+            if (isArt && in.equals("i")) return Optional.empty();
             LOGGER.info("Input non valido.");
+        }
+    }
+
+    private int askInt(String prompt) {
+        while (true) { // Loop finché l'input non è valido
+            LOGGER.info(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                LOGGER.info("Errore: devi inserire un numero intero valido.");
+            }
         }
     }
 
