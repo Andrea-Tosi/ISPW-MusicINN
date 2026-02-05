@@ -2,9 +2,9 @@ package org.musicinn.musicinn.util;
 
 /**
  * Mock Service per il calcolo della distanza tra indirizzi.
- * In una versione reale, interfaccerebbe API come Google Maps o GraphHopper.
+ * In una versione reale, interfaccerebbe API come Google Maps.
  */
-public class DistanceService {
+public class DistanceServiceMock {
     /**
      * Simula il calcolo della distanza in chilometri.
      * Restituisce un valore costante per la stessa coppia di indirizzi.

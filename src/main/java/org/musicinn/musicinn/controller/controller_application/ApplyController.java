@@ -1,7 +1,7 @@
 package org.musicinn.musicinn.controller.controller_application;
 
 import org.musicinn.musicinn.model.*;
-import org.musicinn.musicinn.util.DistanceService;
+import org.musicinn.musicinn.util.DistanceServiceMock;
 import org.musicinn.musicinn.util.Session;
 import org.musicinn.musicinn.util.TechnicalRiderMapper;
 import org.musicinn.musicinn.util.bean.AnnouncementBean;
@@ -26,8 +26,7 @@ public class ApplyController {
 
     private final AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
     private final TechnicalRiderDAO riderDAO = DAOFactory.getTechnicalRiderDAO();
-    // Supponiamo di avere un servizio per la distanza
-    private final DistanceService distanceService = new DistanceService();
+    private final DistanceServiceMock distanceService = new DistanceServiceMock();
 
     public List<EventBean> getCompatibleEvents(int page) throws PersistenceException {
         // 1. Recupero Artista e il suo Rider dalla Sessione
@@ -100,9 +99,7 @@ public class ApplyController {
         ArtistDAO artistDAO = DAOFactory.getArtistDAO();
         List<MusicalGenre> artistGenres = artistDAO.loadArtistGenres(Session.getSingletonInstance().getUser().getUsername());
 
-        long inCommon = requestedGenres.stream().filter(artistGenres::contains).count();
-        double genresScore = requestedGenres.isEmpty() ? 0.0 : (inCommon * 100.0) / requestedGenres.size();
-        application.setScore(genresScore);
+        application.calculateAndSetScore(artistGenres, requestedGenres);
 
         Venue venue = new Venue();
         venue.setName(eventBean.getVenueName());

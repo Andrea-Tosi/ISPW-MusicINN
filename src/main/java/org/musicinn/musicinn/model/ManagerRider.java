@@ -37,6 +37,12 @@ public class ManagerRider extends TechnicalRider {
     public ValidationResult contains(ArtistRider artistRider) {
         ValidationResult report = new ValidationResult();
 
+        if (this.minLengthStage < artistRider.getMinLengthStage() || this.minWidthStage < artistRider.getMinWidthStage()) {
+            report.addError("Il palco del locale (" + minLengthStage + "m x" + minWidthStage + "m) è più piccolo del minimo richiesto (" +
+                    artistRider.getMinLengthStage() + "x" + artistRider.getMinWidthStage() + ")");
+            report.setValid(false);
+        }
+
         // Check Mixer (Logica di assegnazione univoca)
         checkMixerCompatibility(artistRider, report);
 

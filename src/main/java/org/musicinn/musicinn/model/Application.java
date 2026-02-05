@@ -3,8 +3,10 @@ package org.musicinn.musicinn.model;
 import org.musicinn.musicinn.model.observer_pattern.Observer;
 import org.musicinn.musicinn.util.enumerations.AnnouncementState;
 import org.musicinn.musicinn.util.enumerations.ApplicationState;
+import org.musicinn.musicinn.util.enumerations.MusicalGenre;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Application implements Observer {
     private int id;
@@ -68,5 +70,19 @@ public class Application implements Observer {
 
     public void setUsernameArtist(String usernameArtist) {
         this.usernameArtist = usernameArtist;
+    }
+
+    public void calculateAndSetScore(List<MusicalGenre> artistGenres, List<MusicalGenre> requestedGenres) {
+        if (requestedGenres == null || requestedGenres.isEmpty()) {
+            this.score = 0.0;
+            return;
+        }
+        // Conta i generi dell'artista presenti nella lista dei richiesti
+        long inCommon = requestedGenres.stream()
+                .filter(artistGenres::contains)
+                .count();
+
+        // Calcola la percentuale
+        this.score = (inCommon * 100.0) / requestedGenres.size();
     }
 }

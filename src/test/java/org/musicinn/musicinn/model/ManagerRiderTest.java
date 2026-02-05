@@ -48,4 +48,24 @@ class ManagerRiderTest {
 
         assertTrue(result.isValid(), "Il mixer del locale dovrebbe essere compatibile");
     }
+
+    /**
+     * Verifica che il sistema di filtraggio tra domanda (Artista) e offerta (Locale) consideri i vincoli fisici del palco.
+     */
+    @Test
+    void testContainsFailsForStageDimensions() {
+        ManagerRider venueRider = new ManagerRider();
+        venueRider.setMinLengthStage(5); // Palco piccolo
+        venueRider.setMinWidthStage(5);
+
+        ArtistRider artistRider = new ArtistRider();
+        artistRider.setMinLengthStage(10); // Richiede palco grande
+        artistRider.setMinWidthStage(10);
+
+        // Chiamata alla funzione reale del sistema
+        ValidationResult result = venueRider.contains(artistRider);
+
+        assertFalse(result.isValid(), "La validazione deve fallire se il palco è troppo piccolo");
+        assertTrue(result.toString().contains("palco"), "Il messaggio di errore deve menzionare il palco");
+    }
 }
