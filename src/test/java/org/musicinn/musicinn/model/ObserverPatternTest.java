@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Il test assicura che il cambiamento di stato di un annuncio si propaghi correttamente a tutte le candidature collegate, mantenendo l'integrità dei dati.
  * @author Andrea Tosi
  */
-public class ObserverPatternTest {
+class ObserverPatternTest {
     /**
      * Il test simula lo scenario in cui un Manager accetta una candidatura specifica.
      * Viene verificato che l'invio della notifica di chiusura dell'annuncio (CLOSED) scateni l'aggiornamento automatico
