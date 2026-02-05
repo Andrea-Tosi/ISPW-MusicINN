@@ -200,11 +200,11 @@ public class PaymentController {
      */
     public boolean isPaymentStillValid(PaymentBean bean) throws PersistenceException, PaymentServiceException {
         if (bean.getPaymentDeadline().isBefore(LocalDateTime.now())) {
-            // 1. Aggiorna il DB e prendi gli ID delle transazioni da rimborsare
+            // Aggiorna il DB e prendi gli ID delle transazioni da rimborsare
             List<String> peopleToRefund = DAOFactory.getPaymentDAO().markAsRefunded(bean.getId());
 
-            // Logica di "Auto-pulizia": se è scaduto, lo marchiamo nel DB
-            // 2. Esegui il rimborso reale su Stripe per ogni transazione trovata
+            // Logica di "Auto-pulizia": se è scaduto, lo marca nel DB
+            // Esegue il rimborso reale su Stripe per ogni transazione trovata
             for (String id : peopleToRefund) {
                 try {
                     paymentService.issueRefund(id);
