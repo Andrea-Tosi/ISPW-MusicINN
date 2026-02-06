@@ -43,6 +43,7 @@ public class LoginCLI {
             case "1" -> login();
             case "2" -> signup();
             case "3" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.EXIT);
+            default -> LOGGER.info("Scelta non valida.");
         }
     }
 
