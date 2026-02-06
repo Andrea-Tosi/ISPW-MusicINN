@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class AcceptApplicationCLI {
     private static final Logger LOGGER = Logger.getLogger(AcceptApplicationCLI.class.getName());
     private final Scanner scanner;
-    private final AcceptApplicationController controller = AcceptApplicationController.getSingletonInstance();
+    private final AcceptApplicationController controller = new AcceptApplicationController();
 
     public AcceptApplicationCLI(Scanner scanner) {
         this.scanner = scanner;

@@ -39,7 +39,7 @@ public class AcceptApplicationConfirmAcceptanceControllerGUI {
     @FXML
     private void handleConfirmButton() {
         try {
-            AcceptApplicationController acceptApplicationController = AcceptApplicationController.getSingletonInstance();
+            AcceptApplicationController acceptApplicationController = new AcceptApplicationController();
             acceptApplicationController.chooseApplication(announcementBean, applicationBean);
 
             PaymentController paymentController = PaymentServiceFactory.getPaymentController();

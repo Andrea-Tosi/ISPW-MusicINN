@@ -123,6 +123,27 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         announcements.add(announcement);
     }
 
+    @Override
+    public Announcement findById(int announcementId) throws DatabaseException {
+        ensureDataLoaded();
+
+        Announcement ann = announcements.stream()
+                .filter(a -> a.getId() == announcementId)
+                .findFirst()
+                .orElse(null);
+
+        if (ann != null) {
+            calculateNumOfApplications(ann, announcementId);
+        }
+        return ann;
+    }
+
+    private void calculateNumOfApplications(Announcement ann, int announcementId) throws DatabaseException {
+        ApplicationDAOMemory applicationDAOMemory = new ApplicationDAOMemory();
+        int numOfApplications = applicationDAOMemory.findByAnnouncementId(announcementId).size();
+        ann.setNumOfApplications(numOfApplications);
+    }
+
     public List<SchedulableEvent> getEventsByDate(LocalDate date) {
         ensureDataLoaded();
         return announcements.stream()
@@ -196,9 +217,13 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
 
         // Prendo tutti gli annunci che appartengono alle venue di quel manager
         List<Venue> managerVenues = manager.getVenueList();
-        return announcements.stream()
+        List<Announcement> anns = announcements.stream()
                 .filter(a -> a.getState().equals(AnnouncementState.OPEN) && managerVenues.contains(a.getVenue()))
                 .toList();
+        for (Announcement ann : anns) {
+            calculateNumOfApplications(ann, ann.getId());
+        }
+        return anns;
     }
 
     @Override

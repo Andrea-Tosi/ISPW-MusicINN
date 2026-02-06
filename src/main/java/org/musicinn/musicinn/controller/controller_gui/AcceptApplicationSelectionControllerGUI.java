@@ -52,7 +52,7 @@ public class AcceptApplicationSelectionControllerGUI {
 
         eventDateLabel.setText("Evento del " + selectedAnnouncement.getStartingDate() + " " + selectedAnnouncement.getStartingTime());
 
-        AcceptApplicationController controller = AcceptApplicationController.getSingletonInstance();
+        AcceptApplicationController controller =  new AcceptApplicationController();
         try {
             List<ApplicationBean> apps = controller.getApplicationsForAnnouncement(selectedAnnouncement);
             numOfApplicationLabel.setText(apps.size() + " artisti hanno risposto al tuo annuncio...");

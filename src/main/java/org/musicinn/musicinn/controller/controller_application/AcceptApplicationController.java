@@ -20,28 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 public class AcceptApplicationController {
-    List<Announcement> announcements;
-
-    private AcceptApplicationController() {}
-
-    private static class SingletonContainer{
-        public static final AcceptApplicationController singletonInstance = new AcceptApplicationController();
-    }
-
-    public static AcceptApplicationController getSingletonInstance() {
-        return AcceptApplicationController.SingletonContainer.singletonInstance;
-    }
-
     public List<AnnouncementBean> getAllManagerAnnouncements() throws PersistenceException {
-        // 1. Recuperiamo l'utente corrente dalla sessione (deve essere un MANAGER)
-        String currentManager = Session.getSingletonInstance().getUser().getUsername();
+        String currentManagerUsername = Session.getSingletonInstance().getUser().getUsername();
 
         // 2. Otteniamo l'istanza del DAO tramite la Factory
         AnnouncementDAO announcementDAO = DAOFactory.getAnnouncementDAO();
 
         // 3. Chiamiamo il metodo del DAO
-        List<Announcement> announcementList = announcementDAO.findByManager(currentManager);
-        announcements = announcementList;
+        List<Announcement> announcementList = announcementDAO.findByManager(currentManagerUsername);
 
         // 4. Trasformiamo la lista di Entity in una lista di Bean
         List<AnnouncementBean> beans = new ArrayList<>();
@@ -104,11 +90,8 @@ public class AcceptApplicationController {
         return beans;
     }
 
-    private Announcement findAnnouncementById(int id) {
-        return announcements.stream()
-                .filter(a -> a.getId() == id)
-                .findFirst()
-                .orElse(null);
+    private Announcement findAnnouncementById(int id) throws PersistenceException {
+        return DAOFactory.getAnnouncementDAO().findById(id);
     }
 
     private ApplicationBean convertToBean(Application app, Artist artist) {

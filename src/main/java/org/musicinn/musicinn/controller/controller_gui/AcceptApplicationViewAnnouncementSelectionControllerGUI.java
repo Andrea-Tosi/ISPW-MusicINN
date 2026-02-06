@@ -47,7 +47,7 @@ public class AcceptApplicationViewAnnouncementSelectionControllerGUI implements 
     }
 
     private void loadAllAnnouncements() {
-        AcceptApplicationController controller = AcceptApplicationController.getSingletonInstance();
+        AcceptApplicationController controller = new AcceptApplicationController();
 
         try {
             // Chiamata al controller applicativo senza paginazione

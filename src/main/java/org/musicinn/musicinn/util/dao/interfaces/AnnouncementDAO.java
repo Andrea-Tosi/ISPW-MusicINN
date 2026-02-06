@@ -11,6 +11,7 @@ public interface AnnouncementDAO {
     List<SchedulableEvent> getEventsByDate(LocalDate startingDate) throws PersistenceException;
     List<SchedulableEvent> getConfirmedEventsByDate(LocalDate startingDate) throws PersistenceException;
     void save(Announcement announcement) throws PersistenceException;
+    Announcement findById(int id) throws PersistenceException;
     List<Announcement> findOpenAnnouncements(int page, int pageSize) throws PersistenceException;
     List<Announcement> findByManager(String managerUsername) throws PersistenceException;
     void updateAnnouncementState(Announcement ann) throws PersistenceException;

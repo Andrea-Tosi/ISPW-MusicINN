@@ -213,6 +213,43 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
     }
 
     @Override
+    public Announcement findById(int announcementId) throws DatabaseException {
+        Announcement ann = null;
+        // Join con la venue per avere l'oggetto completo
+        String query = "SELECT a.*, a.id as ann_id, v.* FROM announcements a " +
+                "JOIN venues v ON a.venues_id = v.id " +
+                "WHERE a.id = ?";
+
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, announcementId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    ann = new Announcement();
+                    mapAnnouncement(ann, rs);
+
+                    Venue venue = new Venue();
+                    mapVenue(venue, rs);
+                    ann.setVenue(venue);
+                }
+            }
+
+            // Se l'annuncio è stato trovato, carichiamo i requisiti (generi e tipi)
+            if (ann != null) {
+                Map<Integer, Announcement> tempMap = new HashMap<>();
+                tempMap.put(ann.getId(), ann);
+                loadAnnouncementRequirements(conn, tempMap);
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore nel recupero dell'annuncio.");
+        }
+        return ann;
+    }
+
+    @Override
     public List<Announcement> findOpenAnnouncements(int page, int pageSize) throws DatabaseException {
         List<Announcement> announcements = new ArrayList<>();
         // Usiamo l'ID della Venue come chiave della mappa
@@ -272,7 +309,6 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return announcements;
@@ -302,7 +338,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                     Announcement ann = new Announcement();
                     mapAnnouncement(ann, rs);
 
-                    // Impostiamo il conteggio delle candidature (aggiungi il campo in Announcement se non c'è)
+                    // Impostiamo il conteggio delle candidature
                     ann.setNumOfApplications(rs.getInt("app_count"));
 
                     Venue venue = new Venue();
@@ -314,7 +350,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 }
             }
 
-            // RIUTILIZZO: Carichiamo generi e tipi richiesti usando il metodo che hai già scritto
+            // Carica generi e tipi richiesti
             if (!announcementMap.isEmpty()) {
                 loadAnnouncementRequirements(conn, announcementMap);
             }
