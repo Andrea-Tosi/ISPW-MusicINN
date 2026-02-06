@@ -243,7 +243,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 loadAnnouncementRequirements(conn, tempMap);
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore nel recupero dell'annuncio.");
         }
         return ann;
@@ -308,7 +308,7 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 loadAnnouncementRequirements(conn, announcementMap);
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             throw new DatabaseException("Errore: Annuncio non trovato. Impossibile completare la candidatura.");
         }
         return announcements;
