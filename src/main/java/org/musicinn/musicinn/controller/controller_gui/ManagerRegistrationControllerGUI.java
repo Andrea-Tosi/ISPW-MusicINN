@@ -83,7 +83,7 @@ public class ManagerRegistrationControllerGUI implements Initializable {
         ManagerRegistrationBean managerRegistrationBean = new ManagerRegistrationBean(venueName, venueCity, venueAddress, typeVenue);
 
         try {
-            LoginController loginController = LoginController.getSingletonInstance();
+            LoginController loginController = new LoginController();
             loginController.completeSignup(managerRegistrationBean);
 
             Scene currentScene = statusLabel.getScene();

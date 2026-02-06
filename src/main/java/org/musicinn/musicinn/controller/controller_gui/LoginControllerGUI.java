@@ -115,7 +115,8 @@ public class LoginControllerGUI implements Initializable {
 
         try {
             CredentialsBean userBean = new CredentialsBean(username, password);
-            User loggedUser = LoginController.getSingletonInstance().login(userBean);
+            LoginController loginController = new LoginController();
+            User loggedUser = loginController.login(userBean);
             if (loggedUser != null) {
                 //controlla il tipo di utente e mostra la schermata adeguata
                 handleSuccessfulLogin(loggedUser);

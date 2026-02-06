@@ -23,17 +23,6 @@ import java.util.logging.Logger;
 
 public class LoginController {
     private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
-    private CredentialsBean cb;
-
-    private LoginController() {}
-
-    private static class SingletonContainer{
-        public static final LoginController singletonInstance = new LoginController();
-    }
-
-    public static LoginController getSingletonInstance() {
-        return SingletonContainer.singletonInstance;
-    }
 
     public User login(CredentialsBean credentialsBean) throws PersistenceException {
         User user;
@@ -80,7 +69,10 @@ public class LoginController {
         EmailVerifier.getSingletonInstance().sendCode(credentialsBean.getEmail());
 
         //TODO: hashing password
-        cb = credentialsBean;
+
+        // Usiamo una classe anonima per istanziare User (che è abstract)
+        User placeholderUser = new User(credentialsBean.getUsername(), credentialsBean.getEmail(), credentialsBean.getPassword()) {};
+        Session.getSingletonInstance().setUser(placeholderUser);
     }
 
     public boolean checkEnteredCode(String email, String code) {
@@ -92,7 +84,8 @@ public class LoginController {
     }
 
     public void completeSignup(ArtistRegistrationBean arb) throws PaymentServiceException {
-        Artist artist = new Artist(cb.getUsername(), cb.getEmail(), cb.getPassword());
+        User temp = Session.getSingletonInstance().getUser();
+        Artist artist = new Artist(temp.getUsername(), temp.getEmail(), temp.getHashedPassword());
         artist.setStageName(arb.getStageName());
         artist.setTypeArtist(arb.getTypeArtist());
         artist.setDoesUnreleased(arb.getDoesUnreleased());
@@ -111,7 +104,8 @@ public class LoginController {
     }
 
     public void completeSignup(ManagerRegistrationBean mrb) throws PaymentServiceException {
-        Manager manager = new Manager(cb.getUsername(), cb.getEmail(), cb.getPassword());
+        User temp = Session.getSingletonInstance().getUser();
+        Manager manager = new Manager(temp.getUsername(), temp.getEmail(), temp.getHashedPassword());
         Venue venue = new Venue(mrb.getNameVenue(), mrb.getCityVenue(), mrb.getAddressVenue(), mrb.getTypeVenue());
         manager.getVenueList().add(venue);
         manager.setActiveVenue(venue);

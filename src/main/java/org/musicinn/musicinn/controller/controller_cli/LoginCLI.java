@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 public class LoginCLI {
     private static final Logger LOGGER = Logger.getLogger(LoginCLI.class.getName());
     private final Scanner scanner;
-    private final LoginController loginController = LoginController.getSingletonInstance();
+    private final LoginController loginController = new LoginController();
 
     public LoginCLI(Scanner scanner) {
         this.scanner = scanner;
@@ -39,14 +39,10 @@ public class LoginCLI {
         LOGGER.info("Scelta: ");
 
         String choice = scanner.nextLine();
-        if (choice.equals("3")) {
-            Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.EXIT);
-            return;
-        }
-        if (choice.equals("1")) {
-            login();
-        } else if (choice.equals("2")) {
-            signup();
+        switch (choice) {
+            case "1" -> login();
+            case "2" -> signup();
+            case "3" -> Session.getSingletonInstance().setCurrentCLIView(Session.CLIView.EXIT);
         }
     }
 

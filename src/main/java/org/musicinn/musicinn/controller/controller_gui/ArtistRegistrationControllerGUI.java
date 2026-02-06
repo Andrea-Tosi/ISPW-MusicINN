@@ -206,7 +206,7 @@ public class ArtistRegistrationControllerGUI implements Initializable {
         artistRegistrationBean.setGenresList(genreList);
 
         try {
-            LoginController loginController = LoginController.getSingletonInstance();
+            LoginController loginController = new LoginController();
             loginController.completeSignup(artistRegistrationBean);
 
             Scene currentScene = statusLabel.getScene();

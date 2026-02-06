@@ -141,7 +141,7 @@ public class UserRegistrationControllerGUI implements Initializable {
         }
 
         CredentialsBean credentialsBean = new CredentialsBean(username, email, password);
-        LoginController loginController = LoginController.getSingletonInstance();
+        LoginController loginController = new LoginController();
         try {
             loginController.startSignup(credentialsBean);
             statusLabel.setText("Attendere l'arrivo della mail per la verifica dell'indirizzo email fornito (potrebbe volerci un po')");
@@ -173,9 +173,10 @@ public class UserRegistrationControllerGUI implements Initializable {
             // Collega la modale allo Stage principale (primaryStage)
             verificationStage.initOwner(primaryStage);
 
+            LoginController loginController = new LoginController();
             verificationStage.setOnHidden(event ->
                 // Se l'utente chiude la finestra, dovrà richiedere il rinvio della mail di verifica
-                LoginController.getSingletonInstance().invalidateVerificationCode(email)
+                loginController.invalidateVerificationCode(email)
             );
 
             verificationStage.showAndWait();

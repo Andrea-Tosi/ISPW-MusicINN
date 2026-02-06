@@ -146,7 +146,8 @@ public class VerificationModalStageGUI implements Initializable {
             return;
         }
 
-        setCheck(LoginController.getSingletonInstance().checkEnteredCode(getEmail(), enteredCode));
+        LoginController loginController = new LoginController();
+        setCheck(loginController.checkEnteredCode(getEmail(), enteredCode));
         Stage stage = (Stage) statusLabel.getScene().getWindow();
         stage.close();
     }
