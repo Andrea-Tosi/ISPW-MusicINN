@@ -203,7 +203,7 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         return announcements.stream()
                 .filter(a -> a.getState() == AnnouncementState.OPEN)
                 .filter(a -> a.getApplicationList().stream()
-                        .map(obs -> (Application) obs)
+                        .map(Application.class::cast)
                         .noneMatch(app -> app.getUsernameArtist().equals(Session.getSingletonInstance().getUser().getUsername())))
                 .skip((long) page * pageSize)
                 .limit(pageSize)
