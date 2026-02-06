@@ -263,14 +263,15 @@ public class AnnouncementDAODatabase implements AnnouncementDAO {
                 "JOIN venues v ON a.venues_id = v.id " +
                 "JOIN manager_riders r ON v.id = r.venues_id " +
                 "WHERE a.state = 'OPEN' " +
+                "AND NOT EXISTS (SELECT 1 FROM applications app WHERE app.announcements_id = a.id AND app.artists_username = ?) " +
                 "LIMIT ? OFFSET ?";
 
         Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, pageSize);
-            pstmt.setInt(2, page * pageSize);
+            pstmt.setString(1, Session.getSingletonInstance().getUser().getUsername());
+            pstmt.setInt(2, pageSize);
+            pstmt.setInt(3, page * pageSize);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {

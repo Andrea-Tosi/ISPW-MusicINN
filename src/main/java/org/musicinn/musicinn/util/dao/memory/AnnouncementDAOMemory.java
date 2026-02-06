@@ -202,6 +202,9 @@ public class AnnouncementDAOMemory implements AnnouncementDAO {
         ensureDataLoaded();
         return announcements.stream()
                 .filter(a -> a.getState() == AnnouncementState.OPEN)
+                .filter(a -> a.getApplicationList().stream()
+                        .map(obs -> (Application) obs)
+                        .noneMatch(app -> app.getUsernameArtist().equals(Session.getSingletonInstance().getUser().getUsername())))
                 .skip((long) page * pageSize)
                 .limit(pageSize)
                 .toList();
