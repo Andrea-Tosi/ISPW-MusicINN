@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     private static final String QUANTITY_COLUMN = "quantity";
+    private static final String ARTIST_USERNAME_COLUMN = "artist_username";
     private static final Logger LOGGER = Logger.getLogger(TechnicalRiderDAODatabase.class.getName());
 
     @Override
@@ -86,7 +87,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     // Nuovo metodo per evitare duplicati quando si aggiorna
     private void deleteExistingComponents(Connection conn, String artistUser, Integer venueId) throws SQLException {
         String[] tables = {"mixers", "stage_boxes", "mic_sets", "di_box_sets", "monitor_sets", "mic_stand_sets", "cable_sets"};
-        String column = (artistUser != null) ? "artist_username" : "manager_riders_venues_id";
+        String column = (artistUser != null) ? ARTIST_USERNAME_COLUMN : "manager_riders_venues_id";
         Object param = (artistUser != null) ? artistUser : venueId;
         for (String table : tables) {
             String sql = "DELETE FROM " + table + " WHERE " + column + " = ?";
@@ -415,7 +416,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     }
 
     private String getOwnerColumn(String artistUser) {
-        return (artistUser != null) ? "artist_username" : "manager_riders_venues_id";
+        return (artistUser != null) ? ARTIST_USERNAME_COLUMN : "manager_riders_venues_id";
     }
 
     private void setOwnerParam(PreparedStatement ps, String artistUser, Integer venueId) throws SQLException {
@@ -429,7 +430,7 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
         String username = Session.getSingletonInstance().getUser().getUsername();
         Session.UserRole role = Session.getSingletonInstance().getRole();
         String table = (role.equals(Session.UserRole.ARTIST)) ? "artist_riders" : "manager_riders";
-        String column = (role.equals(Session.UserRole.ARTIST)) ? "artist_username" : "venues_id";
+        String column = (role.equals(Session.UserRole.ARTIST)) ? ARTIST_USERNAME_COLUMN : "venues_id";
 
         // Se è un manager, dobbiamo prima recuperare l'ID della venue (come fai già altrove)
         Object identifier = username;

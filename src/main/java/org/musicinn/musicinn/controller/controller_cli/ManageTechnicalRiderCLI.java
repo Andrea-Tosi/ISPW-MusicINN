@@ -79,9 +79,8 @@ public class ManageTechnicalRiderCLI {
         this.minWidthDimension = Integer.parseInt(scanner.nextLine());
 
         try {
-            ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
             controller.saveStageDimensions(minLengthDimension, minWidthDimension);
-        } catch (PersistenceException e) {
+        } catch (PersistenceException _) {
             LOGGER.info("Errore nel salvataggio delle dimensioni del palco.");
         }
     }
