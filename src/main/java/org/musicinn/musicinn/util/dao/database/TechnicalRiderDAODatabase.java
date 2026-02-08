@@ -7,6 +7,7 @@ import org.musicinn.musicinn.util.dao.DAOFactory;
 import org.musicinn.musicinn.util.dao.interfaces.TechnicalRiderDAO;
 import org.musicinn.musicinn.util.enumerations.CablePurpose;
 import org.musicinn.musicinn.util.exceptions.DatabaseException;
+import org.musicinn.musicinn.util.exceptions.PersistenceException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -275,7 +276,6 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Se hai aggiunto questi setter nel bean ArtistRider:
                     ar.setMinLengthStage(rs.getInt("min_length_stage"));
                     ar.setMinWidthStage(rs.getInt("min_width_stage"));
                 }
@@ -289,7 +289,6 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
             ps.setInt(1, venueId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Se hai aggiunto questi setter nel bean ManagerRider:
                     mr.setMinLengthStage(rs.getInt("min_length_stage"));
                     mr.setMinWidthStage(rs.getInt("min_width_stage"));
                 }
@@ -422,5 +421,31 @@ public class TechnicalRiderDAODatabase implements TechnicalRiderDAO {
     private void setOwnerParam(PreparedStatement ps, String artistUser, Integer venueId) throws SQLException {
         if (artistUser != null) ps.setString(1, artistUser);
         else ps.setInt(1, venueId);
+    }
+
+    @Override
+    public void updateStageDimensions(int length, int width) throws PersistenceException {
+        Connection conn = DBConnectionManager.getSingletonInstance().getConnection();
+        String username = Session.getSingletonInstance().getUser().getUsername();
+        Session.UserRole role = Session.getSingletonInstance().getRole();
+        String table = (role.equals(Session.UserRole.ARTIST)) ? "artist_riders" : "manager_riders";
+        String column = (role.equals(Session.UserRole.ARTIST)) ? "artist_username" : "venues_id";
+
+        // Se è un manager, dobbiamo prima recuperare l'ID della venue (come fai già altrove)
+        Object identifier = username;
+        if (role == Session.UserRole.MANAGER) {
+            identifier = DAOFactory.getVenueDAO().getActiveVenueIdByManager(username);
+        }
+
+        String sql = "UPDATE " + table + " SET min_length_stage = ?, min_width_stage = ? WHERE " + column + " = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, length);
+            ps.setInt(2, width);
+            ps.setObject(3, identifier);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore aggiornamento dimensioni: " + e.getMessage());
+        }
     }
 }

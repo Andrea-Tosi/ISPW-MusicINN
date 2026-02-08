@@ -23,6 +23,8 @@ public class ManageTechnicalRiderCLI {
     private final Scanner scanner;
     private final ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
 
+    private int minLengthDimension;
+    private int minWidthDimension;
     private List<MixerBean> mixers = new ArrayList<>();
     private List<StageBoxBean> stageBoxes = new ArrayList<>();
     private List<MicrophoneSetBean> mics = new ArrayList<>();
@@ -37,19 +39,20 @@ public class ManageTechnicalRiderCLI {
 
     public void run() {
         LOGGER.info("\n*** GESTIONE RIDER TECNICO ***");
-        loadExistingRider();
 
         boolean exitView = false;
         while (!exitView) {
+            loadExistingRider();
             displayCurrentRiderState();
             LOGGER.info("\n--- MENU AZIONI ---");
-            LOGGER.info("1. Gestisci Mixer | 2. Gestisci Stage Box | 3. Gestisci Microfoni");
+            LOGGER.info("0. Modifica Dimensioni Palco | 1. Gestisci Mixer | 2. Gestisci Stage Box | 3. Gestisci Microfoni");
             LOGGER.info("4. Gestisci DI Box | 5. Gestisci Monitor   | 6. Gestisci Aste | 7. Gestisci Cavi");
             LOGGER.info("8. SALVA MODIFICHE   | 9. Pulisci tutto | 10. Esci");
 
             String choice = scanner.nextLine();
             try {
                 switch (choice) {
+                    case "0" -> editStageDimension();
                     case "1" -> manageMixers();
                     case "2" -> manageStageBoxes();
                     case "3" -> manageMicrophones();
@@ -67,6 +70,20 @@ public class ManageTechnicalRiderCLI {
             }
         }
         backToHome();
+    }
+
+    private void editStageDimension() {
+        LOGGER.info("Nuova lunghezza del palco: ");
+        this.minLengthDimension = Integer.parseInt(scanner.nextLine());
+        LOGGER.info("Nuova larghezza del palco: ");
+        this.minWidthDimension = Integer.parseInt(scanner.nextLine());
+
+        try {
+            ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
+            controller.saveStageDimensions(minLengthDimension, minWidthDimension);
+        } catch (PersistenceException e) {
+            LOGGER.info("Errore nel salvataggio delle dimensioni del palco.");
+        }
     }
 
     // --- LOGICA GESTIONE MIXER (CON VINCOLI ARTISTA) ---
@@ -467,12 +484,15 @@ public class ManageTechnicalRiderCLI {
         b.setMicStands(stands);
         b.setCables(cables);
         LOGGER.log(Level.INFO, "{0}", TechnicalRiderFormatter.format(b, Session.getSingletonInstance().getRole()));
+        LOGGER.log(Level.INFO, "Dimensioni del palco: {0}m x {1}m", new Object[] {minLengthDimension, minWidthDimension});
     }
 
     private void loadExistingRider() {
         try {
             TechnicalRiderBean b = controller.loadRiderData();
             if (b != null) {
+                minLengthDimension = b.getMinLengthStage();
+                minWidthDimension = b.getMinWidthStage();
                 mixers = new ArrayList<>(b.getMixers());
                 stageBoxes = new ArrayList<>(b.getStageBoxes());
                 mics = new ArrayList<>(b.getMics());

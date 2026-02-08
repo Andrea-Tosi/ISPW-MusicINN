@@ -175,4 +175,13 @@ public class TechnicalRiderDAOMemory implements TechnicalRiderDAO {
         }
         return null;
     }
+
+    @Override
+    public void updateStageDimensions(int length, int width) throws PersistenceException {
+        TechnicalRider rider = read(Session.getSingletonInstance().getUser().getUsername(), Session.getSingletonInstance().getRole());
+        if (rider != null) {
+            rider.setMinLengthStage(length);
+            rider.setMinWidthStage(width);
+        }
+    }
 }

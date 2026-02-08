@@ -12,6 +12,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManagementTechnicalRiderController {
+    public void saveStageDimensions(int length, int width) throws PersistenceException {
+        Session session = Session.getSingletonInstance();
+        String username = session.getUser().getUsername();
+        Session.UserRole role = session.getRole();
+
+        // Verifica se il rider esiste già nel sistema
+        TechnicalRider existingRider = DAOFactory.getTechnicalRiderDAO().read(username, role);
+
+        if (existingRider == null) {
+            // Il rider non esiste (Primo salvataggio in assoluto)
+            // Crea un nuovo oggetto Rider in base al ruolo
+            TechnicalRider newRider;
+            if (role == Session.UserRole.ARTIST) {
+                newRider = new ArtistRider();
+            } else {
+                newRider = new ManagerRider();
+            }
+
+            // Impostiamo le dimensioni
+            newRider.setMinLengthStage(length);
+            newRider.setMinWidthStage(width);
+
+            // Usiamo create() perché deve essere fatta una INSERT nel database
+            DAOFactory.getTechnicalRiderDAO().create(newRider);
+        } else {
+            // Il rider esiste già
+            DAOFactory.getTechnicalRiderDAO().updateStageDimensions(length, width);
+        }
+    }
+
     public void saveRiderData(List<MixerBean> mixers, List<StageBoxBean> stageBoxes,
                               List<MicrophoneSetBean> mics, List<DIBoxSetBean> diBoxes,
                               List<MonitorSetBean> monitors, List<MicStandSetBean> stands,

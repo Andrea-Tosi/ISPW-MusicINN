@@ -1,5 +1,7 @@
 package org.musicinn.musicinn.controller.controller_gui;
 
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -27,6 +30,15 @@ import java.net.URL;
 import java.util.*;
 
 public class ManagementTechnicalRiderControllerGUI implements Initializable {
+    @FXML
+    private TextField stageLengthField;
+
+    @FXML
+    private TextField stageWidthField;
+
+    @FXML
+    private Button saveStageDimensionsButton;
+
     @FXML
     private VBox mixersVBox;
 
@@ -88,6 +100,17 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         headerController.setPageLabelText(DESCRIPTION_PAGE);
         headerController.setUsernameLabelText(Session.getSingletonInstance().getUser().getUsername());
         if (Session.getSingletonInstance().getRole().equals(Session.UserRole.ARTIST)) setupArtistView();
+
+        ChangeListener<String> numericListener = (observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                // Recupera la proprietà e il TextField associato per correggere il testo
+                ((StringProperty) observable).set(newValue.replaceAll("[^\\d]", ""));
+            }
+        };
+
+        stageLengthField.textProperty().addListener(numericListener);
+        stageWidthField.textProperty().addListener(numericListener);
+
         loadExistingData();
     }
 
@@ -95,6 +118,9 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
         try {
             ManagementTechnicalRiderController appController = new ManagementTechnicalRiderController();
             TechnicalRiderBean trBean = appController.loadRiderData();
+
+            stageLengthField.setText(String.valueOf(trBean.getMinLengthStage()));
+            stageWidthField.setText(String.valueOf(trBean.getMinWidthStage()));
 
             // Per il caricamento iniziale non serve il check duplicati perché il DB è già aggregato
             if (trBean.getMixers() != null) trBean.getMixers().forEach(this::displayMixer);
@@ -233,6 +259,22 @@ public class ManagementTechnicalRiderControllerGUI implements Initializable {
     @FXML private void handleAddMonitor(ActionEvent e) { handlePopupLogic("fxml.monitor_features.modal", "Monitor", (MonitorSetPopupControllerGUI c) -> { if(c.getCreatedMonitorSet()!=null) displayMonitor(c.getCreatedMonitorSet()); }); }
     @FXML private void handleAddMicStand(ActionEvent e) { handlePopupLogic("fxml.mic_stand_features.modal", "Aste", (MicStandSetPopupControllerGUI c) -> { if(c.getCreatedMicStandSet()!=null) displayMicStand(c.getCreatedMicStandSet()); }); }
     @FXML private void handleAddCable(ActionEvent e) { handlePopupLogic("fxml.cable_features.modal", "Cavi", (CableSetPopupControllerGUI c) -> { if(c.getCreatedCableSet()!=null) displayCable(c.getCreatedCableSet()); }); }
+
+    @FXML
+    private void handleSaveStageDimensions(ActionEvent event) {
+        try {
+            int minStageLength = 0;
+            int minStageWidth = 0;
+            if (!stageLengthField.getText().isEmpty()) minStageLength = Integer.parseInt(stageLengthField.getText());
+            if (!stageWidthField.getText().isEmpty()) minStageWidth = Integer.parseInt(stageWidthField.getText());
+            ManagementTechnicalRiderController controller = new ManagementTechnicalRiderController();
+            controller.saveStageDimensions(minStageLength, minStageWidth);
+
+            statusLabel.setText("Dimensioni del palco salvato con successo!");
+        } catch (PersistenceException _) {
+            statusLabel.setText("Errore nel salvataggio delle nuove dimensioni del palco. Riprova.");
+        }
+    }
 
     @FXML
     private void handleSaveChangesButton(ActionEvent event) {

@@ -184,6 +184,9 @@ public class ManagePaymentsCLI {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(new URI(url));
                 return true;
+            } else {
+                LOGGER.log(Level.INFO, "Copia il seguente URL in un browser:%n{0}", url);
+                return true;
             }
         } catch (Exception e) {
             LOGGER.fine("Errore apertura browser: " + e.getMessage());

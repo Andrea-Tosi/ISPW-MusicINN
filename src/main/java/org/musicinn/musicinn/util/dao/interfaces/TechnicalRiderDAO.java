@@ -7,4 +7,5 @@ import org.musicinn.musicinn.util.exceptions.PersistenceException;
 public interface TechnicalRiderDAO {
     void create(TechnicalRider rider) throws PersistenceException;
     TechnicalRider read(String username, Session.UserRole role) throws PersistenceException;
+    void updateStageDimensions(int length, int width) throws PersistenceException;
 }
